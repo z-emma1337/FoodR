@@ -22,5 +22,52 @@
     </div>
 </div>
 </template>
-<script>
+
+<script setup>
+import { ref } from 'vue'
+import Menu from 'primevue/menu'
+import Badge from 'primevue/badge'
+import Avatar from 'primevue/avatar'
+
+const itemsLeft = ref([
+    {
+        label: 'SwipeR',
+        icon: 'pi pi-home'
+    },
+    {
+        label: 'Kedvencek',
+        icon: 'pi pi-shopping-cart',
+        badge: 3
+    }
+])
+
+const itemsRight = ref([
+    {
+        label: 'Felhasználói fiók beállítások',
+        icon: 'pi pi-home'
+    },
+    {
+        label: 'Profil szerkesztése',
+        icon: 'pi pi-user-edit'
+    },
+    {
+        label: 'Fiók biztonság',
+        icon: 'pi pi-shield'
+    },
+    {
+        label: 'Adatvédelmi beállítások',
+        icon: 'pi pi-lock'
+    },
+    {
+        label: 'Segítség / Support',
+        icon: 'pi pi-question-circle'
+    },
+    {
+        separator: true
+    },
+    {
+        label: 'Logout',
+        icon: 'pi pi-sign-out'
+    }
+]);
 </script>
