@@ -18,9 +18,9 @@ Route::get('bejelentkezes', function () {
     return Inertia::render('Bejelentkezes');
 })->middleware('guest')->name('login');
 
-Route::get('bejelentkezes', function () {
-    return Inertia::render('Bejelentkezes');
-})->name('bejelentkezes');
+Route::get('regisztracio', function () {
+    return Inertia::render('Regisztracio');
+})->name('regisztracio');
 
 
 require __DIR__.'/settings.php';

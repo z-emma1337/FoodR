@@ -1,6 +1,19 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@theme inline {
+  --color-brand-50:  #fbeaea;
+  --color-brand-100: #f5d2d3;
+  --color-brand-200: #ebb3b5;
+  --color-brand-300: #e39597;
+  --color-brand-400: #da7678;
+  --color-brand-500: #b21f24;
+  --color-brand-600: #901a1d;
+  --color-brand-700: #6e1417;
+  --color-brand-800: #4c0f11;
+  --color-brand-900: #2a0a0a;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -38,4 +51,20 @@
 
 input {
     color: #333333;
+}
+
+@layer utilities {
+  .focus-glow {
+    transition:
+      box-shadow 0.25s ease,
+      border-color 0.25s ease,
+      transform 0.15s ease;
+  }
+
+  .focus-glow:focus {
+    box-shadow:
+      0 0 0 2px hsl(var(--ring) / 0.4),
+      0 0 18px hsl(var(--ring) / 0.35);
+    transform: translateY(-1px);
+  }
 }
