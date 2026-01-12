@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import laravel from 'laravel-vite-plugin'
 import { defineConfig } from 'vite'
+import Wayfinder from '@laravel/vite-plugin-wayfinder'
 
 export default defineConfig({
     plugins: [
@@ -17,9 +18,9 @@ export default defineConfig({
 
         tailwindcss(),
 
-        wayfinder({
-            formVariants: true,
-        }),
+        //Wayfinder({
+        //    formVariants: true,
+        //}),
 
         vue({
             template: {
