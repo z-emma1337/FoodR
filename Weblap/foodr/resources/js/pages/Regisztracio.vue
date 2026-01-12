@@ -3,6 +3,9 @@ import { Head, Link } from '@inertiajs/vue3'
 import { Eye, EyeOff, Check } from 'lucide-vue-next'
 import { ref, computed, watch } from 'vue'
 import axios from 'axios'
+import { router } from '@inertiajs/vue3'
+
+  const email = ref('')
 
 // Username
 const username = ref('')
@@ -42,6 +45,27 @@ watch(username, async (val) => {
     checkingUsername.value = false
   }
 })
+
+const submit = () => {
+  router.post('/regisztracio', {
+    nev: username.value,
+    email: email.value,
+    jelszo: password.value,
+    jelszo_confirmation: confirmPassword.value,
+    allergen_id: null,
+  }, {
+    onSuccess: () => {
+      console.log('Sikeres regisztráció')
+    },
+    onError: (errors) => {
+      console.error(errors)
+    }
+  })
+}
+
+
+
+
 </script>
 
 
@@ -56,7 +80,7 @@ watch(username, async (val) => {
           Regisztráció | FoodR
         </h1>
 
-        <form class="mt-6 space-y-4">
+        <form class="space-y-4" @submit.prevent="submit">
           <!-- USERNAME -->
           <div>
             <label class="block text-sm font-medium text-slate-700">
@@ -96,7 +120,7 @@ watch(username, async (val) => {
             <label class="block text-sm font-medium text-slate-700">
               Email cím
             </label>
-            <input type="email" placeholder="email@pelda.hu"
+            <input v-model="email" type="email" placeholder="email@pelda.hu" required
               class="focus-glow mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 outline-none focus:border-brand-500" />
           </div>
 
@@ -142,18 +166,18 @@ watch(username, async (val) => {
               </p>
             </div>
           </div>
-<button
-  type="submit"
-  class="w-full rounded-xl bg-brand-600 py-2 font-semibold text-white
+          <button type="submit" class="w-full rounded-xl bg-brand-600 py-2 font-semibold text-white
          transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500
-         focus:ring-offset-2 focus:ring-offset-white focus:outline-none"
-  :disabled="checkingUsername ||
-             username.length < 4 ||
-             isUsernameAvailable !== true ||
-             !isPasswordLongEnough ||
-             !doPasswordsMatch">
-  Regisztráció
-</button>
+         focus:ring-offset-2 focus:ring-offset-white focus:outline-none     disabled:bg-slate-300
+    disabled:text-slate-500
+    disabled:cursor-not-allowed
+    disabled:hover:bg-slate-300" :disabled="checkingUsername ||
+      username.length < 4 ||
+      isUsernameAvailable !== true ||
+      !isPasswordLongEnough ||
+      !doPasswordsMatch">
+            Regisztráció
+          </button>
 
         </form>
 

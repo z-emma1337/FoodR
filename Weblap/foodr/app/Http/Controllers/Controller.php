@@ -2,17 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Felhasznalo;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
 
-class UserController extends Controller
+class Controller extends BaseController
 {
-    public function checkUsername(Request $request)
-    {
-        $username = $request->query('username'); // GET paraméter
-
-        $available = !Felhasznalo::where('nev', $username)->exists();
-
-        return response()->json(['available' => $available]);
-    }
+    use AuthorizesRequests, ValidatesRequests;
 }
