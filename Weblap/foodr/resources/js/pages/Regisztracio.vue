@@ -6,7 +6,7 @@ import axios from 'axios'
 
 // Username
 const username = ref('')
-const isUsernameAvailable = ref(false)
+const isUsernameAvailable = ref(null)
 const checkingUsername = ref(false)
 const usernameTouched = ref(false)
 
@@ -26,19 +26,15 @@ const doPasswordsMatch = computed(
 watch(username, async (val) => {
   usernameTouched.value = true
 
-  // Minimum hossz
   if (val.length < 4) {
-    isUsernameAvailable.value = false
+    isUsernameAvailable.value = null // null = nincs ellenőrizve
     return
   }
 
   checkingUsername.value = true
 
   try {
-    const response = await axios.get('/check-username', {
-      params: { username: val }
-    })
-
+    const response = await axios.get('/check-username', { params: { username: val } })
     isUsernameAvailable.value = response.data.available
   } catch (e) {
     isUsernameAvailable.value = false
@@ -71,9 +67,7 @@ watch(username, async (val) => {
            text-slate-900 placeholder-slate-400 outline-none transition
            border-slate-300 focus:border-brand-500" />
 
-            <!-- Username feedback -->
             <div v-if="usernameTouched" class="mt-2 text-sm space-y-1">
-              <!-- min length -->
               <p class="flex items-center gap-2 transition"
                 :class="username.length >= 4 ? 'text-emerald-600' : 'text-slate-400'">
                 <Check v-if="username.length >= 4" class="h-4 w-4" />
@@ -81,7 +75,6 @@ watch(username, async (val) => {
                 Legalább 4 karakter
               </p>
 
-              <!-- availability -->
               <p v-if="username.length >= 4" class="flex items-center gap-2 transition" :class="checkingUsername
                 ? 'text-slate-400'
                 : isUsernameAvailable
@@ -97,6 +90,14 @@ watch(username, async (val) => {
                 </template>
               </p>
             </div>
+          </div>
+          <!-- EMAIL -->
+          <div>
+            <label class="block text-sm font-medium text-slate-700">
+              Email cím
+            </label>
+            <input type="email" placeholder="email@pelda.hu"
+              class="focus-glow mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 outline-none focus:border-brand-500" />
           </div>
 
           <!-- PASSWORD -->
@@ -141,17 +142,19 @@ watch(username, async (val) => {
               </p>
             </div>
           </div>
-
-          <button type="submit" class="w-full rounded-xl bg-brand-600 py-2 font-semibold text-white
+<button
+  type="submit"
+  class="w-full rounded-xl bg-brand-600 py-2 font-semibold text-white
          transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500
-         focus:ring-offset-2 focus:ring-offset-white focus:outline-none" :disabled="checkingUsername ||
-          username.length < 4 ||
-          !isUsernameAvailable ||
-          !isPasswordLongEnough ||
-          !doPasswordsMatch
-          ">
-            Regisztráció
-          </button>
+         focus:ring-offset-2 focus:ring-offset-white focus:outline-none"
+  :disabled="checkingUsername ||
+             username.length < 4 ||
+             isUsernameAvailable !== true ||
+             !isPasswordLongEnough ||
+             !doPasswordsMatch">
+  Regisztráció
+</button>
+
         </form>
 
         <p class="mt-6 text-center text-sm text-slate-500">

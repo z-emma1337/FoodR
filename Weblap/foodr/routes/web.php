@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use App\Http\Controllers\UserController;
+use App\Models\User;
+use App\Models\Felhasznalo;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -23,7 +25,16 @@ Route::get('regisztracio', function () {
     return Inertia::render('Regisztracio');
 })->name('regisztracio');
 
-Route::get('/check-username', [UserController::class, 'checkUsername']);
+Route::get('/check-username', function (Request $request) {
+    $username = $request->query('username'); // ez a helyes
+    // vagy: $request->input('username');
+
+    $available = !Felhasznalo::where('nev', $username)->exists();
+
+    return response()->json([
+        'available' => $available
+    ]);
+});
 
 
 require __DIR__.'/settings.php';
