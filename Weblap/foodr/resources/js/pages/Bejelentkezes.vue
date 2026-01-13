@@ -4,10 +4,31 @@ import { Link } from '@inertiajs/vue3'
 import { Mail, Lock } from 'lucide-vue-next'
 import { Eye, EyeOff, Check } from 'lucide-vue-next'
 import { ref } from 'vue'
+import { router } from '@inertiajs/vue3'
+
 
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
+const errorMessage = ref('')
+
+const submit = () => {
+    errorMessage.value = '' // előző hibát töröljük
+
+    router.post('/bejelentkezes', {
+        email: email.value,
+        jelszo: password.value
+    }, {
+        onSuccess: () => {
+            console.log('Sikeres bejelentkezés')
+        },
+        onError: (errors) => {
+            // Hibát kiírunk a mező alá
+            errorMessage.value = 'Hibás email cím vagy jelszó'
+        }
+    })
+}
+
 
 </script>
 
@@ -22,7 +43,7 @@ const showPassword = ref(false)
                     Bejelentkezés | FoodR
                 </h1>
 
-                <form class="mt-6 space-y-4">
+                <form @submit.prevent="submit" class="mt-6 space-y-4">
                     <!-- EMAIL -->
                     <div>
                         <label class="block text-sm font-medium text-slate-700">
@@ -70,6 +91,12 @@ const showPassword = ref(false)
                             </button>
                         </div>
                     </div>
+
+                    <div v-if="errorMessage" class="mt-2 text-sm text-brand-500 text-center">
+                        {{ errorMessage }}
+                    </div>
+
+
                     <!-- BUTTON -->
                     <button type="submit"
                         class="cursor-pointer w-full rounded-xl bg-brand-600 py-2 font-semibold text-white transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-white focus:outline-none">

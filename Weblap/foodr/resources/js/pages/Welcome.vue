@@ -48,7 +48,7 @@
               <template #end>
                 <div class="menu-bottom">
                   <a class="flex items-center px-3 py-2 menu-item logout">
-                    <button type="button">Kijelentkezés</button>
+                    <button type="button" @click="logout">Kijelentkezés</button>
                   </a>
 
                   <div class="p-3 flex items-center gap-2">
@@ -78,6 +78,7 @@ import Menu from 'primevue/menu'
 import Badge from 'primevue/badge'
 import Avatar from 'primevue/avatar'
 import DataView from 'primevue/dataview';
+import { router } from '@inertiajs/vue3'
 
 const itemsLeft = ref([
     {
@@ -117,4 +118,15 @@ const itemsRight = ref([
         icon: 'pi pi-question-circle'
     }
 ]);
+
+const logout = () => {
+    router.post('/logout', {}, {
+        onSuccess: () => {
+            console.log('Sikeres kijelentkezés')
+        },
+        onError: (errors) => {
+            console.error(errors)
+        }
+    })
+}
 </script>
