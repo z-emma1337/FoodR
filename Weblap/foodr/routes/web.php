@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use App\Models\Felhasznalo;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\RegisterController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -13,5 +16,29 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('bejelentkezes', function () { //BEJELENTKEZES
+    return Inertia::render('Bejelentkezes');
+})->middleware('guest')->name('bejelentkezes');
+
+Route::get('regisztracio', function () { //REGISZTRACIO 
+    return Inertia::render('Regisztracio');
+})->name('regisztracio');
+
+Route::get('/check-username', function (Request $request) { //USERNAME ELLENŐRZÉS
+    $username = $request->query('username');
+
+    $available = !Felhasznalo::where('nev', $username)->exists();
+
+    return response()->json([
+        'available' => $available
+    ]);
+});
+
+
+
+Route::post('/regisztracio', [RegisterController::class, 'store']) //REGISZTRÁCIÓ ADATOK KÜLDÉSE
+    ->name('regisztracio.store');
+
 
 require __DIR__.'/settings.php';
