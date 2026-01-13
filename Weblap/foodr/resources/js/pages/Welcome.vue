@@ -1,59 +1,65 @@
 <template>
     <div class="flex min-h-screen">
-        <Menu :model="itemsLeft" class="w-64" style="background-color: darkred;">
-            <template #start>
-                <div class="px-4 py-3 font-bold text-xl">
-                    Food<span class="text-primary">Я</span>
-                </div>
-            </template>
+        <div class="flex justify-end">
+            <Menu :model="itemsLeft" class="w-64 user-menu">
+                <template #start>
+                    <div class="px-4 py-3 font-bold text-xl">
+                        Food<span class="text-primary">Я</span>
+                    </div>
+                </template>
 
-            <template #item="{ item, props }">
-                <a v-ripple class="flex items-center px-3 py-2" v-bind="props.action" style="background-color:goldenrod /*burlywood darkkhaki*/; border-radius: 10px;">
-                    <span :class="item.icon" class="mr-2" />
-                    <span>{{ item.label }}</span>
-                    <Badge v-if="item.badge" class="ml-auto"style="background-color: darkgoldenrod;" :value="item.badge" />
-                </a>
-            </template>
+                <template #item="{ item, props }">
+                    <a v-ripple class="flex items-center px-3 py-2 menu-item" v-bind="props.action">
+                        <span :class="item.icon" class="mr-2" />
+                        <span>{{ item.label }}</span>
+                        <Badge v-if="item.badge" class="ml-auto badge" :value="item.badge" />
+                    </a>
+                </template>
+            </Menu>
+        </div> 
 
-        </Menu>
-
-
-        <div class="flex-1 p-10" style="background-color: RGB(139, 0, 0,0.3);">
+        <div class="flex-1 p-10 main-background">
             <h1 class="text-4xl font-bold mb-4">Üdvözöllek a FoodR-ben</h1>
             <p class="text-lg text-gray-600">
                 Az Ön egyedi ételeinek válogatása.
             </p>
+            
         </div>
 
 
         <div class="flex justify-end">
-            <Menu :model="itemsRight" class="w-64" style="background-color: darkred;">
-            
+            <Menu :model="itemsRight" class="w-64 user-menu">
+
               <template #start>
                 <div class="px-4 py-3 font-bold text-xl text-right">
-                  Felhasználói fiók<span class="text-primary"></span>
+                  Felhasználói fiók
                 </div>
               </template>
           
               <template #item="{ item, props }">
-                <a v-ripple class="flex items-center px-3 py-2" v-bind="props.action"
-                   style="background-color: goldenrod; border-radius: 10px;">
+                <a v-ripple
+                   v-bind="props.action"
+                   class="flex items-center px-3 py-2 menu-item">
                   <span :class="item.icon" class="mr-2"></span>
                   <span>{{ item.label }}</span>
-                  <Badge v-if="item.badge" class="ml-auto" style="background-color: darkgoldenrod;" :value="item.badge" />
                 </a>
               </template>
-          
+
               <template #end>
-                <div class="p-3 flex items-center gap-2">
+                <div class="menu-bottom">
+                  <a class="flex items-center px-3 py-2 menu-item logout">
+                    <button type="button">Kijelentkezés</button>
+                  </a>
+
+                  <div class="p-3 flex items-center gap-2">
                     <Avatar image="/imgs/emcyPFP.png" shape="circle" />
                     <div>
-                        <div class="font-bold">Emcy</div>
-                        <div class="text-sm text-gray-500">emcy@foodr.test</div>
+                      <div class="font-bold">Emcy</div>
+                      <div class="text-sm text-gray-500">emcy@foodr.test</div>
                     </div>
+                  </div>
                 </div>
               </template>
-          
             </Menu>
         </div>
     </div>
@@ -65,6 +71,7 @@ import { ref } from 'vue'
 import Menu from 'primevue/menu'
 import Badge from 'primevue/badge'
 import Avatar from 'primevue/avatar'
+import DataView from 'primevue/dataview';
 
 const itemsLeft = ref([
     {
@@ -75,6 +82,10 @@ const itemsLeft = ref([
         label: 'Kedvencek',
         icon: 'pi pi-shopping-cart',
         badge: 3
+    },
+    {
+        label: 'Felfedezés',
+        icon: 'pi pi-search'
     }
 ])
 
@@ -98,13 +109,6 @@ const itemsRight = ref([
     {
         label: 'Segítség / Support',
         icon: 'pi pi-question-circle'
-    },
-    {
-        separator: true
-    },
-    {
-        label: 'Logout',
-        icon: 'pi pi-sign-out'
     }
 ]);
 </script>

@@ -7,6 +7,8 @@ import { createApp, h } from 'vue';
 import { initializeTheme } from './composables/useAppearance';
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
+import '../css/prime-overrides.css';
+
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
