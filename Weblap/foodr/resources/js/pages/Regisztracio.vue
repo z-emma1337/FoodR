@@ -4,8 +4,10 @@ import { Eye, EyeOff, Check } from 'lucide-vue-next'
 import { ref, computed, watch } from 'vue'
 import axios from 'axios'
 import { router } from '@inertiajs/vue3'
+import { User, Mail, Lock } from 'lucide-vue-next'
 
-  const email = ref('')
+
+const email = ref('')
 
 // Username
 const username = ref('')
@@ -87,10 +89,20 @@ const submit = () => {
               Felhasználónév
             </label>
 
-            <input v-model="username" type="text" placeholder="pelda123" class="focus-glow mt-1 w-full rounded-lg border bg-white px-3 py-2
-           text-slate-900 placeholder-slate-400 outline-none transition
-           border-slate-300 focus:border-brand-500" />
+            <div class="relative mt-1 group">
+              <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2
+           text-slate-400 z-10
+           group-focus-within:text-brand-500 transition">
+                <User class="h-5 w-5" />
+              </span>
 
+              <input v-model="username" type="text" placeholder="felhasznalonev" class="focus-glow w-full rounded-lg border bg-white px-3 py-2 pl-10
+             text-slate-900 placeholder-slate-400 outline-none transition
+             border-slate-300 focus:border-brand-500" />
+            </div>
+
+
+            <!-- VALIDATION -->
             <div v-if="usernameTouched" class="mt-2 text-sm space-y-1">
               <p class="flex items-center gap-2 transition"
                 :class="username.length >= 4 ? 'text-emerald-600' : 'text-slate-400'">
@@ -103,8 +115,7 @@ const submit = () => {
                 ? 'text-slate-400'
                 : isUsernameAvailable
                   ? 'text-emerald-600'
-                  : 'text-red-500'
-                ">
+                  : 'text-red-500'">
                 <span v-if="checkingUsername">Ellenőrzés…</span>
 
                 <template v-else>
@@ -115,26 +126,54 @@ const submit = () => {
               </p>
             </div>
           </div>
+
           <!-- EMAIL -->
           <div>
             <label class="block text-sm font-medium text-slate-700">
               Email cím
             </label>
-            <input v-model="email" type="email" placeholder="email@pelda.hu" required
-              class="focus-glow mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 outline-none focus:border-brand-500" />
+
+            <div class="relative mt-1 group">
+              <!-- ICON -->
+              <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2
+             text-slate-400 z-10
+             group-focus-within:text-brand-500 transition">
+                <Mail class="h-5 w-5" />
+              </span>
+
+              <!-- INPUT -->
+              <input v-model="email" type="email" placeholder="email@pelda.hu" required class="focus-glow w-full rounded-lg border bg-white px-3 py-2 pl-10
+             text-slate-900 placeholder-slate-400 outline-none transition
+             border-slate-300 focus:border-brand-500" />
+            </div>
           </div>
 
           <!-- PASSWORD -->
           <div>
             <label class="block text-sm font-medium text-slate-700">Jelszó</label>
-            <div class="relative mt-1">
-              <input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="••••••••" class="w-full rounded-lg border bg-white px-3 py-2 pr-10 text-slate-900 placeholder-slate-400 outline-none transition-all duration-200
-                       focus:ring-2 focus:ring-brand-500/20 border-slate-300 focus:border-brand-500" />
+
+            <div class="relative mt-1 group">
+              <!-- LOCK ICON -->
+              <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2
+             text-slate-400 z-10
+             group-focus-within:text-red-500 transition-colors">
+                <Lock class="h-5 w-5" />
+              </span>
+
+
+              <!-- INPUT -->
+              <input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="••••••••" class="w-full rounded-lg border bg-white px-3 py-2 pl-10 pr-10
+             text-slate-900 placeholder-slate-400 outline-none transition-all duration-200
+             focus:ring-2 focus:ring-brand-500/20 border-slate-300 focus:border-brand-500" />
+
+              <!-- EYE BUTTON -->
               <button type="button" @click="showPassword = !showPassword"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-500 transition">
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-500 transition cursor-pointer">
                 <component :is="showPassword ? EyeOff : Eye" class="h-5 w-5" />
               </button>
             </div>
+
+            <!-- PASSWORD VALIDATION -->
             <div class="mt-2 space-y-1 text-sm">
               <p class="flex items-center gap-2 transition"
                 :class="isPasswordLongEnough ? 'text-emerald-600' : 'text-slate-400'">
@@ -145,18 +184,32 @@ const submit = () => {
             </div>
           </div>
 
+
           <!-- PASSWORD CONFIRM -->
           <div>
             <label class="block text-sm font-medium text-slate-700">Jelszó megerősítése</label>
-            <div class="relative mt-1">
-              <input v-model="confirmPassword" :type="showPasswordConfirm ? 'text' : 'password'" placeholder="••••••••"
-                class="w-full rounded-lg border bg-white px-3 py-2 pr-10 text-slate-900 placeholder-slate-400 outline-none transition-all duration-200
-                       focus:ring-2 focus:ring-brand-500/20 border-slate-300 focus:border-brand-500" />
+
+            <div class="relative mt-1 group">
+              <!-- LOCK ICON -->
+              <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2
+             text-slate-400 z-10
+             group-focus-within:text-red-500 transition-colors">
+                <Lock class="h-5 w-5" />
+              </span>
+              <!-- INPUT -->
+              <input ref="confirmPasswordInput" v-model="confirmPassword"
+                :type="showPasswordConfirm ? 'text' : 'password'" placeholder="••••••••" class="w-full rounded-lg border bg-white px-3 py-2 pl-10 pr-10
+             text-slate-900 placeholder-slate-400 outline-none transition-all duration-200
+             focus:ring-2 focus:ring-brand-500/20 border-slate-300 focus:border-brand-500" />
+
+              <!-- EYE BUTTON -->
               <button type="button" @click="showPasswordConfirm = !showPasswordConfirm"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-500 transition">
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-500 transition cursor-pointer">
                 <component :is="showPasswordConfirm ? EyeOff : Eye" class="h-5 w-5" />
               </button>
             </div>
+
+            <!-- PASSWORD CONFIRM VALIDATION -->
             <div class="mt-2 text-sm">
               <p class="flex items-center gap-2 transition"
                 :class="doPasswordsMatch ? 'text-emerald-600' : 'text-slate-400'">
@@ -166,7 +219,8 @@ const submit = () => {
               </p>
             </div>
           </div>
-          <button type="submit" class="w-full rounded-xl bg-brand-600 py-2 font-semibold text-white
+          <!-- SUBMIT BUTTON -->
+          <button type="submit" class="cursor-pointer w-full rounded-xl bg-brand-600 py-2 font-semibold text-white
          transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500
          focus:ring-offset-2 focus:ring-offset-white focus:outline-none     disabled:bg-slate-300
     disabled:text-slate-500
