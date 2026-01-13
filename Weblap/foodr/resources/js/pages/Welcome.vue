@@ -70,7 +70,6 @@
     <div class="w-full md:w-5/12 flex items-center justify-center py-5">
         <Button label="Sign Up" icon="pi pi-user-plus" severity="success" class="w-full max-w-[17.35rem] mx-auto"></Button>
     </div>
-</div>
 </template>
 
 <script setup>

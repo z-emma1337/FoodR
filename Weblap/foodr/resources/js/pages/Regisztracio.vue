@@ -52,7 +52,7 @@ const submit = () => {
     email: email.value,
     jelszo: password.value,
     jelszo_confirmation: confirmPassword.value,
-    allergen_id: null,
+    allergen_id: 1,
   }, {
     onSuccess: () => {
       console.log('Sikeres regisztráció')

@@ -14,7 +14,10 @@ return new class extends Migration {
             $table->string('jelszo');
 
             // foreign key, de lehet null, ha nincs allergén kiválasztva
-            $table->unsignedBigInteger('allergen_id')->nullable();
+            $table->foreignId('allergen_id')
+                ->nullable()
+                ->constrained('allergenek')
+                ->nullOnDelete();
             $table->foreign('allergen_id')->references('id')->on('allergen')->onDelete('set null');
             $table->timestamps();
         });
