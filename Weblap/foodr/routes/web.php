@@ -25,6 +25,16 @@ Route::get('regisztracio', function () { //REGISZTRACIO
     return Inertia::render('Regisztracio');
 })->name('regisztracio');
 
+Route::get('/felfedezes', function () {
+    return Inertia::render('Felfedezes');
+})->name('felfedezes');
+
+Route::get('/recipes', function () {
+    return \App\Models\Recept::with('felhasznalo')
+        ->orderBy('created_at', 'desc')
+        ->get();
+});
+
 Route::get('/check-username', function (Request $request) { //USERNAME ELLENŐRZÉS
     $username = $request->query('username');
 

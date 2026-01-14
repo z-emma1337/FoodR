@@ -1,39 +1,66 @@
-import '../css/app.css';
+import '../css/app.css'
+import '../css/prime-overrides.css'
 
-import { createInertiaApp } from '@inertiajs/vue3';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import type { DefineComponent } from 'vue';
-import { createApp, h } from 'vue';
-import { initializeTheme } from './composables/useAppearance';
-import PrimeVue from 'primevue/config';
-import Aura from '@primeuix/themes/aura';
-import '../css/prime-overrides.css';
+import { createInertiaApp } from '@inertiajs/vue3'
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+import type { DefineComponent } from 'vue'
+import { createApp, h } from 'vue'
+import { initializeTheme } from './composables/useAppearance'
 
+import PrimeVue from 'primevue/config'
+import Aura from '@primeuix/themes/aura'
 
-const appName = import.meta.env.VITE_APP_NAME || 'FoodR';
+// PRIMEVUE KOMPONENSEK (EZ HIÁNYZOTT)
+import Menu from 'primevue/menu'
+import Avatar from 'primevue/avatar'
+import Badge from 'primevue/badge'
+import DataView from 'primevue/dataview'
+import Button from 'primevue/button'
+import Tag from 'primevue/tag'
+import SelectButton from 'primevue/selectbutton'
+import Divider from 'primevue/divider'
+
+const appName = import.meta.env.VITE_APP_NAME || 'FoodR'
 
 createInertiaApp({
     title: (title) => (title ? `${title} | ${appName}` : appName),
-    resolve: (name) =>
-        resolvePageComponent(
+
+    resolve: (name: string) => {
+        return resolvePageComponent(
             `./pages/${name}.vue`,
-            import.meta.glob<DefineComponent>('./pages/**/*.vue'),
-        ),
+            import.meta.glob<DefineComponent>('./pages/**/*.vue')
+        )
+    },
+
+
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        const vueApp = createApp({ render: () => h(App, props) })
+
+        vueApp
             .use(plugin)
             .use(PrimeVue, {
                 theme: {
                     preset: Aura,
                 },
             })
-            .mount(el);
 
+            // ⬇⬇⬇ GLOBÁLIS PRIMEVUE REGISZTRÁCIÓ ⬇⬇⬇
+            .component('Menu', Menu)
+            .component('Avatar', Avatar)
+            .component('Badge', Badge)
+            .component('DataView', DataView)
+            .component('Button', Button)
+            .component('Tag', Tag)
+            .component('SelectButton', SelectButton)
+            .component('Divider', Divider)
+
+            .mount(el)
     },
+
     progress: {
         color: '#4B5563',
     },
-});
+})
 
-// This will set light / dark mode on page load...
-initializeTheme();
+// light / dark mód
+initializeTheme()
