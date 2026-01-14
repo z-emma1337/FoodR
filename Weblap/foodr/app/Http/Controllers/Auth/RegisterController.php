@@ -23,8 +23,10 @@ class RegisterController extends Controller
             'nev' => $validated['nev'],
             'email' => $validated['email'],
             'jelszo' => Hash::make($validated['jelszo']),
-            'allergen_id' => $validated['allergen_id'] ?? 0,
+            'allergen_id' => $validated['allergen_id']
+
         ]);
+
 
 
         return redirect()->route('bejelentkezes');

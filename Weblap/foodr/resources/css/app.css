@@ -68,3 +68,30 @@ input {
     transform: translateY(-1px);
   }
 }
+
+@layer components {
+  input:-webkit-autofill {
+    /* Háttér és belső árnyék */
+    -webkit-box-shadow: 0 0 0 1000px white inset; /* white vagy a :root változóval: hsl(var(--input)) */
+    
+    /* Szöveg színe */
+    -webkit-text-fill-color: #1f2937; /* slate-900 */
+
+    /* Smooth átmenet autofillkor */
+    transition: background-color 5000s ease-in-out 0s, color 0.3s ease;
+
+    /* Betűtípus */
+    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    /* Kerekített sarkok és border */
+    border-radius: 0.5rem; /* borderRadius.md */
+    border: 1px solid #d1d5db; /* slate-300 */
+  }
+
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #1f2937;
+    box-shadow: 0 0 0 1000px white inset;
+  }
+}
+
+

@@ -6,16 +6,14 @@ use Laravel\Fortify\Features;
 use App\Models\Felhasznalo;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
-
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('bejelentkezes', function () { //BEJELENTKEZES
     return Inertia::render('Bejelentkezes');
@@ -50,5 +48,10 @@ Route::get('/check-username', function (Request $request) { //USERNAME ELLENŐRZ
 Route::post('/regisztracio', [RegisterController::class, 'store']) //REGISZTRÁCIÓ ADATOK KÜLDÉSE
     ->name('regisztracio.store');
 
+Route::post('/bejelentkezes', [LoginController::class, 'login'])->name('bejelentkezes');
 
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect()->route('bejelentkezes');
+})->name('logout');
 require __DIR__.'/settings.php';

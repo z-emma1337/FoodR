@@ -30,33 +30,35 @@
         <div class="flex justify-end">
             <Menu :model="itemsRight" class="w-64 user-menu">
 
-                <template #start>
-                    <div class="px-4 py-3 font-bold text-xl text-right">
-                        Felhasználói fiók
+              <template #start>
+                <div class="px-4 py-3 font-bold text-xl text-right">
+                  Felhasználói fiók
+                </div>
+              </template>
+          
+              <template #item="{ item, props }">
+                <a v-ripple
+                   v-bind="props.action":href="item.url"
+                   class="flex items-center px-3 py-2 menu-item">
+                  <span :class="item.icon" class="mr-2"></span>
+                  <span>{{ item.label }}</span>
+                </a>
+              </template>
+
+              <template #end>
+                <div class="menu-bottom">
+                  <a class="flex items-center px-3 py-2 menu-item logout">
+                    <button type="button" @click="logout">Kijelentkezés</button>
+                  </a>
+
+                  <div class="p-3 flex items-center gap-2">
+                    <Avatar image="/imgs/emcyPFP.png" shape="circle" />
+                    <div>
+                      <div class="font-bold">Emcy</div>
+                      <div class="text-sm text-gray-500">emcy@foodr.test</div>
                     </div>
-                </template>
-
-                <template #item="{ item, props }">
-                    <a v-ripple v-bind="props.action" :href="item.url" class="flex items-center px-3 py-2 menu-item">
-                        <span :class="item.icon" class="mr-2" />
-                        <span>{{ item.label }}</span>
-                    </a>
-                </template>
-
-                <template #end>
-                    <div class="menu-bottom">
-                        <a class="flex items-center px-3 py-2 menu-item logout">
-                            <button type="button">Kijelentkezés</button>
-                        </a>
-
-                        <div class="p-3 flex items-center gap-2">
-                            <Avatar image="/imgs/emcyPFP.png" shape="circle" />
-                            <div>
-                                <div class="font-bold">Emcy</div>
-                                <div class="text-sm text-gray-500">emcy@foodr.test</div>
-                            </div>
-                        </div>
                     </div>
+                </div>
                 </template>
             </Menu>
         </div>
@@ -69,7 +71,6 @@
         <Button label="Sign Up" icon="pi pi-user-plus" severity="success"
             class="w-full max-w-[17.35rem] mx-auto"></Button>
     </div>
-
 </template>
 
 <script setup>
@@ -78,6 +79,7 @@ import Menu from 'primevue/menu'
 import Badge from 'primevue/badge'
 import Avatar from 'primevue/avatar'
 import DataView from 'primevue/dataview';
+import { router } from '@inertiajs/vue3'
 
 const itemsLeft = ref([
     {
@@ -125,6 +127,17 @@ const itemsRight = ref([
         icon: 'pi pi-question-circle'
     }
 ]);
+
+const logout = () => {
+    router.post('/logout', {}, {
+        onSuccess: () => {
+            console.log('Sikeres kijelentkezés')
+        },
+        onError: (errors) => {
+            console.error(errors)
+        }
+    })
+}
 </script>
 <style scoped>
 .text-primary {
