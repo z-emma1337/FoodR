@@ -1,14 +1,37 @@
-<script setup lang="ts">
-import AuthLayout from '@/layouts/auth/AuthSimpleLayout.vue';
+<!-- resources/js/Layouts/AuthLayout.vue -->
+<script setup>
+import { Head } from '@inertiajs/vue3'
 
-defineProps<{
-    title?: string;
-    description?: string;
-}>();
+defineProps({
+  title: String
+})
 </script>
 
 <template>
-    <AuthLayout :title="title" :description="description">
-        <slot />
-    </AuthLayout>
+  <div>
+    <Head :title="title" />
+    
+    <!-- PAGE BACKGROUND -->
+    <div class="relative flex min-h-screen items-center justify-center p-4 overflow-hidden
+             bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient">
+      
+      <!-- Glow overlay -->
+      <div class="pointer-events-none absolute inset-0
+               bg-gradient-to-br from-accent-500/20 via-transparent to-accent-600/20
+               blur-3xl animate-gradient-slow"></div>
+
+      <div class="relative w-full max-w-md">
+        <!-- ACCENT FRAME -->
+        <div class="rounded-3xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-[1.01]">
+          <div class="bg-gradient-to-br from-accent-500/80 to-accent-600/80 p-1">
+            <!-- CARD -->
+            <div class="rounded-3xl bg-accent-300 p-8">
+              <!-- Itt jön a slot tartalma -->
+              <slot />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

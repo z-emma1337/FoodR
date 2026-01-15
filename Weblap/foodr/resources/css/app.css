@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 
 @theme inline {
+  /* BRAND – meglévő */
   --color-brand-50:  #fbeaea;
   --color-brand-100: #f5d2d3;
   --color-brand-200: #ebb3b5;
@@ -12,7 +13,20 @@
   --color-brand-700: #6e1417;
   --color-brand-800: #4c0f11;
   --color-brand-900: #2a0a0a;
+
+  /* ACCENT – AMBER / ORANGE */
+  --color-accent-50:  #fff7ed;
+  --color-accent-100: #ffedd5;
+  --color-accent-200: #fed7aa;
+  --color-accent-300: #fdba74;
+  --color-accent-400: #fb923c;
+  --color-accent-500: #f97316;
+  --color-accent-600: #ea580c;
+  --color-accent-700: #c2410c;
+  --color-accent-800: #9a3412;
+  --color-accent-900: #7c2d12;
 }
+
 
 @layer base {
   :root {
@@ -95,3 +109,18 @@ input {
 }
 
 
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientMove 30s ease infinite;
+}
+
+.animate-gradient-slow {
+  background-size: 300% 300%;
+  animation: gradientMove 45s ease infinite;
+}
