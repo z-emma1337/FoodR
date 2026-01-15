@@ -3,7 +3,7 @@
 
 @theme inline {
   /* BRAND – meglévő */
-  --color-brand-50:  #fbeaea;
+  --color-brand-50: #fbeaea;
   --color-brand-100: #f5d2d3;
   --color-brand-200: #ebb3b5;
   --color-brand-300: #e39597;
@@ -15,7 +15,7 @@
   --color-brand-900: #2a0a0a;
 
   /* ACCENT – AMBER / ORANGE */
-  --color-accent-50:  #fff7ed;
+  --color-accent-50: #fff7ed;
   --color-accent-100: #ffedd5;
   --color-accent-200: #fed7aa;
   --color-accent-300: #fdba74;
@@ -64,7 +64,7 @@
 }
 
 input {
-    color: #333333;
+  color: #333333;
 }
 
 @layer utilities {
@@ -86,10 +86,12 @@ input {
 @layer components {
   input:-webkit-autofill {
     /* Háttér és belső árnyék */
-    -webkit-box-shadow: 0 0 0 1000px white inset; /* white vagy a :root változóval: hsl(var(--input)) */
-    
+    -webkit-box-shadow: 0 0 0 1000px white inset;
+    /* white vagy a :root változóval: hsl(var(--input)) */
+
     /* Szöveg színe */
-    -webkit-text-fill-color: #1f2937; /* slate-900 */
+    -webkit-text-fill-color: #1f2937;
+    /* slate-900 */
 
     /* Smooth átmenet autofillkor */
     transition: background-color 5000s ease-in-out 0s, color 0.3s ease;
@@ -98,21 +100,50 @@ input {
     font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
     /* Kerekített sarkok és border */
-    border-radius: 0.5rem; /* borderRadius.md */
-    border: 1px solid #d1d5db; /* slate-300 */
+    border-radius: 0.5rem;
+    /* borderRadius.md */
+    border: 1px solid #d1d5db;
+    /* slate-300 */
   }
 
   input:-webkit-autofill:focus {
     -webkit-text-fill-color: #1f2937;
     box-shadow: 0 0 0 1000px white inset;
   }
+
+  /* Fade + Scale transition */
+  .fade-scale-enter-active,
+  .fade-scale-leave-active {
+    transition: all 0.2s ease;
+  }
+
+  .fade-scale-enter-from,
+  .fade-scale-leave-to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  .fade-scale-enter-to,
+  .fade-scale-leave-from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
 }
 
 
 @keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .animate-gradient {
