@@ -62,10 +62,10 @@ const logout = () => {
              border-r border-accent-500 z-10"
     >
       <div class="p-6 pb-4">
-        <h2 class="text-2xl font-bold text-slate-900">
+        <h1 class="text-6xl font-bold text-slate-900 text-center">
           <span class="text-accent-400 text-outline-shadow">Food</span>
           <span class="text-brand-500 text-outline-shadow">R</span>
-        </h2>
+        </h1>
       </div>
 
       <nav class="flex-1 px-3 space-y-1">
