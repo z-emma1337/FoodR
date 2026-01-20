@@ -67,8 +67,7 @@ const submit = () => {
 <template>
   <AuthLayout title="Regisztráció">
     <h1 class="text-2xl font-semibold text-slate-900 transition-all duration-300">
-      Regisztráció
-      <span class="text-brand-700 inline-block transition-all duration-300 hover:scale-110">| <span class="text-brand-700">Food</span><span class="text-slate-800">R</span></span>
+      Regisztráció | <span class="text-accent-400 text-outline-shadow">Food</span><span class="text-brand-500 text-outline-shadow">R</span>
     </h1>
 
     <form class="mt-6 space-y-5" @submit.prevent="submit">

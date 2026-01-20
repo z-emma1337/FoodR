@@ -28,11 +28,11 @@ const submit = () => {
 }
 </script>
 
+
 <template>
   <AuthLayout title="Bejelentkezés">
-    <h1 class="text-2xl font-semibold text-slate-900 transition-all duration-300">
-      Bejelentkezés
-      <span class="text-brand-700 inline-block transition-all duration-300 hover:scale-110">| FoodR</span>
+     <h1 class="text-2xl font-semibold text-slate-900 transition-all duration-300">
+      Bejelentkezés | <span class="text-accent-400 text-outline-shadow">Food</span><span class="text-brand-500 text-outline-shadow">R</span>
     </h1>
 
     <form @submit.prevent="submit" class="mt-6 space-y-5">
