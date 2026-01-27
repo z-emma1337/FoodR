@@ -14,11 +14,11 @@ return new class extends Migration {
             $table->string('jelszo');
 
             // foreign key, de lehet null, ha nincs allergén kiválasztva
-            $table->foreignId('allergen_id')
-                ->nullable()
-                ->constrained('allergenek')
-                ->nullOnDelete();
-            $table->foreign('allergen_id')->references('id')->on('allergen')->onDelete('set null');
+$table->foreignId('allergen_id')
+    ->nullable()
+    ->constrained('allergen')
+    ->nullOnDelete();
+
             $table->timestamps();
         });
     }

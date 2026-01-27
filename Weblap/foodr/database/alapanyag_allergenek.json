@@ -1,0 +1,487 @@
+[
+  {
+    "alapanyag_id": 15,
+    "allergen_id": 1,
+    "megjegyzes": "Sütőpor - glutén"
+  },
+  {
+    "alapanyag_id": 32,
+    "allergen_id": 1,
+    "megjegyzes": "Masni tészta - glutén"
+  },
+  {
+    "alapanyag_id": 35,
+    "allergen_id": 1,
+    "megjegyzes": "Kenyér - glutén"
+  },
+  {
+    "alapanyag_id": 36,
+    "allergen_id": 1,
+    "megjegyzes": "Zsemlemorzsa - glutén"
+  },
+  {
+    "alapanyag_id": 41,
+    "allergen_id": 3,
+    "megjegyzes": "Vaj - tej"
+  },
+  {
+    "alapanyag_id": 50,
+    "allergen_id": 4,
+    "megjegyzes": "Kesudió - dió"
+  },
+  {
+    "alapanyag_id": 51,
+    "allergen_id": 4,
+    "megjegyzes": "Kesudió - dió"
+  },
+  {
+    "alapanyag_id": 59,
+    "allergen_id": 3,
+    "megjegyzes": "Cheddar sajt - tej"
+  },
+  {
+    "alapanyag_id": 60,
+    "allergen_id": 3,
+    "megjegyzes": "Sajt - tej"
+  },
+  {
+    "alapanyag_id": 61,
+    "allergen_id": 3,
+    "megjegyzes": "Sajttúró - tej"
+  },
+  {
+    "alapanyag_id": 73,
+    "allergen_id": 3,
+    "megjegyzes": "Hűtött vaj - tej"
+  },
+  {
+    "alapanyag_id": 92,
+    "allergen_id": 3,
+    "megjegyzes": "Colby Jack sajt - tej"
+  },
+  {
+    "alapanyag_id": 94,
+    "allergen_id": 3,
+    "megjegyzes": "Sűrített tej - tej"
+  },
+  {
+    "alapanyag_id": 100,
+    "allergen_id": 3,
+    "megjegyzes": "Tejszín - tej"
+  },
+  {
+    "alapanyag_id": 101,
+    "allergen_id": 3,
+    "megjegyzes": "Crème fraiche - tej"
+  },
+  {
+    "alapanyag_id": 102,
+    "allergen_id": 3,
+    "megjegyzes": "Kockázott feta sajt - tej"
+  },
+  {
+    "alapanyag_id": 112,
+    "allergen_id": 1,
+    "megjegyzes": "Digestive keksz - glutén"
+  },
+  {
+    "alapanyag_id": 115,
+    "allergen_id": 3,
+    "megjegyzes": "Habtejszín - tej"
+  },
+  {
+    "alapanyag_id": 121,
+    "allergen_id": 2,
+    "megjegyzes": "Tojásfehérje - tojás"
+  },
+  {
+    "alapanyag_id": 122,
+    "allergen_id": 2,
+    "megjegyzes": "Tojássárgája - tojás"
+  },
+  {
+    "alapanyag_id": 123,
+    "allergen_id": 2,
+    "megjegyzes": "Tojás - tojás"
+  },
+  {
+    "alapanyag_id": 128,
+    "allergen_id": 1,
+    "megjegyzes": "Farfalle - glutén"
+  },
+  {
+    "alapanyag_id": 133,
+    "allergen_id": 3,
+    "megjegyzes": "Feta - tej"
+  },
+  {
+    "alapanyag_id": 135,
+    "allergen_id": 4,
+    "megjegyzes": "Pörkölt mandulapehely - dió"
+  },
+  {
+    "alapanyag_id": 136,
+    "allergen_id": 2,
+    "megjegyzes": "Lentojás - tojás"
+  },
+  {
+    "alapanyag_id": 137,
+    "allergen_id": 1,
+    "megjegyzes": "Liszt - glutén"
+  },
+  {
+    "alapanyag_id": 138,
+    "allergen_id": 1,
+    "megjegyzes": "Lisztes tortilla - glutén"
+  },
+  {
+    "alapanyag_id": 140,
+    "allergen_id": 2,
+    "megjegyzes": "Szabadtartású tojás, felverve - tojás"
+  },
+  {
+    "alapanyag_id": 141,
+    "allergen_id": 2,
+    "megjegyzes": "Szabadtartású tojások, felverve - tojás"
+  },
+  {
+    "alapanyag_id": 147,
+    "allergen_id": 3,
+    "megjegyzes": "Teljes zsírtartalmú joghurt - tej"
+  },
+  {
+    "alapanyag_id": 153,
+    "allergen_id": 3,
+    "megjegyzes": "Ghee (tisztított vaj) - tej"
+  },
+  {
+    "alapanyag_id": 159,
+    "allergen_id": 3,
+    "megjegyzes": "Gouda sajt - tej"
+  },
+  {
+    "alapanyag_id": 162,
+    "allergen_id": 3,
+    "megjegyzes": "Görög joghurt - tej"
+  },
+  {
+    "alapanyag_id": 169,
+    "allergen_id": 4,
+    "megjegyzes": "Darált mandula - dió"
+  },
+  {
+    "alapanyag_id": 172,
+    "allergen_id": 3,
+    "megjegyzes": "Gruyère - tej"
+  },
+  {
+    "alapanyag_id": 173,
+    "allergen_id": 1,
+    "megjegyzes": "Kemény taco héj - glutén"
+  },
+  {
+    "alapanyag_id": 176,
+    "allergen_id": 3,
+    "megjegyzes": "Habtejszín - tej"
+  },
+  {
+    "alapanyag_id": 181,
+    "allergen_id": 3,
+    "megjegyzes": "Fagylalt - tej"
+  },
+  {
+    "alapanyag_id": 181,
+    "allergen_id": 2,
+    "megjegyzes": "Fagylalt - tojás"
+  },
+  {
+    "alapanyag_id": 194,
+    "allergen_id": 1,
+    "megjegyzes": "Lasagne lapok - glutén"
+  },
+  {
+    "alapanyag_id": 204,
+    "allergen_id": 1,
+    "megjegyzes": "Makaróni - glutén"
+  },
+  {
+    "alapanyag_id": 211,
+    "allergen_id": 3,
+    "megjegyzes": "Tej - tej"
+  },
+  {
+    "alapanyag_id": 215,
+    "allergen_id": 3,
+    "megjegyzes": "Monterey Jack sajt - tej"
+  },
+  {
+    "alapanyag_id": 216,
+    "allergen_id": 3,
+    "megjegyzes": "Mozzarella golyók - tej"
+  },
+  {
+    "alapanyag_id": 234,
+    "allergen_id": 3,
+    "megjegyzes": "Parmezán - tej"
+  },
+  {
+    "alapanyag_id": 235,
+    "allergen_id": 3,
+    "megjegyzes": "Parmezán sajt - tej"
+  },
+  {
+    "alapanyag_id": 236,
+    "allergen_id": 3,
+    "megjegyzes": "Parmigiano-reggiano - tej"
+  },
+  {
+    "alapanyag_id": 238,
+    "allergen_id": 5,
+    "megjegyzes": "Mogyoróvaj - földimogyoró"
+  },
+  {
+    "alapanyag_id": 239,
+    "allergen_id": 5,
+    "megjegyzes": "Mogyoróolaj - földimogyoró"
+  },
+  {
+    "alapanyag_id": 240,
+    "allergen_id": 5,
+    "megjegyzes": "Mogyoró - földimogyoró"
+  },
+  {
+    "alapanyag_id": 242,
+    "allergen_id": 3,
+    "megjegyzes": "Pecorino - tej"
+  },
+  {
+    "alapanyag_id": 243,
+    "allergen_id": 1,
+    "megjegyzes": "Penne rigate - glutén"
+  },
+  {
+    "alapanyag_id": 248,
+    "allergen_id": 1,
+    "megjegyzes": "Sima liszt - glutén"
+  },
+  {
+    "alapanyag_id": 255,
+    "allergen_id": 1,
+    "megjegyzes": "Leveles tészta - glutén"
+  },
+  {
+    "alapanyag_id": 255,
+    "allergen_id": 3,
+    "megjegyzes": "Leveles tészta - tej"
+  },
+  {
+    "alapanyag_id": 269,
+    "allergen_id": 1,
+    "megjegyzes": "Rizstészta - glutén (ha búzaalapú)"
+  },
+  {
+    "alapanyag_id": 270,
+    "allergen_id": 1,
+    "megjegyzes": "Rizstészta - glutén (ha búzaalapú)"
+  },
+  {
+    "alapanyag_id": 272,
+    "allergen_id": 1,
+    "megjegyzes": "Rigatoni - glutén"
+  },
+  {
+    "alapanyag_id": 282,
+    "allergen_id": 3,
+    "megjegyzes": "Sós vaj - tej"
+  },
+  {
+    "alapanyag_id": 286,
+    "allergen_id": 1,
+    "megjegyzes": "Önkelő liszt - glutén"
+  },
+  {
+    "alapanyag_id": 287,
+    "allergen_id": 3,
+    "megjegyzes": "Félzsíros tej - tej"
+  },
+  {
+    "alapanyag_id": 290,
+    "allergen_id": 3,
+    "megjegyzes": "Reszelt mexikói sajt - tej"
+  },
+  {
+    "alapanyag_id": 291,
+    "allergen_id": 3,
+    "megjegyzes": "Reszelt Monterey Jack sajt - tej"
+  },
+  {
+    "alapanyag_id": 295,
+    "allergen_id": 3,
+    "megjegyzes": "Tejföl - tej"
+  },
+  {
+    "alapanyag_id": 297,
+    "allergen_id": 3,
+    "megjegyzes": "Szójatej - tej (alternatíva, de nem tejallegén)"
+  },
+  {
+    "alapanyag_id": 298,
+    "allergen_id": 1,
+    "megjegyzes": "Spagetti - glutén"
+  },
+  {
+    "alapanyag_id": 326,
+    "allergen_id": 3,
+    "megjegyzes": "Vegán vaj - tej (alternatíva, nem tartalmaz tejt)"
+  },
+  {
+    "alapanyag_id": 339,
+    "allergen_id": 3,
+    "megjegyzes": "Teljes tej - tej"
+  },
+  {
+    "alapanyag_id": 340,
+    "allergen_id": 1,
+    "megjegyzes": "Teljes kiőrlésű búza - glutén"
+  },
+  {
+    "alapanyag_id": 341,
+    "allergen_id": 1,
+    "megjegyzes": "Teljes kiőrlésű kenyér - glutén"
+  },
+  {
+    "alapanyag_id": 343,
+    "allergen_id": 3,
+    "megjegyzes": "Joghurt - tej"
+  },
+  {
+    "alapanyag_id": 346,
+    "allergen_id": 3,
+    "megjegyzes": "Tejszínes krémsajt - tej"
+  },
+  {
+    "alapanyag_id": 351,
+    "allergen_id": 1,
+    "megjegyzes": "Tagliatelle - glutén"
+  },
+  {
+    "alapanyag_id": 352,
+    "allergen_id": 1,
+    "megjegyzes": "Fettuccine - glutén"
+  },
+  {
+    "alapanyag_id": 353,
+    "allergen_id": 3,
+    "megjegyzes": "Clotted cream - tej"
+  },
+  {
+    "alapanyag_id": 354,
+    "allergen_id": 1,
+    "megjegyzes": "Kukoricaliszt - glutén (ha kontaminált)"
+  },
+  {
+    "alapanyag_id": 358,
+    "allergen_id": 1,
+    "megjegyzes": "Vermicelli tészta - glutén"
+  },
+  {
+    "alapanyag_id": 369,
+    "allergen_id": 1,
+    "megjegyzes": "Pappardelle tészta - glutén"
+  },
+  {
+    "alapanyag_id": 370,
+    "allergen_id": 1,
+    "megjegyzes": "Paccheri tészta - glutén"
+  },
+  {
+    "alapanyag_id": 371,
+    "allergen_id": 1,
+    "megjegyzes": "Linguine tészta - glutén"
+  },
+  {
+    "alapanyag_id": 374,
+    "allergen_id": 1,
+    "megjegyzes": "Ropogós kenyér - glutén"
+  },
+  {
+    "alapanyag_id": 375,
+    "allergen_id": 3,
+    "megjegyzes": "Fromage frais - tej"
+  },
+  {
+    "alapanyag_id": 379,
+    "allergen_id": 3,
+    "megjegyzes": "Stilton sajt - tej"
+  },
+  {
+    "alapanyag_id": 401,
+    "allergen_id": 3,
+    "megjegyzes": "Mascarpone - tej"
+  },
+  {
+    "alapanyag_id": 402,
+    "allergen_id": 3,
+    "megjegyzes": "Mozzarella - tej"
+  },
+  {
+    "alapanyag_id": 403,
+    "allergen_id": 3,
+    "megjegyzes": "Ricotta - tej"
+  },
+  {
+    "alapanyag_id": 410,
+    "allergen_id": 4,
+    "megjegyzes": "Dió - dió"
+  },
+  {
+    "alapanyag_id": 411,
+    "allergen_id": 4,
+    "megjegyzes": "Pekándió - dió"
+  },
+  {
+    "alapanyag_id": 416,
+    "allergen_id": 3,
+    "megjegyzes": "Tejcsokoládé - tej"
+  },
+  {
+    "alapanyag_id": 419,
+    "allergen_id": 1,
+    "megjegyzes": "Omlós tészta - glutén"
+  },
+  {
+    "alapanyag_id": 419,
+    "allergen_id": 3,
+    "megjegyzes": "Omlós tészta - tej"
+  },
+  {
+    "alapanyag_id": 420,
+    "allergen_id": 1,
+    "megjegyzes": "Mogyoróvajas keksz - glutén"
+  },
+  {
+    "alapanyag_id": 420,
+    "allergen_id": 5,
+    "megjegyzes": "Mogyoróvajas keksz - földimogyoró"
+  },
+  {
+    "alapanyag_id": 422,
+    "allergen_id": 5,
+    "megjegyzes": "Mogyorókrém - földimogyoró"
+  },
+  {
+    "alapanyag_id": 428,
+    "allergen_id": 4,
+    "megjegyzes": "Gesztenye - dió"
+  },
+  {
+    "alapanyag_id": 431,
+    "allergen_id": 3,
+    "megjegyzes": "Paneer - tej"
+  },
+  {
+    "alapanyag_id": 432,
+    "allergen_id": 1,
+    "megjegyzes": "Naan kenyér - glutén"
+  }
+]
