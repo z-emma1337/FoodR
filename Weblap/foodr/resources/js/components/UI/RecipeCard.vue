@@ -22,6 +22,14 @@ const props = defineProps({
   isBackground: {
     type: Boolean,
     default: false
+  },
+  nextCardScale: {
+    type: Number,
+    default: 0.95
+  },
+  nextCardOpacity: {
+    type: Number,
+    default: 0.5
   }
 })
 
@@ -54,18 +62,25 @@ const getAllergenColor = (allergen) => {
   <div
     :class="[
       'absolute inset-0 touch-none',
-      isBackground ? 'rounded-3xl overflow-hidden transform scale-95 opacity-50 transition-all duration-300' : 'cursor-grab active:cursor-grabbing'
+      isBackground ? 'rounded-3xl overflow-hidden' : 'cursor-grab active:cursor-grabbing'
     ]"
     :style="{
       zIndex: isBackground ? 1 : 2,
-      transform: isBackground ? 'scale(0.95)' : `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${rotation}deg)`,
-      transition: !isBackground && isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+      transform: isBackground 
+        ? `scale(${nextCardScale})` 
+        : `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${rotation}deg)`,
+      opacity: isBackground ? nextCardOpacity : 1,
+      transition: !isBackground && isDragging 
+        ? 'none' 
+        : isBackground 
+          ? 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out'
+          : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
     }"
     @mousedown.prevent="!isBackground && $emit('dragstart', $event)"
     @touchstart.prevent="!isBackground && $emit('dragstart', $event)">
     
     <!-- Accent Frame -->
-    <div class="w-full h-full rounded-3xl overflow-hidden shadow-2xl pointer-events-none">
+    <div class="w-full h-full rounded-3xl overflow-hidden pointer-events-none">
       <div class="bg-gradient-to-br from-accent-500/80 to-accent-600/80 p-1 w-full h-full">
         
         <!-- Kártya Content -->

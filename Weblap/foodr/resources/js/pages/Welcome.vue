@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { Heart, X, ChefHat } from 'lucide-vue-next'
 import AppLayout from '@/layouts/AppLayout.vue'
 import RecipeCard from '@/components/UI/RecipeCard.vue'
@@ -11,6 +11,9 @@ const dragStartPos = ref({ x: 0, y: 0 })
 const dragOffset = ref({ x: 0, y: 0 })
 const rotation = ref(0)
 const isAnimating = ref(false)
+const nextCardScale = ref(0.95)
+const nextCardOpacity = ref(0.5)
+const shouldShowCurrentCard = ref(true)
 
 const currentRecipe = computed(() => recipes.value[currentIndex.value])
 const nextRecipe = computed(() => recipes.value[currentIndex.value + 1])
@@ -31,6 +34,15 @@ onMounted(async () => {
   document.addEventListener('touchmove', handleDragMove, { passive: false })
   document.addEventListener('touchend', handleDragEnd)
 })
+
+// Figyeljük a drag offsetet és animáljuk a következő kártyát
+watch(dragOffset, (newOffset) => {
+  if (!isDragging.value && !isAnimating.value) return
+  
+  const dragProgress = Math.min(Math.abs(newOffset.x) / 200, 1)
+  nextCardScale.value = 0.95 + (dragProgress * 0.05) // 0.95 -> 1.0
+  nextCardOpacity.value = 0.5 + (dragProgress * 0.5) // 0.5 -> 1.0
+}, { deep: true })
 
 // Drag események
 const handleDragStart = (e) => {
@@ -78,10 +90,35 @@ const handleDragEnd = () => {
     // Visszaugrik
     dragOffset.value = { x: 0, y: 0 }
     rotation.value = 0
+    nextCardScale.value = 0.95
+    nextCardOpacity.value = 0.5
   }
 }
 
-// Swipe műveletek
+// Smooth animáció gombnyomásra
+const animateSwipe = async (direction) => {
+  const targetX = direction === 'right' ? 1000 : -1000
+  const targetRotation = direction === 'right' ? 30 : -30
+  const duration = 400 // ms
+  const steps = 40
+  const stepDelay = duration / steps
+  
+  for (let i = 0; i <= steps; i++) {
+    const progress = i / steps
+    // Easing function (ease-out-cubic)
+    const eased = 1 - Math.pow(1 - progress, 3)
+    
+    dragOffset.value = { 
+      x: eased * targetX, 
+      y: 0 
+    }
+    rotation.value = eased * targetRotation
+    
+    await new Promise(resolve => setTimeout(resolve, stepDelay))
+  }
+}
+
+// Swipe műveletek (drag-hez)
 const swipeLeft = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
@@ -90,8 +127,15 @@ const swipeLeft = async () => {
   dragOffset.value = { x: -1000, y: 0 }
   rotation.value = -30
   
+  // A következő kártya előrejön
+  nextCardScale.value = 1
+  nextCardOpacity.value = 1
+  
   // Várunk az animáció végére
   await new Promise(resolve => setTimeout(resolve, 300))
+  
+  // Elrejtjük az aktuális kártyát
+  shouldShowCurrentCard.value = false
   
   // Következő kártya
   nextCard()
@@ -107,8 +151,60 @@ const swipeRight = async () => {
   dragOffset.value = { x: 1000, y: 0 }
   rotation.value = 30
   
+  // A következő kártya előrejön
+  nextCardScale.value = 1
+  nextCardOpacity.value = 1
+  
   // Várunk az animáció végére
   await new Promise(resolve => setTimeout(resolve, 300))
+  
+  // Elrejtjük az aktuális kártyát
+  shouldShowCurrentCard.value = false
+  
+  // Következő kártya
+  nextCard()
+}
+
+// Gombos swipe műveletek (lassabb animációval)
+const swipeRightClick = async () => {
+  if (isAnimating.value || !currentRecipe.value) return
+  isAnimating.value = true
+  
+  // TODO: Mentés a kedvencekhez
+  
+  // Smooth animáció
+  await animateSwipe('right')
+  
+  // A következő kártya előrejön
+  nextCardScale.value = 1
+  nextCardOpacity.value = 1
+  
+  // Kis delay
+  await new Promise(resolve => setTimeout(resolve, 100))
+  
+  // Elrejtjük az aktuális kártyát
+  shouldShowCurrentCard.value = false
+  
+  // Következő kártya
+  nextCard()
+}
+
+const swipeLeftClick = async () => {
+  if (isAnimating.value || !currentRecipe.value) return
+  isAnimating.value = true
+  
+  // Smooth animáció
+  await animateSwipe('left')
+  
+  // A következő kártya előrejön
+  nextCardScale.value = 1
+  nextCardOpacity.value = 1
+  
+  // Kis delay
+  await new Promise(resolve => setTimeout(resolve, 100))
+  
+  // Elrejtjük az aktuális kártyát
+  shouldShowCurrentCard.value = false
   
   // Következő kártya
   nextCard()
@@ -116,9 +212,16 @@ const swipeRight = async () => {
 
 const nextCard = () => {
   currentIndex.value++
-  dragOffset.value = { x: 0, y: 0 }
-  rotation.value = 0
-  isAnimating.value = false
+  
+  // Kis delay után reset
+  setTimeout(() => {
+    dragOffset.value = { x: 0, y: 0 }
+    rotation.value = 0
+    nextCardScale.value = 0.95
+    nextCardOpacity.value = 0.5
+    shouldShowCurrentCard.value = true
+    isAnimating.value = false
+  }, 1)
 }
 </script>
 
@@ -137,17 +240,22 @@ const nextCard = () => {
       </div>
 
       <!-- Kártya és gombok konténer -->
-      <div v-else class="flex flex-col items-center gap-6 w-full max-w-md">
+      <div v-else class="flex flex-col items-center gap-6 w-full max-w-md px-4">
 
         <!-- Kártya Stack -->
         <div class="relative w-full h-[600px]">
 
-          <!-- Következő kártya (háttérben) -->
-          <RecipeCard v-if="nextRecipe" :recipe="nextRecipe" :is-background="true" />
+          <!-- Következő kártya (háttérben) - smooth animációval jön előre -->
+          <RecipeCard 
+            v-if="nextRecipe" 
+            :recipe="nextRecipe" 
+            :is-background="true"
+            :next-card-scale="nextCardScale"
+            :next-card-opacity="nextCardOpacity" />
 
-          <!-- Aktuális kártya -->
+          <!-- Aktuális kártya - csak ha shouldShowCurrentCard true -->
           <RecipeCard
-            v-if="currentRecipe"
+            v-if="currentRecipe && shouldShowCurrentCard"
             :recipe="currentRecipe"
             :is-dragging="isDragging"
             :drag-offset="dragOffset"
@@ -158,29 +266,35 @@ const nextCard = () => {
         </div>
 
         <!-- Action Buttons - KÍVÜL a kártyán -->
-        <div class="flex items-center gap-6">
+        <div class="flex items-center gap-6 -translate-y-3">
 
           <!-- Dislike Button -->
-          <button @click="swipeLeft" :disabled="isAnimating" class="group relative w-16 h-16 rounded-full 
-                         bg-gradient-to-br from-red-500 to-red-600
-                         shadow-lg hover:shadow-xl
-                         transform hover:scale-110 active:scale-95
-                         transition-all duration-200
-                         disabled:opacity-50 disabled:cursor-not-allowed
-                         flex items-center justify-center">
+          <button 
+            @click="swipeLeftClick" 
+            :disabled="isAnimating" 
+            class="group relative w-16 h-16 rounded-full 
+                   bg-gradient-to-br from-red-500 to-red-600
+                   shadow-lg hover:shadow-xl
+                   transform hover:scale-110 active:scale-95
+                   transition-all duration-200
+                   disabled:opacity-50 disabled:cursor-not-allowed
+                   flex items-center justify-center">
             <div class="absolute inset-0 rounded-full bg-red-400/50 
                         blur-xl group-hover:blur-2xl transition-all" />
             <X class="relative w-8 h-8 text-white" />
           </button>
 
           <!-- Like Button -->
-          <button @click="swipeRight" :disabled="isAnimating" class="group relative w-20 h-20 rounded-full 
-                         bg-gradient-to-br from-green-500 to-green-600
-                         shadow-lg hover:shadow-xl
-                         transform hover:scale-110 active:scale-95
-                         transition-all duration-200
-                         disabled:opacity-50 disabled:cursor-not-allowed
-                         flex items-center justify-center">
+          <button 
+            @click="swipeRightClick" 
+            :disabled="isAnimating" 
+            class="group relative w-20 h-20 rounded-full 
+                   bg-gradient-to-br from-green-500 to-green-600
+                   shadow-lg hover:shadow-xl
+                   transform hover:scale-110 active:scale-95
+                   transition-all duration-200
+                   disabled:opacity-50 disabled:cursor-not-allowed
+                   flex items-center justify-center">
             <div class="absolute inset-0 rounded-full bg-green-400/50 
                         blur-xl group-hover:blur-2xl transition-all" />
             <Heart class="relative w-10 h-10 text-white fill-white" />
