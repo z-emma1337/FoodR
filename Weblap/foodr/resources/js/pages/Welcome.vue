@@ -65,9 +65,9 @@ const handleDragEnd = () => {
   if (!isDragging.value || isAnimating.value) return
   
   isDragging.value = false
-  
+
   const threshold = 100
-  
+
   if (Math.abs(dragOffset.value.x) > threshold) {
     if (dragOffset.value.x > 0) {
       swipeRight()
@@ -125,10 +125,9 @@ const nextCard = () => {
 <template>
   <AppLayout>
     <div class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
-      
+
       <!-- Nincs több recept üzenet -->
-      <div v-if="currentIndex >= recipes.length" 
-           class="text-center space-y-4 animate-fade-in">
+      <div v-if="currentIndex >= recipes.length" class="text-center space-y-4 animate-fade-in">
         <div class="w-24 h-24 mx-auto rounded-full bg-accent-400/30 
                     flex items-center justify-center">
           <ChefHat class="w-12 h-12 text-accent-600" />
@@ -138,17 +137,13 @@ const nextCard = () => {
       </div>
 
       <!-- Kártya és gombok konténer -->
-      <div v-else class="flex flex-col items-center gap-6 w-full max-w-md px-4">
-        
+      <div v-else class="flex flex-col items-center gap-6 w-full max-w-md">
+
         <!-- Kártya Stack -->
         <div class="relative w-full h-[600px]">
-          
+
           <!-- Következő kártya (háttérben) -->
-          <RecipeCard
-            v-if="nextRecipe"
-            :recipe="nextRecipe"
-            :is-background="true"
-          />
+          <RecipeCard v-if="nextRecipe" :recipe="nextRecipe" :is-background="true" />
 
           <!-- Aktuális kártya -->
           <RecipeCard
@@ -164,11 +159,9 @@ const nextCard = () => {
 
         <!-- Action Buttons - KÍVÜL a kártyán -->
         <div class="flex items-center gap-6">
-          
+
           <!-- Dislike Button -->
-          <button @click="swipeLeft"
-                  :disabled="isAnimating"
-                  class="group relative w-16 h-16 rounded-full 
+          <button @click="swipeLeft" :disabled="isAnimating" class="group relative w-16 h-16 rounded-full 
                          bg-gradient-to-br from-red-500 to-red-600
                          shadow-lg hover:shadow-xl
                          transform hover:scale-110 active:scale-95
@@ -181,9 +174,7 @@ const nextCard = () => {
           </button>
 
           <!-- Like Button -->
-          <button @click="swipeRight"
-                  :disabled="isAnimating"
-                  class="group relative w-20 h-20 rounded-full 
+          <button @click="swipeRight" :disabled="isAnimating" class="group relative w-20 h-20 rounded-full 
                          bg-gradient-to-br from-green-500 to-green-600
                          shadow-lg hover:shadow-xl
                          transform hover:scale-110 active:scale-95
@@ -209,6 +200,7 @@ const nextCard = () => {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
