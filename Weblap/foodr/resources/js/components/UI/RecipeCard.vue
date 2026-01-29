@@ -53,7 +53,7 @@ const getAllergenColor = (allergen) => {
 <template>
   <div
     :class="[
-      'absolute inset-0',
+      'absolute inset-0 touch-none',
       isBackground ? 'rounded-3xl overflow-hidden transform scale-95 opacity-50 transition-all duration-300' : 'cursor-grab active:cursor-grabbing'
     ]"
     :style="{
@@ -61,16 +61,11 @@ const getAllergenColor = (allergen) => {
       transform: isBackground ? 'scale(0.95)' : `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${rotation}deg)`,
       transition: !isBackground && isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
     }"
-    @mousedown="!isBackground && $emit('dragstart', $event)"
-    @mousemove="!isBackground && $emit('dragmove', $event)"
-    @mouseup="!isBackground && $emit('dragend')"
-    @mouseleave="!isBackground && $emit('dragend')"
-    @touchstart="!isBackground && $emit('dragstart', $event)"
-    @touchmove="!isBackground && $emit('dragmove', $event)"
-    @touchend="!isBackground && $emit('dragend')">
+    @mousedown.prevent="!isBackground && $emit('dragstart', $event)"
+    @touchstart.prevent="!isBackground && $emit('dragstart', $event)">
     
     <!-- Accent Frame -->
-    <div class="w-full h-full rounded-3xl overflow-hidden shadow-2xl">
+    <div class="w-full h-full rounded-3xl overflow-hidden shadow-2xl pointer-events-none">
       <div class="bg-gradient-to-br from-accent-500/80 to-accent-600/80 p-1 w-full h-full">
         
         <!-- Kártya Content -->
@@ -81,7 +76,8 @@ const getAllergenColor = (allergen) => {
           <div class="relative w-full h-full overflow-hidden">
             <img :src="recipe.kep_url" 
                  :alt="recipe.nev"
-                 class="w-full h-full object-cover" />
+                 class="w-full h-full object-cover select-none pointer-events-none"
+                 draggable="false" />
             
             <!-- Gradient overlay - erősebb alsó rész -->
             <div class="absolute inset-0 bg-gradient-to-b 
@@ -101,7 +97,7 @@ const getAllergenColor = (allergen) => {
                           rounded-2xl px-8 py-4 text-6xl font-bold text-red-500
                           shadow-2xl bg-white/10 backdrop-blur-sm"
                    :style="{ opacity: Math.min(Math.abs(dragOffset.x) / 100, 1) }">
-                NOPE
+                DISLIKE
               </div>
             </div>
 
@@ -133,10 +129,11 @@ const getAllergenColor = (allergen) => {
                 <div v-for="allergen in recipe.allergenek" 
                      :key="allergen"
                      :class="[
-                       'backdrop-blur-md rounded-full px-3 py-1 shadow-md border',
+                       'backdrop-blur-md rounded-full px-3 shadow-md border flex items-center',
                        getAllergenColor(allergen)
-                     ]">
-                  <span class="text-xs font-semibold">{{ allergen }}</span>
+                     ]"
+                     style="padding-top: 0.25rem; padding-bottom: 0.25rem;">
+                  <span class="text-xs font-semibold leading-none">{{ allergen }}</span>
                 </div>
               </div>
 

@@ -7,6 +7,7 @@ import RecipeCard from '@/components/UI/RecipeCard.vue'
 const recipes = ref([])
 const currentIndex = ref(0)
 const isDragging = ref(false)
+const dragStartPos = ref({ x: 0, y: 0 })
 const dragOffset = ref({ x: 0, y: 0 })
 const rotation = ref(0)
 const isAnimating = ref(false)
@@ -23,26 +24,38 @@ onMounted(async () => {
   } catch (error) {
     console.error('Hiba a receptek betöltésekor:', error)
   }
+
+  // Globális event listenerek a smooth drag-hez
+  document.addEventListener('mousemove', handleDragMove)
+  document.addEventListener('mouseup', handleDragEnd)
+  document.addEventListener('touchmove', handleDragMove, { passive: false })
+  document.addEventListener('touchend', handleDragEnd)
 })
 
 // Drag események
 const handleDragStart = (e) => {
   if (isAnimating.value) return
+  
   isDragging.value = true
   const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
   const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY
-  dragOffset.value = { x: clientX, y: clientY }
+  
+  dragStartPos.value = { x: clientX, y: clientY }
+  dragOffset.value = { x: 0, y: 0 }
 }
 
 const handleDragMove = (e) => {
   if (!isDragging.value || isAnimating.value) return
-  e.preventDefault()
+  
+  if (e.type.includes('touch')) {
+    e.preventDefault()
+  }
   
   const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
   const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY
   
-  const deltaX = clientX - dragOffset.value.x
-  const deltaY = clientY - dragOffset.value.y
+  const deltaX = clientX - dragStartPos.value.x
+  const deltaY = clientY - dragStartPos.value.y
   
   dragOffset.value = { x: deltaX, y: deltaY }
   rotation.value = deltaX * 0.1
@@ -50,6 +63,7 @@ const handleDragMove = (e) => {
 
 const handleDragEnd = () => {
   if (!isDragging.value || isAnimating.value) return
+  
   isDragging.value = false
   
   const threshold = 100
@@ -61,6 +75,7 @@ const handleDragEnd = () => {
       swipeLeft()
     }
   } else {
+    // Visszaugrik
     dragOffset.value = { x: 0, y: 0 }
     rotation.value = 0
   }
@@ -71,24 +86,32 @@ const swipeLeft = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
   
+  // Animáljuk ki a kártyát
   dragOffset.value = { x: -1000, y: 0 }
   rotation.value = -30
   
-  setTimeout(() => {
-    nextCard()
-  }, 300)
+  // Várunk az animáció végére
+  await new Promise(resolve => setTimeout(resolve, 300))
+  
+  // Következő kártya
+  nextCard()
 }
 
 const swipeRight = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
   
+  // TODO: Mentés a kedvencekhez
+  
+  // Animáljuk ki a kártyát
   dragOffset.value = { x: 1000, y: 0 }
   rotation.value = 30
   
-  setTimeout(() => {
-    nextCard()
-  }, 300)
+  // Várunk az animáció végére
+  await new Promise(resolve => setTimeout(resolve, 300))
+  
+  // Következő kártya
+  nextCard()
 }
 
 const nextCard = () => {
@@ -115,7 +138,7 @@ const nextCard = () => {
       </div>
 
       <!-- Kártya és gombok konténer -->
-      <div v-else class="flex flex-col items-center gap-6 w-full max-w-md">
+      <div v-else class="flex flex-col items-center gap-6 w-full max-w-md px-4">
         
         <!-- Kártya Stack -->
         <div class="relative w-full h-[600px]">
@@ -135,8 +158,6 @@ const nextCard = () => {
             :drag-offset="dragOffset"
             :rotation="rotation"
             @dragstart="handleDragStart"
-            @dragmove="handleDragMove"
-            @dragend="handleDragEnd"
           />
 
         </div>
