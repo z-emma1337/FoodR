@@ -1,137 +1,200 @@
 <script setup>
-import { Head, Link, router, usePage } from '@inertiajs/vue3'
-import {
-  User,
-  Settings,
-  Shield,
-  Lock,
-  HelpCircle,
-  LogOut,
-  Heart,
-  Search,
-  Home
-} from 'lucide-vue-next'
-import { ref, computed } from 'vue'
-import Avatar from 'primevue/avatar'
+import { ref, onMounted, computed } from 'vue'
+import { Heart, X, ChefHat } from 'lucide-vue-next'
+import AppLayout from '@/layouts/AppLayout.vue'
+import RecipeCard from '@/components/UI/RecipeCard.vue'
 
-// Inertia page props-ból user lekérése
-const page = usePage()
-const user = computed(() => page.props.auth?.user)
+const recipes = ref([])
+const currentIndex = ref(0)
+const isDragging = ref(false)
+const dragOffset = ref({ x: 0, y: 0 })
+const rotation = ref(0)
+const isAnimating = ref(false)
 
-// DEBUG - nézd meg mit kapsz
-console.log('Page props:', page.props)
-console.log('Auth:', page.props.auth)
-console.log('User:', user.value)
+const currentRecipe = computed(() => recipes.value[currentIndex.value])
+const nextRecipe = computed(() => recipes.value[currentIndex.value + 1])
 
-const rightItems = ref([
-  { label: 'SwipeR', url: '/welcome', icon: Home },
-  { label: 'Kedvencek', url: '/kedvencek', icon: Heart },
-  { label: 'Felfedezés', url: '/felfedezes', icon: Search },
-])
+// Receptek betöltése
+onMounted(async () => {
+  try {
+    const response = await fetch('/recipes')
+    const data = await response.json()
+    recipes.value = data
+  } catch (error) {
+    console.error('Hiba a receptek betöltésekor:', error)
+  }
+})
 
-const logout = () => {
-  router.post('/logout')
+// Drag események
+const handleDragStart = (e) => {
+  if (isAnimating.value) return
+  isDragging.value = true
+  const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
+  const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY
+  dragOffset.value = { x: clientX, y: clientY }
+}
+
+const handleDragMove = (e) => {
+  if (!isDragging.value || isAnimating.value) return
+  e.preventDefault()
+  
+  const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
+  const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY
+  
+  const deltaX = clientX - dragOffset.value.x
+  const deltaY = clientY - dragOffset.value.y
+  
+  dragOffset.value = { x: deltaX, y: deltaY }
+  rotation.value = deltaX * 0.1
+}
+
+const handleDragEnd = () => {
+  if (!isDragging.value || isAnimating.value) return
+  isDragging.value = false
+  
+  const threshold = 100
+  
+  if (Math.abs(dragOffset.value.x) > threshold) {
+    if (dragOffset.value.x > 0) {
+      swipeRight()
+    } else {
+      swipeLeft()
+    }
+  } else {
+    dragOffset.value = { x: 0, y: 0 }
+    rotation.value = 0
+  }
+}
+
+// Swipe műveletek
+const swipeLeft = async () => {
+  if (isAnimating.value || !currentRecipe.value) return
+  isAnimating.value = true
+  
+  dragOffset.value = { x: -1000, y: 0 }
+  rotation.value = -30
+  
+  setTimeout(() => {
+    nextCard()
+  }, 300)
+}
+
+const swipeRight = async () => {
+  if (isAnimating.value || !currentRecipe.value) return
+  isAnimating.value = true
+  
+  dragOffset.value = { x: 1000, y: 0 }
+  rotation.value = 30
+  
+  setTimeout(() => {
+    nextCard()
+  }, 300)
+}
+
+const nextCard = () => {
+  currentIndex.value++
+  dragOffset.value = { x: 0, y: 0 }
+  rotation.value = 0
+  isAnimating.value = false
 }
 </script>
 
 <template>
-
-  <Head title="Főoldal" />
-
-  <div class="relative flex min-h-screen overflow-hidden
-           bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800
-           animate-gradient">
-    <!-- glow overlay -->
-    <div class="pointer-events-none absolute inset-0
-             bg-gradient-to-br from-accent-500 via-transparent to-accent-600
-             blur-3xl animate-gradient-slow"></div>
-
-  
-
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 flex flex-col p-6 md:p-10 z-10">
-      <div class="max-w-5xl mx-auto w-full">
-
-
-      </div>
-    </main>
-    
-    <!-- RIGHT SIDEBAR -->
-    <aside class="hidden lg:flex lg:w-80 flex-col
-                  bg-accent-300/95 backdrop-blur-xl
-                  m-4 rounded-3xl
-                  shadow-2xl shadow-brand-900/40
-                  border border-accent-500/20 z-10
-                  overflow-hidden">
-
-      <div class="p-6 pb-4">
-        <h1 class="text-6xl font-bold text-slate-900 text-center">
-          <span class="text-accent-400 text-outline-shadow">Food</span>
-          <span class="text-brand-500 text-outline-shadow">R</span>
-        </h1>
-      </div>
-
-      <nav class="flex-1 px-3 space-y-1">
-        <a v-for="item in rightItems" :key="item.label" :href="item.url" 
-           class="group flex items-center px-4 py-3 rounded-xl
-                  text-slate-800
-                  transition-all duration-200
-                  hover:bg-accent-400 hover:text-slate-900
-                  hover:scale-[1.02]">
-          <component :is="item.icon" 
-                     class="h-5 w-5 mr-3 text-slate-700
-                            transition-all duration-200
-                            group-hover:text-brand-700 group-hover:scale-110" />
-          <span class="font-medium">{{ item.label }}</span>
-        </a>
-      </nav>
-
-      <!-- USER CARD -->
-      <div class="p-5 mt-auto border-t border-accent-400/30">
-        <div v-if="user" class="flex items-center gap-3 mb-4 p-3 rounded-2xl bg-accent-200/50">
-          <Avatar 
-            :image="user.avatar || '/imgs/emcyPFP.png'"
-            shape="circle" 
-            class="!w-12 !h-12" 
-          />
-          <div>
-            <div class="font-semibold text-slate-900">{{ user.name }}</div>
-            <div class="text-sm text-slate-600">{{ user.email }}</div>
-          </div>
+  <AppLayout>
+    <div class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
+      
+      <!-- Nincs több recept üzenet -->
+      <div v-if="currentIndex >= recipes.length" 
+           class="text-center space-y-4 animate-fade-in">
+        <div class="w-24 h-24 mx-auto rounded-full bg-accent-400/30 
+                    flex items-center justify-center">
+          <ChefHat class="w-12 h-12 text-accent-600" />
         </div>
+        <h2 class="text-3xl font-bold text-accent-200">Elfogytak a receptek! 🎉</h2>
+        <p class="text-accent-300">Nézd meg a kedvenceidet, vagy gyere vissza később!</p>
+      </div>
+
+      <!-- Kártya és gombok konténer -->
+      <div v-else class="flex flex-col items-center gap-6 w-full max-w-md">
         
-        <!-- Ha nincs user, debug info -->
-        <div v-else class="text-slate-800 text-sm p-3">
-          Nincs bejelentkezett user
+        <!-- Kártya Stack -->
+        <div class="relative w-full h-[600px]">
+          
+          <!-- Következő kártya (háttérben) -->
+          <RecipeCard
+            v-if="nextRecipe"
+            :recipe="nextRecipe"
+            :is-background="true"
+          />
+
+          <!-- Aktuális kártya -->
+          <RecipeCard
+            v-if="currentRecipe"
+            :recipe="currentRecipe"
+            :is-dragging="isDragging"
+            :drag-offset="dragOffset"
+            :rotation="rotation"
+            @dragstart="handleDragStart"
+            @dragmove="handleDragMove"
+            @dragend="handleDragEnd"
+          />
+
         </div>
 
-        <button @click="logout" 
-                class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl
-                       bg-brand-700 text-accent-200 font-medium
-                       shadow-xl shadow-brand-800/40
-                       transition-all
-                       hover:bg-brand-800 hover:scale-[1.02]
-                       focus:outline-none focus:ring-4 focus:ring-brand-500">
-          <LogOut class="h-5 w-5" />
-          Kijelentkezés
-        </button>
-      </div>
-    </aside>
+        <!-- Action Buttons - KÍVÜL a kártyán -->
+        <div class="flex items-center gap-6">
+          
+          <!-- Dislike Button -->
+          <button @click="swipeLeft"
+                  :disabled="isAnimating"
+                  class="group relative w-16 h-16 rounded-full 
+                         bg-gradient-to-br from-red-500 to-red-600
+                         shadow-lg hover:shadow-xl
+                         transform hover:scale-110 active:scale-95
+                         transition-all duration-200
+                         disabled:opacity-50 disabled:cursor-not-allowed
+                         flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full bg-red-400/50 
+                        blur-xl group-hover:blur-2xl transition-all" />
+            <X class="relative w-8 h-8 text-white" />
+          </button>
 
-    <!-- MOBILE NAV -->
-    <div class="md:hidden fixed bottom-0 left-0 right-0
-             bg-accent-300 backdrop-blur-xl
-             border-t border-accent-500/30 z-50">
-      <div class="flex justify-around py-3">
-        <a href="/welcome" class="flex flex-col items-center text-slate-700 hover:text-brand-700">
-          <Home class="h-6 w-6" />
-          <span class="text-xs mt-1">SwipeR</span>
-        </a>
-        <a href="/kedvencek" class="flex flex-col items-center text-slate-700 hover:text-brand-700">
-          <Heart class="h-6 w-6" />
-          <span class="text-xs mt-1">Kedvencek</span>
-        </a>
+          <!-- Like Button -->
+          <button @click="swipeRight"
+                  :disabled="isAnimating"
+                  class="group relative w-20 h-20 rounded-full 
+                         bg-gradient-to-br from-green-500 to-green-600
+                         shadow-lg hover:shadow-xl
+                         transform hover:scale-110 active:scale-95
+                         transition-all duration-200
+                         disabled:opacity-50 disabled:cursor-not-allowed
+                         flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full bg-green-400/50 
+                        blur-xl group-hover:blur-2xl transition-all" />
+            <Heart class="relative w-10 h-10 text-white fill-white" />
+          </button>
+
+        </div>
+
       </div>
+
     </div>
-  </div>
+  </AppLayout>
 </template>
+
+<style scoped>
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
+}
+</style>

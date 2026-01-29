@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Models\Felhasznalo;
@@ -28,11 +29,53 @@ Route::get('/felfedezes', function () {
 })->name('felfedezes');
 
 Route::get('/recipes', function () {
-    return \App\Models\Recept::with('felhasznalo')
-        ->orderBy('created_at', 'desc')
-        ->get();
+    return \App\Models\Recept::with([
+        'receptAlapanyagok.alapanyag.allergenek'
+    ])
+    ->get()
+    ->map(function($recept) {
+        // Összes allergén összegyűjtése a receptből
+        $osszesAllergen = $recept->receptAlapanyagok
+            ->pluck('alapanyag.allergenek')
+            ->flatten()
+            ->unique('id');
+        
+        // Allergének neve (kivéve vegetáriánus/vegán)
+        $allergenek = $osszesAllergen
+            ->whereNotIn('id', [6, 7]) // Kihagyjuk a "Nem vegetáriánus" és "Nem vegán" ID-kat
+            ->pluck('nev')
+            ->values();
+        
+        // Vegán/Vegetáriánus pozitív logika
+        $nemVegetarianusSzuro = $osszesAllergen->where('id', 6)->isNotEmpty();
+        $nemVeganSzuro = $osszesAllergen->where('id', 7)->isNotEmpty();
+        
+        $dietTags = [];
+        
+        // Ha NINCS "Nem vegetáriánus" allergén, akkor vegetáriánus
+        if (!$nemVegetarianusSzuro) {
+            $dietTags[] = 'Vegetáriánus';
+        }
+        
+        // Ha NINCS "Nem vegán" allergén ÉS vegetáriánus, akkor vegán
+        if (!$nemVeganSzuro && !$nemVegetarianusSzuro) {
+            $dietTags[] = 'Vegán';
+        }
+        
+        // Összefűzzük az allergéneket és a diet tageket
+        $osszesTag = array_merge($allergenek->toArray(), $dietTags);
+        
+        return [
+            'id' => $recept->id,
+            'nev' => $recept->nev,
+            'leiras' => $recept->leiras,
+            'ido' => $recept->ido,
+            'adag' => $recept->adag,
+            'kep_url' => $recept->kep_url,
+            'allergenek' => $osszesTag
+        ];
+    });
 });
-
 Route::get('/check-username', function (Request $request) { //USERNAME ELLENŐRZÉS
     $username = $request->query('username');
 
@@ -43,15 +86,16 @@ Route::get('/check-username', function (Request $request) { //USERNAME ELLENŐRZ
     ]);
 });
 
-
-
 Route::post('/regisztracio', [RegisterController::class, 'store']) //REGISZTRÁCIÓ ADATOK KÜLDÉSE
     ->name('regisztracio.store');
 
-Route::post('/bejelentkezes', [LoginController::class, 'login'])->name('bejelentkezes');
+Route::post('/bejelentkezes', [LoginController::class, 'login'])->name('login');
 
 Route::post('/logout', function () {
     Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
     return redirect()->route('bejelentkezes');
 })->name('logout');
+
 require __DIR__.'/settings.php';

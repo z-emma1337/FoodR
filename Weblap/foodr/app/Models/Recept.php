@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Recept extends Model
 {
-    protected $table = 'receptek';
+    protected $table = 'recept';
     
     protected $fillable = [
         'felhasznalo_id',
         'nev',
         'leiras',
+        'ido',
         'adag',
         'kep_url'
     ];
@@ -19,5 +20,10 @@ class Recept extends Model
     public function felhasznalo()
     {
         return $this->belongsTo(Felhasznalo::class, 'felhasznalo_id');
+    }
+
+    public function receptAlapanyagok()
+    {
+        return $this->hasMany(ReceptAlapanyag::class, 'recept_id');
     }
 }
