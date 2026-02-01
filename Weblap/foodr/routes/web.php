@@ -97,4 +97,5 @@ Route::post('/logout', function () {
     return redirect()->route('bejelentkezes');
 })->name('logout');
 
-require __DIR__.'/settings.php';
+Route::post('/interakcio/like', [InterakcioController::class, 'likeRecept']);
+Route::post('/interakcio/dislike', [InterakcioController::class, 'dislikeRecept']);

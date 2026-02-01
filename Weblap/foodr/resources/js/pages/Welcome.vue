@@ -18,6 +18,36 @@ const shouldShowCurrentCard = ref(true)
 const currentRecipe = computed(() => recipes.value[currentIndex.value])
 const nextRecipe = computed(() => recipes.value[currentIndex.value + 1])
 
+// API hívás - LIKE/DISLIKE mentése
+const saveInteraction = async (type) => {
+  if (!currentRecipe.value) return
+
+  const endpoint = type === 'like' ? '/interakcio/like' : '/interakcio/dislike'
+  
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        recept_id: currentRecipe.value.id
+      })
+    })
+
+    const data = await response.json()
+    
+    if (data.success) {
+      console.log(`✅ ${type === 'like' ? 'LIKED' : 'DISLIKED'}:`, currentRecipe.value.nev)
+    } else {
+      console.error('❌ Hiba az interakció mentésekor:', data)
+    }
+  } catch (error) {
+    console.error('❌ Hálózati hiba:', error)
+  }
+}
+
 // Receptek betöltése
 onMounted(async () => {
   try {
@@ -123,6 +153,9 @@ const swipeLeft = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
   
+  // DISLIKE mentése az adatbázisba
+  await saveInteraction('dislike')
+  
   // Animáljuk ki a kártyát
   dragOffset.value = { x: -1000, y: 0 }
   rotation.value = -30
@@ -145,7 +178,8 @@ const swipeRight = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
   
-  // TODO: Mentés a kedvencekhez
+  // LIKE mentése az adatbázisba
+  await saveInteraction('like')
   
   // Animáljuk ki a kártyát
   dragOffset.value = { x: 1000, y: 0 }
@@ -170,7 +204,8 @@ const swipeRightClick = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
   
-  // TODO: Mentés a kedvencekhez
+  // LIKE mentése az adatbázisba
+  await saveInteraction('like')
   
   // Smooth animáció
   await animateSwipe('right')
@@ -192,6 +227,9 @@ const swipeRightClick = async () => {
 const swipeLeftClick = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
+  
+  // DISLIKE mentése az adatbázisba
+  await saveInteraction('dislike')
   
   // Smooth animáció
   await animateSwipe('left')
