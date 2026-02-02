@@ -99,8 +99,9 @@ Route::post('/logout', function () {
     return redirect()->route('bejelentkezes');
 })->name('logout');
 
-Route::post('/interakcio/like', [InterakcioController::class, 'likeRecept']);
-Route::post('/interakcio/dislike', [InterakcioController::class, 'dislikeRecept']);
+Route::post('/interakcio/like', [InterakcioController::class, 'likeRecept'])->middleware('auth');
+Route::post('/interakcio/dislike', [InterakcioController::class, 'dislikeRecept'])->middleware('auth');
+
 
 
 Route::get('/interakciok', function () {

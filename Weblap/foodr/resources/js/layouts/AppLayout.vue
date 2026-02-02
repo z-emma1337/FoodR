@@ -15,6 +15,7 @@ import Avatar from 'primevue/avatar'
 
 const page = usePage()
 const user = computed(() => page.props.auth?.user)
+const likedCount = computed(() => page.props.likedCount ?? 0)
 
 const LeftnavItems = ref([
   { label: 'SwipeR', url: '/welcome', icon: Home },
@@ -97,11 +98,20 @@ const login = () => {
               </h2>
             </div>
 
-            <nav class="flex-1 px-3 space-y-1 my-3">
-              <a v-for="item in RightnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-xl
+             <nav class="flex-1 px-3 space-y-1">
+              <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-xl
                         transition hover:bg-accent-400 hover:scale-[1.02] text-slate-900">
                 <component :is="item.icon" class="h-5 w-5 mr-3" />
                 {{ item.label }}
+                <span class="flex items-center gap-2">
+                  <span>{{ item.label }}</span>
+                  <span
+                    v-if="item.label === 'Kedvencek' && user"
+                    class="px-2 py-0.5 rounded-full bg-brand-600 text-accent-200 text-xs font-semibold"
+                  >
+                    {{ likedCount }}
+                  </span>
+                </span>
               </a>
             </nav>
 

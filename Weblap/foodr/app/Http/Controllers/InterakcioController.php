@@ -15,6 +15,10 @@ class InterakcioController extends Controller
      */
     public function likeRecept(Request $request)
     {
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Bejelentkezés szükséges'], 401);
+        }
+
         // Validáljuk a bejövő adatot
         $request->validate([
             'recept_id' => 'required|exists:recept,id'
@@ -22,7 +26,7 @@ class InterakcioController extends Controller
 
         // Lekérjük a bejelentkezett felhasználó ID-ját
         $felhasznaloId = Auth::id();
-        
+
         // updateOrCreate: 
         // - Ha már van ilyen interakció (ugyanaz a felhasználó + recept) -> FRISSÍTI
         // - Ha nincs még -> LÉTREHOZZA
@@ -57,7 +61,7 @@ class InterakcioController extends Controller
         ]);
 
         $felhasznaloId = Auth::id();
-        
+
         $interakcio = Interakciok::updateOrCreate(
             [
                 'felhasznalo_id' => $felhasznaloId,
@@ -80,7 +84,7 @@ class InterakcioController extends Controller
     public function getInterakcio($receptId)
     {
         $felhasznaloId = Auth::id();
-        
+
         $interakcio = Interakciok::where('felhasznalo_id', $felhasznaloId)
             ->where('recept_id', $receptId)
             ->first();

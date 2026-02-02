@@ -33,6 +33,11 @@ const saveInteraction = async (type) => {
       preserveState: true,
       onSuccess: () => {
         console.log(`✅ ${type === 'like' ? 'LIKED' : 'DISLIKED'}:`, currentRecipe.value.nev)
+        router.reload({
+          only: ['likedCount'],
+          preserveScroll: true,
+          preserveState: true,
+        })
         resolve()
       },
       onError: (errors) => {
@@ -62,7 +67,7 @@ onMounted(async () => {
 // Figyeljük a drag offsetet és animáljuk a következő kártyát
 watch(dragOffset, (newOffset) => {
   if (!isDragging.value && !isAnimating.value) return
-  
+
   const dragProgress = Math.min(Math.abs(newOffset.x) / 200, 1)
   nextCardScale.value = 0.95 + (dragProgress * 0.05) // 0.95 -> 1.0
   nextCardOpacity.value = 0.5 + (dragProgress * 0.5) // 0.5 -> 1.0
@@ -71,35 +76,35 @@ watch(dragOffset, (newOffset) => {
 // Drag események
 const handleDragStart = (e) => {
   if (isAnimating.value) return
-  
+
   isDragging.value = true
   const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
   const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY
-  
+
   dragStartPos.value = { x: clientX, y: clientY }
   dragOffset.value = { x: 0, y: 0 }
 }
 
 const handleDragMove = (e) => {
   if (!isDragging.value || isAnimating.value) return
-  
+
   if (e.type.includes('touch')) {
     e.preventDefault()
   }
-  
+
   const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
   const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY
-  
+
   const deltaX = clientX - dragStartPos.value.x
   const deltaY = clientY - dragStartPos.value.y
-  
+
   dragOffset.value = { x: deltaX, y: deltaY }
   rotation.value = deltaX * 0.1
 }
 
 const handleDragEnd = () => {
   if (!isDragging.value || isAnimating.value) return
-  
+
   isDragging.value = false
 
   const threshold = 100
@@ -126,18 +131,18 @@ const animateSwipe = async (direction) => {
   const duration = 400 // ms
   const steps = 40
   const stepDelay = duration / steps
-  
+
   for (let i = 0; i <= steps; i++) {
     const progress = i / steps
     // Easing function (ease-out-cubic)
     const eased = 1 - Math.pow(1 - progress, 3)
-    
-    dragOffset.value = { 
-      x: eased * targetX, 
-      y: 0 
+
+    dragOffset.value = {
+      x: eased * targetX,
+      y: 0
     }
     rotation.value = eased * targetRotation
-    
+
     await new Promise(resolve => setTimeout(resolve, stepDelay))
   }
 }
@@ -146,24 +151,24 @@ const animateSwipe = async (direction) => {
 const swipeLeft = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
-  
+
   // DISLIKE mentése az adatbázisba
   await saveInteraction('dislike')
-  
+
   // Animáljuk ki a kártyát
   dragOffset.value = { x: -1000, y: 0 }
   rotation.value = -30
-  
+
   // A következő kártya előrejön
   nextCardScale.value = 1
   nextCardOpacity.value = 1
-  
+
   // Várunk az animáció végére
   await new Promise(resolve => setTimeout(resolve, 300))
-  
+
   // Elrejtjük az aktuális kártyát
   shouldShowCurrentCard.value = false
-  
+
   // Következő kártya
   nextCard()
 }
@@ -171,24 +176,24 @@ const swipeLeft = async () => {
 const swipeRight = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
-  
+
   // LIKE mentése az adatbázisba
   await saveInteraction('like')
-  
+
   // Animáljuk ki a kártyát
   dragOffset.value = { x: 1000, y: 0 }
   rotation.value = 30
-  
+
   // A következő kártya előrejön
   nextCardScale.value = 1
   nextCardOpacity.value = 1
-  
+
   // Várunk az animáció végére
   await new Promise(resolve => setTimeout(resolve, 300))
-  
+
   // Elrejtjük az aktuális kártyát
   shouldShowCurrentCard.value = false
-  
+
   // Következő kártya
   nextCard()
 }
@@ -197,23 +202,23 @@ const swipeRight = async () => {
 const swipeRightClick = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
-  
+
   // LIKE mentése az adatbázisba
   await saveInteraction('like')
-  
+
   // Smooth animáció
   await animateSwipe('right')
-  
+
   // A következő kártya előrejön
   nextCardScale.value = 1
   nextCardOpacity.value = 1
-  
+
   // Kis delay
   await new Promise(resolve => setTimeout(resolve, 100))
-  
+
   // Elrejtjük az aktuális kártyát
   shouldShowCurrentCard.value = false
-  
+
   // Következő kártya
   nextCard()
 }
@@ -221,30 +226,30 @@ const swipeRightClick = async () => {
 const swipeLeftClick = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
-  
+
   // DISLIKE mentése az adatbázisba
   await saveInteraction('dislike')
-  
+
   // Smooth animáció
   await animateSwipe('left')
-  
+
   // A következő kártya előrejön
   nextCardScale.value = 1
   nextCardOpacity.value = 1
-  
+
   // Kis delay
   await new Promise(resolve => setTimeout(resolve, 100))
-  
+
   // Elrejtjük az aktuális kártyát
   shouldShowCurrentCard.value = false
-  
+
   // Következő kártya
   nextCard()
 }
 
 const nextCard = () => {
   currentIndex.value++
-  
+
   // Kis delay után reset
   setTimeout(() => {
     dragOffset.value = { x: 0, y: 0 }
@@ -278,22 +283,12 @@ const nextCard = () => {
         <div class="relative w-full h-[600px]">
 
           <!-- Következő kártya (háttérben) - smooth animációval jön előre -->
-          <RecipeCard 
-            v-if="nextRecipe" 
-            :recipe="nextRecipe" 
-            :is-background="true"
-            :next-card-scale="nextCardScale"
+          <RecipeCard v-if="nextRecipe" :recipe="nextRecipe" :is-background="true" :next-card-scale="nextCardScale"
             :next-card-opacity="nextCardOpacity" />
 
           <!-- Aktuális kártya - csak ha shouldShowCurrentCard true -->
-          <RecipeCard
-            v-if="currentRecipe && shouldShowCurrentCard"
-            :recipe="currentRecipe"
-            :is-dragging="isDragging"
-            :drag-offset="dragOffset"
-            :rotation="rotation"
-            @dragstart="handleDragStart"
-          />
+          <RecipeCard v-if="currentRecipe && shouldShowCurrentCard" :recipe="currentRecipe" :is-dragging="isDragging"
+            :drag-offset="dragOffset" :rotation="rotation" @dragstart="handleDragStart" />
 
         </div>
 
@@ -301,10 +296,7 @@ const nextCard = () => {
         <div class="flex items-center gap-6 -translate-y-3">
 
           <!-- Dislike Button -->
-          <button 
-            @click="swipeLeftClick" 
-            :disabled="isAnimating" 
-            class="group relative w-16 h-16 rounded-full 
+          <button @click="swipeLeftClick" :disabled="isAnimating" class="group relative w-16 h-16 rounded-full 
                    bg-gradient-to-br from-red-500 to-red-600
                    shadow-lg hover:shadow-xl
                    transform hover:scale-110 active:scale-95
@@ -317,10 +309,7 @@ const nextCard = () => {
           </button>
 
           <!-- Like Button -->
-          <button 
-            @click="swipeRightClick" 
-            :disabled="isAnimating" 
-            class="group relative w-20 h-20 rounded-full 
+          <button @click="swipeRightClick" :disabled="isAnimating" class="group relative w-20 h-20 rounded-full 
                    bg-gradient-to-br from-green-500 to-green-600
                    shadow-lg hover:shadow-xl
                    transform hover:scale-110 active:scale-95
