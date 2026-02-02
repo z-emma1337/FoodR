@@ -43,7 +43,8 @@ const login = () => {
               bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800
               animate-gradient">
 
-    <!-- glow -->
+   <!-- glow -->
+   <!-- glow -->
     <div class="pointer-events-none absolute inset-0
                 bg-gradient-to-br from-accent-500/20 via-transparent to-accent-600/20
                 blur-3xl animate-gradient-slow" />
@@ -68,7 +69,15 @@ const login = () => {
               <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-xl
                         transition hover:bg-accent-400 hover:scale-[1.02] text-slate-900">
                 <component :is="item.icon" class="h-5 w-5 mr-3" />
-                {{ item.label }}
+                  <span class="flex flex-1 items-center justify-between gap-2">
+                  <span>{{ item.label }}</span>
+                  <span
+                    v-if="item.label === 'Kedvencek' && user"
+                    class="px-2 py-0.5 rounded-full bg-brand-600 text-accent-200 text-xs font-semibold"
+                  >
+                    {{ likedCount }}
+                  </span>
+                </span>
               </a>
             </nav>
           </div>
@@ -99,20 +108,11 @@ const login = () => {
             </div>
 
              <nav class="flex-1 px-3 space-y-1">
-              <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-xl
+               <a v-for="item in RightnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-xl
                         transition hover:bg-accent-400 hover:scale-[1.02] text-slate-900">
                 <component :is="item.icon" class="h-5 w-5 mr-3" />
                 {{ item.label }}
-                <span class="flex items-center gap-2">
-                  <span>{{ item.label }}</span>
-                  <span
-                    v-if="item.label === 'Kedvencek' && user"
-                    class="px-2 py-0.5 rounded-full bg-brand-600 text-accent-200 text-xs font-semibold"
-                  >
-                    {{ likedCount }}
-                  </span>
-                </span>
-              </a>
+                </a>
             </nav>
 
             <!-- USER SECTION -->
@@ -137,8 +137,6 @@ const login = () => {
                     Kijelentkezés
                   </button>
                 </div>
-
-                <!-- Login prompt when logged out -->
                 <div v-else class="space-y-4 text-center py-2">
                   <div class="flex justify-center">
                     <div class="w-20 h-20 rounded-full bg-accent-500/30 
