@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
+import { router } from '@inertiajs/vue3'
 import { Heart, X, ChefHat } from 'lucide-vue-next'
 import AppLayout from '@/layouts/AppLayout.vue'
 import RecipeCard from '@/components/UI/RecipeCard.vue'
@@ -18,36 +19,29 @@ const shouldShowCurrentCard = ref(true)
 const currentRecipe = computed(() => recipes.value[currentIndex.value])
 const nextRecipe = computed(() => recipes.value[currentIndex.value + 1])
 
-// API hívás - LIKE/DISLIKE mentése
+// Ez a teljes saveInteraction függvény LECSERÉLENDŐ:
 const saveInteraction = async (type) => {
   if (!currentRecipe.value) return
 
   const endpoint = type === 'like' ? '/interakcio/like' : '/interakcio/dislike'
-  
-  try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+
+  return new Promise((resolve) => {
+    router.post(endpoint, {
+      recept_id: currentRecipe.value.id
+    }, {
+      preserveScroll: true,
+      preserveState: true,
+      onSuccess: () => {
+        console.log(`✅ ${type === 'like' ? 'LIKED' : 'DISLIKED'}:`, currentRecipe.value.nev)
+        resolve()
       },
-      body: JSON.stringify({
-        recept_id: currentRecipe.value.id
-      })
+      onError: (errors) => {
+        console.error('❌ Hiba:', errors)
+        resolve() // resolve-oljuk hiba esetén is, hogy a swipe animáció ne stukkoljon
+      }
     })
-
-    const data = await response.json()
-    
-    if (data.success) {
-      console.log(`✅ ${type === 'like' ? 'LIKED' : 'DISLIKED'}:`, currentRecipe.value.nev)
-    } else {
-      console.error('❌ Hiba az interakció mentésekor:', data)
-    }
-  } catch (error) {
-    console.error('❌ Hálózati hiba:', error)
-  }
+  })
 }
-
 // Receptek betöltése
 onMounted(async () => {
   try {
@@ -259,7 +253,7 @@ const nextCard = () => {
     nextCardOpacity.value = 0.5
     shouldShowCurrentCard.value = true
     isAnimating.value = false
-  }, 1)
+  }, 0.000001) //Milyen gyorsan töltse be a következő kártyát
 }
 </script>
 

@@ -17,7 +17,7 @@ class InterakcioController extends Controller
     {
         // Validáljuk a bejövő adatot
         $request->validate([
-            'recept_id' => 'required|exists:receptek,id'
+            'recept_id' => 'required|exists:recept,id'
         ]);
 
         // Lekérjük a bejelentkezett felhasználó ID-ját
@@ -41,12 +41,7 @@ class InterakcioController extends Controller
             ]
         );
 
-        // Visszaküldjük a választ JSON formátumban
-        return response()->json([
-            'success' => true,
-            'message' => 'Recept likeolva!',
-            'data' => $interakcio
-        ], 200);
+
     }
 
     /**
@@ -58,7 +53,7 @@ class InterakcioController extends Controller
     {
         // Validáljuk a bejövő adatot
         $request->validate([
-            'recept_id' => 'required|exists:receptek,id'
+            'recept_id' => 'required|exists:recept,id'
         ]);
 
         $felhasznaloId = Auth::id();
@@ -75,11 +70,6 @@ class InterakcioController extends Controller
             ]
         );
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Recept elutasítva!',
-            'data' => $interakcio
-        ], 200);
     }
 
     /**
@@ -103,10 +93,5 @@ class InterakcioController extends Controller
             ]);
         }
 
-        return response()->json([
-            'success' => true,
-            'liked' => $interakcio->liked,
-            'data' => $interakcio
-        ]);
     }
 }

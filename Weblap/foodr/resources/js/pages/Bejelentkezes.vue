@@ -22,7 +22,6 @@ const submit = () => {
     email: email.value,
     jelszo: password.value
   }, {
-    onSuccess: () => console.log('Sikeres bejelentkezés'),
     onError: () => errorMessage.value = 'Hibás email cím vagy jelszó'
   })
 }

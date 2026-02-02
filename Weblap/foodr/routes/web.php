@@ -8,6 +8,8 @@ use App\Models\Felhasznalo;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Models\Interakciok;
+use App\Http\Controllers\InterakcioController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -99,3 +101,14 @@ Route::post('/logout', function () {
 
 Route::post('/interakcio/like', [InterakcioController::class, 'likeRecept']);
 Route::post('/interakcio/dislike', [InterakcioController::class, 'dislikeRecept']);
+
+
+Route::get('/interakciok', function () {
+    $felhasznalo = Auth::user();
+
+    $likedReceptek = $felhasznalo->interakciok
+        ->where('liked', 1)
+        ->pluck('recept_id');
+
+    return \App\Models\Recept::whereIn('id', $likedReceptek)->get();
+});

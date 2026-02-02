@@ -10,7 +10,7 @@ const props = defineProps({
   error: String,
   showClear: Boolean,
   showToggle: Boolean,         // ← új
-  toggleState: Boolean         // ← új
+  toggleState: Boolean
 })
 
 const emit = defineEmits(['update:modelValue', 'clear', 'toggle'])
@@ -25,12 +25,14 @@ const emit = defineEmits(['update:modelValue', 'clear', 'toggle'])
       </span>
 
       <!-- Input -->
-      <input :value="modelValue" @input="emit('update:modelValue', $event.target.value)" :type="type"
-        :placeholder="placeholder" class="w-full rounded-xl border border-accent-400/60
-           bg-accent-200 px-3 py-2 pl-10 pr-10
-           text-slate-900 placeholder-slate-600 outline-none
-           transition-all duration-150 focus:border-accent-600
-           focus:ring-4 focus:ring-accent-600/30 focus:scale-[1.01]" :class="{ 'border-red-500': error }" />
+      <input :value="modelValue" :type="type" :placeholder="placeholder" :autocomplete="autocomplete"
+        @input="emit('update:modelValue', $event.target.value)" class="w-full rounded-xl border border-accent-400/60
+     bg-accent-200 px-3 py-2 pl-10 pr-10
+     text-slate-900 placeholder-slate-600 outline-none
+     transition-all duration-150 focus:border-accent-600
+     focus:ring-4 focus:ring-accent-600/30 focus:scale-[1.01]
+     [&::-ms-reveal]:hidden
+     [&::-webkit-credentials-auto-fill-button]:hidden" :class="{ 'border-red-500': error }" />
     </div>
 
 
