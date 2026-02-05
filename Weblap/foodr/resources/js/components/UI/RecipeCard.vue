@@ -80,13 +80,10 @@ const getAllergenColor = (allergen) => {
     @mousedown.prevent="!isBackground && $emit('dragstart', $event)"
     @touchstart.prevent="!isBackground && $emit('dragstart', $event)">
     
-    <!-- Accent Frame -->
-    <div class="w-full h-full rounded-3xl overflow-hidden pointer-events-none">
-      <div class="bg-gradient-to-br from-accent-500/80 to-accent-600/80 p-1 w-full h-full">
         
         <!-- Kártya Content -->
         <div class="relative w-full h-full rounded-3xl overflow-hidden 
-                    bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300">
+                    bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300  border-accent-600 border-6">
           
           <!-- Kép (teljes magasság) -->
           <div class="relative w-full h-full overflow-hidden">
@@ -158,6 +155,5 @@ const getAllergenColor = (allergen) => {
 
         </div>
       </div>
-    </div>
-  </div>
+
 </template>

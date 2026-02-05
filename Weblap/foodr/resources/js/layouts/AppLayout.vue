@@ -22,8 +22,8 @@ const isMobileMenuOpen = ref(false)
 
 const LeftnavItems = ref([
   { label: 'SwipeR', url: '/', icon: Home },
-  { label: 'Kedvencek', url: '/kedvencek', icon: Heart },
-  { label: 'Felfedezés', url: '/felfedezes', icon: Search },
+  { label: 'FavoR', url: '/kedvencek', icon: Heart },
+  { label: 'FeedR', url: '/felfedezes', icon: Search },
 ])
 
 const RightnavItems = ref([
@@ -54,8 +54,6 @@ const closeMobileMenu = () => {
   <div class="relative flex min-h-screen
               bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800
               animate-gradient overflow-hidden">
-
-    <!-- glow -->
     <!-- glow -->
     <div class="pointer-events-none absolute inset-0
                 bg-gradient-to-br from-accent-500/20 via-transparent to-accent-600/20
@@ -167,8 +165,8 @@ const closeMobileMenu = () => {
                 <component :is="item.icon" class="h-5 w-5 mr-3" />
                 <span class="flex flex-1 items-center justify-between gap-2">
                   <span>{{ item.label }}</span>
-                  <span v-if="item.label === 'Kedvencek' && user"
-                    class="px-2 py-0.5 rounded-full bg-brand-600 text-accent-200 text-xs font-semibold">
+                  <span v-if="item.label === 'FavoR' && user"
+                    class="px-2 py-1 rounded-full bg-brand-600 text-accent-200 text-xs font-semibold">
                     {{ likedCount }}
                   </span>
                 </span>
@@ -256,51 +254,3 @@ const closeMobileMenu = () => {
   </div>
 </template>
 
-<style scoped>
-/* Mobile Menu Transitions */
-.menu-fade-enter-active,
-.menu-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.menu-fade-enter-from,
-.menu-fade-leave-to {
-  opacity: 0;
-}
-
-.menu-slide-enter-active,
-.menu-slide-leave-active {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.menu-slide-enter-from,
-.menu-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-20px) scale(0.95);
-}
-
-/* Scrollbar styling */
-main::-webkit-scrollbar {
-  width: 8px;
-}
-
-main::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-}
-
-main::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-}
-
-main::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-/* Firefox scrollbar */
-main {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
-}
-</style>
