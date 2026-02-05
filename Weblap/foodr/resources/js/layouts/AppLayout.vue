@@ -9,6 +9,8 @@ import {
   User,
   Settings,
   HelpCircle,
+  Menu,
+  X as CloseIcon
 } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
 import Avatar from 'primevue/avatar'
@@ -16,9 +18,10 @@ import Avatar from 'primevue/avatar'
 const page = usePage()
 const user = computed(() => page.props.auth?.user)
 const likedCount = computed(() => page.props.likedCount ?? 0)
+const isMobileMenuOpen = ref(false)
 
 const LeftnavItems = ref([
-  { label: 'SwipeR', url: '/welcome', icon: Home },
+  { label: 'SwipeR', url: '/', icon: Home },
   { label: 'Kedvencek', url: '/kedvencek', icon: Heart },
   { label: 'Felfedezés', url: '/felfedezes', icon: Search },
 ])
@@ -35,25 +38,118 @@ const logout = () => {
 
 const login = () => {
   router.visit('/bejelentkezes')
+  isMobileMenuOpen.value = false
+}
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false
 }
 </script>
 
 <template>
-  <div class="h-screen relative flex min-h-screen overflow-hidden
+  <div class="relative flex min-h-screen
               bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800
-              animate-gradient">
+              animate-gradient overflow-hidden">
 
-   <!-- glow -->
-   <!-- glow -->
+    <!-- glow -->
+    <!-- glow -->
     <div class="pointer-events-none absolute inset-0
                 bg-gradient-to-br from-accent-500/20 via-transparent to-accent-600/20
                 blur-3xl animate-gradient-slow" />
-    <!-- LEFT NAVBAR -->
-    <aside class="hidden lg:flex lg:w-80 flex-col m-4 z-10">
-      <!-- ACCENT FRAME -->
+
+    <!-- MOBILE HEADER -->
+    <header class="lg:hidden fixed top-0 left-0 right-0 z-30 p-4">
+      <div class="flex items-center justify-between bg-accent-300/90 backdrop-blur-lg rounded-2xl px-4 py-3 shadow-xl">
+        <h1 class="text-2xl font-bold">
+          <span class="text-accent-400">Food</span><span class="text-brand-500">R</span>
+        </h1>
+        <button @click="toggleMobileMenu" class="p-2 rounded-xl bg-accent-400/50 hover:bg-accent-400 transition">
+          <Menu v-if="!isMobileMenuOpen" class="w-6 h-6 text-slate-900" />
+          <CloseIcon v-else class="w-6 h-6 text-slate-900" />
+        </button>
+      </div>
+    </header>
+
+    <!-- MOBILE MENU OVERLAY -->
+    <Transition name="menu-fade">
+      <div v-if="isMobileMenuOpen" @click="closeMobileMenu"
+        class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40">
+      </div>
+    </Transition>
+
+    <!-- MOBILE MENU PANEL -->
+    <Transition name="menu-slide">
+      <div v-if="isMobileMenuOpen"
+        class="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto">
+        <div class="rounded-3xl overflow-hidden shadow-2xl">
+          <div class="bg-gradient-to-br from-accent-500/90 to-accent-600/90 p-1 backdrop-blur-xl">
+            <div class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-6">
+
+              <!-- User Section -->
+              <div class="rounded-2xl bg-accent-400/40 shadow-lg p-5 text-center">
+                <div v-if="user" class="space-y-3">
+                  <Avatar :image="user.avatar || '/imgs/emcyPFP.png'" shape="circle"
+                    class="!w-16 !h-16 ring-2 ring-accent-600/50 shadow-md mx-auto" />
+                  <p class="font-bold text-slate-900">@{{ user.username || user.email.split('@')[0] }}</p>
+                  <p class="text-sm text-slate-700">{{ user.email }}</p>
+                </div>
+                <div v-else class="space-y-3">
+                  <div
+                    class="w-16 h-16 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md mx-auto">
+                    <User class="w-8 h-8 text-slate-700" />
+                  </div>
+                  <p class="font-bold text-slate-900">Nincs bejelentkezve</p>
+                </div>
+              </div>
+
+              <!-- Navigation -->
+              <nav class="space-y-2">
+                <p class="text-xs font-semibold text-slate-700 uppercase px-4">Navigáció</p>
+                <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu" class="flex items-center px-4 py-3 rounded-xl
+                          transition hover:bg-accent-400 text-slate-900">
+                  <component :is="item.icon" class="h-5 w-5 mr-3" />
+                  {{ item.label }}
+                </a>
+              </nav>
+
+              <!-- Settings -->
+              <nav class="space-y-2">
+                <p class="text-xs font-semibold text-slate-700 uppercase px-4">Beállítások</p>
+                <a v-for="item in RightnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu" class="flex items-center px-4 py-3 rounded-xl
+                          transition hover:bg-accent-400 text-slate-900">
+                  <component :is="item.icon" class="h-5 w-5 mr-3" />
+                  {{ item.label }}
+                </a>
+              </nav>
+
+              <!-- Auth Button -->
+              <button v-if="user" @click="logout" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
+                             hover:bg-brand-800 transition-all
+                             font-medium shadow-md flex items-center justify-center gap-2">
+                <LogOut class="w-4 h-4" />
+                Kijelentkezés
+              </button>
+              <button v-else @click="login" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
+                             hover:bg-brand-800 transition-all
+                             font-medium shadow-md flex items-center justify-center gap-2">
+                <LogIn class="w-4 h-4" />
+                Bejelentkezés
+              </button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- LEFT SIDEBAR (Desktop) -->
+    <aside class="hidden lg:flex flex-col w-80 h-[calc(100vh-2rem)] fixed top-4 left-4 z-20">
       <div class="rounded-3xl overflow-hidden shadow-2xl h-full">
         <div class="bg-gradient-to-br from-accent-500/80 to-accent-600/80 p-1 h-full">
-          <!-- NAVBAR CARD -->
           <div class="h-full rounded-3xl flex flex-col
                       bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
                       animate-card-gradient backdrop-blur-xl">
@@ -65,38 +161,29 @@ const login = () => {
               </h1>
             </div>
 
-            <nav class="flex-1 px-3 space-y-1">
+            <nav class="flex-1 px-3 space-y-1 overflow-y-auto">
               <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-xl
                         transition hover:bg-accent-400 hover:scale-[1.02] text-slate-900">
                 <component :is="item.icon" class="h-5 w-5 mr-3" />
-                  <span class="flex flex-1 items-center justify-between gap-2">
+                <span class="flex flex-1 items-center justify-between gap-2">
                   <span>{{ item.label }}</span>
-                  <span
-                    v-if="item.label === 'Kedvencek' && user"
-                    class="px-2 py-0.5 rounded-full bg-brand-600 text-accent-200 text-xs font-semibold"
-                  >
+                  <span v-if="item.label === 'Kedvencek' && user"
+                    class="px-2 py-0.5 rounded-full bg-brand-600 text-accent-200 text-xs font-semibold">
                     {{ likedCount }}
                   </span>
                 </span>
               </a>
             </nav>
+
           </div>
         </div>
       </div>
     </aside>
-    <!-- PAGE CONTENT -->
-    <main class="flex-1 flex flex-col p-6 md:p-10 z-10">
-      <div class="max-w-5xl mx-auto w-full">
-        <slot />
-      </div>
-    </main>
 
-    <!-- RIGHT NAVBAR -->
-    <aside class="hidden lg:flex lg:w-80 flex-col m-4 z-10">
-      <!-- ACCENT FRAME -->
+    <!-- RIGHT SIDEBAR (Desktop) -->
+    <aside class="hidden lg:flex flex-col w-80 h-[calc(100vh-2rem)] fixed top-4 right-4 z-20">
       <div class="rounded-3xl overflow-hidden shadow-2xl h-full">
         <div class="bg-gradient-to-br from-accent-500/80 to-accent-600/80 p-1 h-full">
-          <!-- NAVBAR CARD -->
           <div class="h-full rounded-3xl flex flex-col
                       bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
                       animate-card-gradient backdrop-blur-xl">
@@ -107,32 +194,26 @@ const login = () => {
               </h2>
             </div>
 
-             <nav class="flex-1 px-3 space-y-1">
-               <a v-for="item in RightnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-xl
+            <nav class="flex-1 px-3 space-y-1">
+              <a v-for="item in RightnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-xl
                         transition hover:bg-accent-400 hover:scale-[1.02] text-slate-900">
                 <component :is="item.icon" class="h-5 w-5 mr-3" />
                 {{ item.label }}
-                </a>
+              </a>
             </nav>
 
-            <!-- USER SECTION -->
             <div class="mt-auto p-4">
               <div class="rounded-2xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 
-                          shadow-lg p-5 backdrop-blur-sm">
+                          shadow-lg p-5 backdrop-blur-sm text-center">
 
-                <!-- Logged in state -->
-                <div v-if="user" class="space-y-4 text-center py-2">
-                  <div class="flex justify-center">
-                    <Avatar :image="user.avatar || '/imgs/emcyPFP.png'" shape="circle"
-                      class="!w-20 !h-20 ring-2 ring-accent-600/50 shadow-md" />
-                  </div>
-                  <div>
-                    <p class="font-bold text-slate-900 text-lg">@{{ user.username || user.email.split('@')[0] }}</p>
-                    <p class="text-base text-slate-700 mt-1">{{ user.email }}</p>
-                  </div>
+                <div v-if="user" class="space-y-4">
+                  <Avatar :image="user.avatar || '/imgs/emcyPFP.png'" shape="circle"
+                    class="!w-20 !h-20 ring-2 ring-accent-600/50 shadow-md mx-auto" />
+                  <p class="font-bold text-slate-900 text-lg">@{{ user.username || user.email.split('@')[0] }}</p>
+                  <p class="text-base text-slate-700 mt-1">{{ user.email }}</p>
                   <button @click="logout" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
-                           hover:bg-brand-800 transition-all hover:scale-[1.02]
-                           font-medium shadow-md flex items-center justify-center gap-2">
+                                 hover:bg-brand-800 transition-all hover:scale-[1.02]
+                                 font-medium shadow-md flex items-center justify-center gap-2">
                     <LogOut class="w-4 h-4" />
                     Kijelentkezés
                   </button>
@@ -149,8 +230,8 @@ const login = () => {
                     <p class="text-base text-slate-700 mt-1">Jelentkezz be a funkciók eléréséhez</p>
                   </div>
                   <button @click="login" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
-                           hover:bg-brand-800 transition-all hover:scale-[1.02]
-                           font-medium shadow-md flex items-center justify-center gap-2">
+                                 hover:bg-brand-800 transition-all hover:scale-[1.02]
+                                 font-medium shadow-md flex items-center justify-center gap-2">
                     <LogIn class="w-4 h-4" />
                     Bejelentkezés
                   </button>
@@ -161,5 +242,65 @@ const login = () => {
         </div>
       </div>
     </aside>
+
+    <!-- PAGE CONTENT -->
+    <main class="flex-1 flex flex-col 
+             pt-20 lg:pt-6 px-4 sm:px-6 md:px-10 pb-6
+             lg:ml-[calc(320px+1rem)] lg:mr-[calc(320px+1rem)]
+             z-10 overflow-y-auto">
+      <div class="max-w-7xl mx-auto w-full">
+        <slot />
+      </div>
+    </main>
+
   </div>
 </template>
+
+<style scoped>
+/* Mobile Menu Transitions */
+.menu-fade-enter-active,
+.menu-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.menu-fade-enter-from,
+.menu-fade-leave-to {
+  opacity: 0;
+}
+
+.menu-slide-enter-active,
+.menu-slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.menu-slide-enter-from,
+.menu-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+}
+
+/* Scrollbar styling */
+main::-webkit-scrollbar {
+  width: 8px;
+}
+
+main::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+main::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+main::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Firefox scrollbar */
+main {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+}
+</style>

@@ -10,7 +10,7 @@ import { initializeTheme } from './composables/useAppearance'
 import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 
-// PRIMEVUE KOMPONENSEK (EZ HIÁNYZOTT)
+// PRIMEVUE KOMPONENSEK
 import Menu from 'primevue/menu'
 import Avatar from 'primevue/avatar'
 import Badge from 'primevue/badge'
@@ -19,6 +19,7 @@ import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import SelectButton from 'primevue/selectbutton'
 import Divider from 'primevue/divider'
+import Dialog from 'primevue/dialog'
 
 const appName = import.meta.env.VITE_APP_NAME || 'FoodR'
 
@@ -32,7 +33,6 @@ createInertiaApp({
         )
     },
 
-
     setup({ el, App, props, plugin }) {
         const vueApp = createApp({ render: () => h(App, props) })
 
@@ -44,7 +44,7 @@ createInertiaApp({
                 },
             })
 
-            // ⬇⬇⬇ GLOBÁLIS PRIMEVUE REGISZTRÁCIÓ ⬇⬇⬇
+            // GLOBÁLIS PRIMEVUE REGISZTRÁCIÓ
             .component('Menu', Menu)
             .component('Avatar', Avatar)
             .component('Badge', Badge)
@@ -53,6 +53,7 @@ createInertiaApp({
             .component('Tag', Tag)
             .component('SelectButton', SelectButton)
             .component('Divider', Divider)
+            .component('Dialog', Dialog)
 
             .mount(el)
     },
@@ -64,4 +65,3 @@ createInertiaApp({
 
 // light / dark mód
 initializeTheme()
-

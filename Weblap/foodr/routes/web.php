@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Models\Interakciok;
 use App\Http\Controllers\InterakcioController;
+use App\Http\Controllers\KedvencController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -17,11 +18,15 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('bejelentkezes', function () { //BEJELENTKEZES
+Route::get('login', function () {
+    return redirect()->route('bejelentkezes');
+})->name('login');
+
+Route::get('bejelentkezes', function () {
     return Inertia::render('Bejelentkezes');
 })->middleware('guest')->name('bejelentkezes');
 
-Route::get('regisztracio', function () { //REGISZTRACIO 
+Route::get('regisztracio', function () {
     return Inertia::render('Regisztracio');
 })->name('regisztracio');
 
@@ -35,35 +40,29 @@ Route::get('/recipes', function () {
     ])
     ->get()
     ->map(function($recept) {
-        // Összes allergén összegyűjtése a receptből
         $osszesAllergen = $recept->receptAlapanyagok
             ->pluck('alapanyag.allergenek')
             ->flatten()
             ->unique('id');
         
-        // Allergének neve (kivéve vegetáriánus/vegán)
         $allergenek = $osszesAllergen
-            ->whereNotIn('id', [6, 7]) // Kihagyjuk a "Nem vegetáriánus" és "Nem vegán" ID-kat
+            ->whereNotIn('id', [6, 7])
             ->pluck('nev')
             ->values();
         
-        // Vegán/Vegetáriánus pozitív logika
         $nemVegetarianusSzuro = $osszesAllergen->where('id', 6)->isNotEmpty();
         $nemVeganSzuro = $osszesAllergen->where('id', 7)->isNotEmpty();
         
         $dietTags = [];
         
-        // Ha NINCS "Nem vegetáriánus" allergén, akkor vegetáriánus
         if (!$nemVegetarianusSzuro) {
             $dietTags[] = 'Vegetáriánus';
         }
         
-        // Ha NINCS "Nem vegán" allergén ÉS vegetáriánus, akkor vegán
         if (!$nemVeganSzuro && !$nemVegetarianusSzuro) {
             $dietTags[] = 'Vegán';
         }
         
-        // Összefűzzük az allergéneket és a diet tageket
         $osszesTag = array_merge($allergenek->toArray(), $dietTags);
         
         return [
@@ -77,20 +76,18 @@ Route::get('/recipes', function () {
         ];
     });
 });
-Route::get('/check-username', function (Request $request) { //USERNAME ELLENŐRZÉS
+
+Route::get('/check-username', function (Request $request) {
     $username = $request->query('username');
-
     $available = !Felhasznalo::where('nev', $username)->exists();
-
-    return response()->json([
-        'available' => $available
-    ]);
+    return response()->json(['available' => $available]);
 });
 
-Route::post('/regisztracio', [RegisterController::class, 'store']) //REGISZTRÁCIÓ ADATOK KÜLDÉSE
+Route::post('/regisztracio', [RegisterController::class, 'store'])
     ->name('regisztracio.store');
 
-Route::post('/bejelentkezes', [LoginController::class, 'login'])->name('login');
+Route::post('/bejelentkezes', [LoginController::class, 'login'])
+    ->name('login');
 
 Route::post('/logout', function () {
     Auth::logout();
@@ -113,3 +110,23 @@ Route::get('/interakciok', function () {
 
     return \App\Models\Recept::whereIn('id', $likedReceptek)->get();
 });
+Route::middleware('auth')->group(function () {
+    
+    Route::get('/api/kedvencek', [KedvencController::class, 'index'])
+        ->name('kedvencek.index');
+    
+    Route::post('/api/kedvencek', [KedvencController::class, 'store'])
+        ->name('kedvencek.store');
+    
+    Route::delete('/api/kedvencek/{receptId}', [KedvencController::class, 'destroy'])
+        ->name('kedvencek.destroy');
+    
+    Route::get('/api/kedvencek/check/{receptId}', [KedvencController::class, 'check'])
+        ->name('kedvencek.check');
+    
+    Route::get('/kedvencek', function () {
+        return Inertia::render('Kedvencek');
+    })->name('kedvencek');
+});
+
+require __DIR__.'/settings.php';

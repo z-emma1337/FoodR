@@ -56,6 +56,7 @@ const getAllergenColor = (allergen) => {
   
   return colors[allergen] || 'bg-white/20 border-white/30 text-white'
 }
+
 </script>
 
 <template>
