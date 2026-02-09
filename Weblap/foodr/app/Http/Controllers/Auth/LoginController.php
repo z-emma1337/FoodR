@@ -14,13 +14,22 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'authInput' => ['required'],
             'jelszo' => ['required']
         ]);
+        $fieldType = filter_var($credentials['authInput'], FILTER_VALIDATE_EMAIL) ? 'email' : 'nev';
+        $fieldType = strtolower($fieldType);
+        
+        if ($fieldType == 'nev') {
+        $credentials['authInput'] = Felhasznalo::when($fieldType=='nev', function($query) use ($credentials) { 
+            $query->whereRaw('LOWER(nev) = ?', [strtolower($credentials['authInput'])]);
+        })->first();
+        }
+        $credentials['authInput'] = $credentials['authInput']->nev;
 
         if (
             Auth::attempt([
-                'email' => $credentials['email'],
+                $fieldType => ($credentials['authInput']),
                 'password' => $credentials['jelszo']
             ])
         ) {
@@ -29,7 +38,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Hibás email vagy jelszó.',
+            'authInput' => 'Hibás email/felhasználónév vagy jelszó.',
         ]);
     }
 

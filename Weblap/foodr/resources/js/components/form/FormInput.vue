@@ -26,7 +26,7 @@ const emit = defineEmits(['update:modelValue', 'clear', 'toggle'])
 
       <!-- Input -->
       <input :value="modelValue" :type="type" :placeholder="placeholder" :autocomplete="autocomplete"
-        @input="emit('update:modelValue', $event.target.value)" class="w-full rounded-xl border border-accent-400/60
+        @input="emit('update:modelValue', $event.target.value)" class="w-full rounded-3xl border border-accent-400/60
      bg-accent-200 px-3 py-2 pl-10 pr-10
      text-slate-900 placeholder-slate-600 outline-none
      transition-all duration-150 focus:border-accent-600

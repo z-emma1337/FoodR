@@ -100,14 +100,14 @@ const getAllergenColor = (allergen) => {
             <div v-if="!isBackground && isDragging" class="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div v-if="dragOffset.x > 50" 
                    class="transform rotate-12 border-8 border-green-500 
-                          rounded-2xl px-8 py-4 text-6xl font-bold text-green-500
+                          rounded-3xl px-8 py-4 text-6xl font-bold text-green-500
                           shadow-2xl bg-white/10 backdrop-blur-sm"
                    :style="{ opacity: Math.min(dragOffset.x / 100, 1) }">
                 LIKE
               </div>
               <div v-if="dragOffset.x < -50" 
                    class="transform -rotate-12 border-8 border-red-500 
-                          rounded-2xl px-8 py-4 text-6xl font-bold text-red-500
+                          rounded-3xl px-8 py-4 text-6xl font-bold text-red-500
                           shadow-2xl bg-white/10 backdrop-blur-sm"
                    :style="{ opacity: Math.min(Math.abs(dragOffset.x) / 100, 1) }">
                 DISLIKE
@@ -125,12 +125,12 @@ const getAllergenColor = (allergen) => {
               <!-- Idő és Adag -->
               <div class="flex items-center gap-3 flex-wrap">
                 <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md 
-                            rounded-full px-4 py-2 shadow-lg">
+                            rounded-3xl px-4 py-2 shadow-lg">
                   <Clock class="w-4 h-4 text-white" />
                   <span class="text-sm font-semibold text-white">{{ formatTime(recipe.ido) }}</span>
                 </div>
                 <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md 
-                            rounded-full px-4 py-2 shadow-lg">
+                            rounded-3xl px-4 py-2 shadow-lg">
                   <Users class="w-4 h-4 text-white" />
                   <span class="text-sm font-semibold text-white">{{ recipe.adag }} adag</span>
                 </div>
@@ -142,7 +142,7 @@ const getAllergenColor = (allergen) => {
                 <div v-for="allergen in recipe.allergenek" 
                      :key="allergen"
                      :class="[
-                       'backdrop-blur-md rounded-full px-3 shadow-md border flex items-center',
+                       'backdrop-blur-md rounded-3xl px-3 shadow-md border flex items-center',
                        getAllergenColor(allergen)
                      ]"
                      style="padding-top: 0.25rem; padding-bottom: 0.25rem;">

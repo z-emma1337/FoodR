@@ -7,7 +7,7 @@ defineProps({
 </script>
 
 <template>
-    <button type="submit" :disabled="disabled || loading" class="w-full rounded-2xl bg-brand-700 py-2.5 font-semibold text-accent-200
+    <button type="submit" :disabled="disabled || loading" class="w-full rounded-3xl bg-brand-700 py-2.5 font-semibold text-accent-200
            shadow-xl shadow-brand-800/40
            transition-transform duration-300
            hover:scale-105

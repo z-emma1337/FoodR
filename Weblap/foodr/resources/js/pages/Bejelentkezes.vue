@@ -1,30 +1,50 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { router, Link, Head } from '@inertiajs/vue3'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import FormInput from '@/components/form/FormInput.vue'
 import FormButton from '@/components/form/FormButton.vue'
-import { Mail, Lock, Eye } from 'lucide-vue-next'
+import { Mail, Lock, User } from 'lucide-vue-next'
 
-const email = ref('')
+const authInput = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const errorMessage = ref('')
 
-// Form validation (minimal, email + password required)
-const isFormValid = computed(() => email.value.length > 0 && password.value.length > 0)
+const isFormValid = computed(() => authInput.value.length > 0 && password.value.length > 0)
 
-// Submit
 const submit = () => {
-  errorMessage.value = '' // előző hibát töröljük
+  errorMessage.value = ''
 
   router.post('/bejelentkezes', {
-    email: email.value,
+    authInput: authInput.value.toLowerCase(),
     jelszo: password.value
   }, {
     onError: () => errorMessage.value = 'Hibás email cím vagy jelszó'
   })
 }
+
+const valtIkon = ref(Mail)
+const valtPlaceholder = ref('email@pelda.hu')
+
+
+let intervalId = null
+
+onMounted(() => {
+  intervalId = setInterval(() => {
+    if (valtIkon.value === Mail) {
+      valtIkon.value = User
+      valtPlaceholder.value = 'felhasznalonev'
+    } else {
+      valtIkon.value = Mail
+      valtPlaceholder.value = "email@pelda.hu"
+    }
+  }, 2000)
+})
+
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId)
+})
 </script>
 
 
@@ -37,10 +57,10 @@ const submit = () => {
     <form @submit.prevent="submit" class="mt-6 space-y-5">
       <!-- EMAIL -->
       <FormInput
-        v-model="email"
-        type="email"
-        :icon="Mail"
-        placeholder="email@pelda.hu"
+        v-model="authInput"
+        type="text"
+        :icon="valtIkon"
+        :placeholder="valtPlaceholder"
         required
       />
 
@@ -56,7 +76,7 @@ const submit = () => {
       />
 
       <!-- ERROR MESSAGE -->
-      <div v-if="errorMessage" class="rounded-lg bg-brand-200 px-3 py-2 text-center text-sm text-brand-900">
+      <div v-if="errorMessage" class="rounded-3xl bg-brand-200 px-3 py-2 text-center text-sm text-brand-900">
         {{ errorMessage }}
       </div>
 
