@@ -61,12 +61,12 @@ const closeMobileMenu = () => {
                 blur-3xl animate-gradient-slow" />
 
     <!-- MOBILE HEADER -->
-    <header class="lg:hidden fixed top-0 left-0 right-0 z-30 p-4">
-      <div class="flex items-center justify-between bg-accent-300/90 backdrop-blur-lg rounded-2xl px-4 py-3 shadow-xl">
-        <h1 class="text-2xl font-bold">
-          <span class="text-accent-400">Food</span><span class="text-brand-500">R</span>
-        </h1>
-        <button @click="toggleMobileMenu" class="p-2 rounded-xl bg-accent-400/50 hover:bg-accent-400 transition">
+    <header class="lg:hidden fixed top-0 left-0 right-0 z-30 p-4 ">
+      <div class="flex items-center justify-between bg-accent-300/90 backdrop-blur-lg rounded-2xl px-4 py-3 shadow-xl border-accent-600 border-3">
+        <a href="/"><h1 class="text-2xl font-bold">
+                <span class="text-accent-400 text-outline-shadow">Food</span><span
+                  class="text-brand-500 text-outline-shadow">R</span>        </h1></a>
+        <button @click="toggleMobileMenu" class="p-2 rounded-xl bg-accent-400/50 hover:bg-accent-400 border-accent-600 border-2 transition">
           <Menu v-if="!isMobileMenuOpen" class="w-6 h-6 text-slate-900" />
           <CloseIcon v-else class="w-6 h-6 text-slate-900" />
         </button>
@@ -83,9 +83,9 @@ const closeMobileMenu = () => {
     <!-- MOBILE MENU PANEL -->
     <Transition name="menu-slide">
       <div v-if="isMobileMenuOpen"
-        class="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto">
+        class="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto border-accent-600 border-6 rounded-4xl">
         <div class="rounded-3xl overflow-hidden shadow-2xl">
-          <div class="bg-gradient-to-br from-accent-500/90 to-accent-600/90 p-1 backdrop-blur-xl">
+
             <div class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-6">
 
               <!-- User Section -->
@@ -115,7 +115,6 @@ const closeMobileMenu = () => {
                     <p class="text-base text-slate-700 mt-1">Jelentkezz be a funkciók eléréséhez</p>
                   </div>
                 </div>
-              </div>
               </div>
 
               <!-- Navigation -->

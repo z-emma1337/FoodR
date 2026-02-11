@@ -25,17 +25,19 @@ const formatTime = (minutes) => {
 }
 
 const getAllergenColor = (allergen) => {
-  const colors = {
-    'Vegán': 'bg-green-500 text-white',
-    'Vegetáriánus': 'bg-lime-500 text-white',
-    'Glutén': 'bg-amber-500 text-white',
-    'Tojás': 'bg-yellow-500 text-slate-800',
-    'Tej': 'bg-blue-500 text-white',
-    'Dió': 'bg-orange-500 text-white',
-    'Földimogyoró': 'bg-red-500 text-white',
+  const styles = {
+    'Vegán': 'bg-green-500/60 text-slate-900 border border-green-600',
+    'Vegetáriánus': 'bg-lime-500/60 text-slate-900 border border-lime-600',
+    'Glutén': 'bg-amber-500/60 text-slate-900 border border-amber-600',
+    'Tojás': 'bg-yellow-500/60 text-slate-900 border border-yellow-600',
+    'Tej': 'bg-blue-500/60 text-slate-900 border border-blue-600',
+    'Dió': 'bg-orange-500/60 text-slate-900 border border-orange-600',
+    'Földimogyoró': 'bg-red-500/60 text-slate-900 border border-red-600',
   }
-  return colors[allergen] || 'bg-slate-500 text-white'
+  return styles[allergen] || 'bg-slate-500 text-white border border-slate-600'
 }
+
+
 </script>
 
 <template>
@@ -46,7 +48,7 @@ const getAllergenColor = (allergen) => {
     :draggable="false"
     :closable="true"
     :style="{ width: '90vw', maxWidth: '900px' }"
-    class="recipe-modal"
+    class="recipe-modal "
   >
     <template #header>
       <div class="flex items-center gap-3">
@@ -55,7 +57,7 @@ const getAllergenColor = (allergen) => {
       </div>
     </template>
 
-    <div v-if="recipe" class="space-y-6">
+    <div v-if="recipe" class="space-y-6 ">
       
       <!-- Image -->
       <div class="relative rounded-2xl overflow-hidden aspect-video sm:aspect-[21/9]">
