@@ -101,11 +101,30 @@ const handleDragMove = (e) => {
   const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
   const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY
   
-  const deltaX = clientX - dragStartPos.value.x
-  const deltaY = clientY - dragStartPos.value.y
-  
-  dragOffset.value = { x: deltaX, y: deltaY }
-  rotation.value = deltaX * 0.1
+const deltaX = clientX - dragStartPos.value.x
+let deltaY = clientY - dragStartPos.value.y
+
+// aktuális kártya DOM elem
+const cardEl = document.querySelector('.recipe-card') // vagy adj neki refet, ha tisztább megoldást akarsz
+
+if (cardEl) {
+  const rect = cardEl.getBoundingClientRect()
+  const viewportHeight = window.innerHeight
+
+  // top limit (legalább 10px-re legyen a képernyő tetejétől)
+  if (rect.top + deltaY < 10) {
+    deltaY = 75 - rect.top
+  }
+
+  // bottom limit (legalább 10px-re legyen az aljától)
+  if (rect.bottom + deltaY > viewportHeight - 10) {
+    deltaY = (viewportHeight - 70) - rect.bottom
+  }
+}
+
+dragOffset.value = { x: deltaX, y: deltaY }
+rotation.value = deltaX * 0.1
+
 }
 
 const handleDragEnd = () => {
@@ -351,20 +370,3 @@ const nextCard = () => {
   </AppLayout>
 </template>
 
-<style scoped>
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out;
-}
-</style>

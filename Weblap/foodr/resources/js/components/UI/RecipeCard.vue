@@ -62,7 +62,7 @@ const getAllergenColor = (allergen) => {
 <template>
   <div
     :class="[
-      'absolute inset-0 touch-none',
+      'absolute inset-0 touch-none recipe-card',
       isBackground ? 'rounded-3xl overflow-hidden' : 'cursor-grab active:cursor-grabbing'
     ]"
     :style="{

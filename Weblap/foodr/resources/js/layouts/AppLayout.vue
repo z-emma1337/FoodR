@@ -52,8 +52,9 @@ const closeMobileMenu = () => {
 
 <template>
   <div class="relative flex min-h-screen
-              bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800
-              animate-gradient overflow-hidden">
+            bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800
+            animate-gradient overflow-hidden
+            touch-pan-y">
     <!-- glow -->
     <div class="pointer-events-none absolute inset-0
                 bg-gradient-to-br from-accent-500/20 via-transparent to-accent-600/20
@@ -88,34 +89,45 @@ const closeMobileMenu = () => {
             <div class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-6">
 
               <!-- User Section -->
-              <div class="rounded-2xl bg-accent-400/40 shadow-lg p-5 text-center">
-                <div v-if="user" class="space-y-3">
-                    <User class="w-8 h-8 text-slate-700" />
-                  <p class="font-bold text-slate-900">@{{ user.nev || user.email.split('@')[0] }}</p>
-                  <p class="text-sm text-slate-700">{{ user.email }}</p>
-                </div>
-                <div v-else class="space-y-3">
-                  <div
-                    class="w-16 h-16 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md mx-auto">
-                    <User class="w-8 h-8 text-slate-700" />
+             <div class="mt-auto p-4">
+              <div class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 
+                          shadow-lg p-5 backdrop-blur-sm text-center">
+
+                <div v-if="user" class="space-y-4  text-center py-2">
+                  <div class="flex justify-center">
+                    <div class="w-15 h-15 rounded-full bg-accent-500/30 
+                                flex items-center justify-center shadow-md">
+                      <User class="w-8 h-8 text-slate-700" />
+                    </div>
                   </div>
-                  <p class="font-bold text-slate-900">Nincs bejelentkezve</p>
+                    <p class="font-bold text-slate-900 text-lg">{{ user.nev}}</p>
+                    <p class="text-base text-slate-700">{{ user.email }}</p>
                 </div>
+                <div v-else class="space-y-4 text-center py-2">
+                  <div class="flex justify-center">
+                    <div class="w-15 h-15 rounded-full bg-accent-500/30 
+                                flex items-center justify-center shadow-md">
+                      <User class="w-8 h-8 text-slate-700" />
+                    </div>
+                  </div>
+                  <div>
+                    <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
+                    <p class="text-base text-slate-700 mt-1">Jelentkezz be a funkciók eléréséhez</p>
+                  </div>
+                </div>
+              </div>
               </div>
 
               <!-- Navigation -->
               <nav class="space-y-2">
-                <p class="text-xs font-semibold text-slate-700 uppercase px-4">Navigáció</p>
                 <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu" class="flex items-center px-4 py-3 rounded-xl
                           transition hover:bg-accent-400 text-slate-900">
                   <component :is="item.icon" class="h-5 w-5 mr-3" />
                   {{ item.label }}
                 </a>
-              </nav>
+
 
               <!-- Settings -->
-              <nav class="space-y-2">
-                <p class="text-xs font-semibold text-slate-700 uppercase px-4">Beállítások</p>
                 <a v-for="item in RightnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu" class="flex items-center px-4 py-3 rounded-xl
                           transition hover:bg-accent-400 text-slate-900">
                   <component :is="item.icon" class="h-5 w-5 mr-3" />
@@ -245,7 +257,7 @@ const closeMobileMenu = () => {
     <main class="flex-1 flex flex-col 
              pt-20 lg:pt-6 px-4 sm:px-6 md:px-10 pb-6
              lg:ml-[calc(320px+1rem)] lg:mr-[calc(320px+1rem)]
-             z-10 overflow-y-auto">
+             z-10 overflow-hidden">
       <div class="max-w-7xl mx-auto w-full">
         <slot />
       </div>
