@@ -128,83 +128,80 @@ const showSuccessMessage = (message) => {
 </script>
 
 <template>
-<Dialog
-  v-model:visible="dialogVisible"
-  modal
-  :pt="{
-    root: { class: 'max-w-2xl' },
-    header: { 
-      class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient' 
-    },
-    content: { 
-      class: 'bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 rounded-b-3xl p-6' 
-    },
-    mask: { 
-      class: 'backdrop-blur-md' 
-    }
-  }"
->
+  <Dialog v-model:visible="dialogVisible" :modal="true" :dismissableMask="true" :draggable="false" :closable="false"
+    :style="{ width: '90vw', maxWidth: '900px' }" class="recipe-modal">
     <template #header>
-      <h3 class="text-2xl font-bold text-brand-500 text-outline-shadow">
-        {{ recipe?.nev }}
-      </h3>
+      <div class="flex items-center justify-between w-full">
+        <div class="flex items-center gap-3">
+          <ChefHat class="w-6 h-6 text-brand-700" />
+          <span class="text-xl sm:text-2xl font-bold text-slate-900">Recept részletei</span>
+        </div>
+        <button @click="dialogVisible = false" class="p-2 rounded-2xl bg-accent-400/50 hover:bg-accent-400 
+                 transition-all hover:scale-105 shadow-md">
+          <CloseIcon class="w-5 h-5 text-slate-900" />
+        </button>
+      </div>
     </template>
 
-    <div class="relative p-1 rounded-3xl overflow-hidden">
-      
-      <!-- Glow háttér a modalban (ugyanaz mint az oldalon) -->
-      <div class="absolute inset-0 pointer-events-none">
+    <div v-if="recipe" class="space-y-6">
+
+      <div class="relative rounded-3xl overflow-hidden aspect-video sm:aspect-[21/9] shadow-lg">
+        <img :src="recipe.kep_url" :alt="recipe.nev" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60" />
+
+        <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-2xl">
+            {{ recipe.nev }}
+          </h2>
+        </div>
       </div>
 
-      <!-- Fő háttér (sidebar stílus) -->
-      <div class="relative space-y-6 rounded-3xl p-6
-                  bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
-         animate-card-gradient backdrop-blur-xl shadow-xl">
-
-        <!-- Recipe Info -->
-        <div class="flex flex-wrap gap-4 text-sm text-slate-700">
-          <div class="flex items-center gap-2">
-            <Clock :size="18" class="text-brand-600" />
-            <span>{{ formatTime(recipe.ido) }}</span>
-          </div>
-
-          <div v-if="recipe.adag" class="flex items-center gap-2">
-            <Users :size="18" class="text-brand-600" />
-            <span>{{ recipe.adag }} adag</span>
+      <div class="flex flex-wrap gap-3">
+        <div class="flex items-center gap-2 bg-accent-400/40 rounded-2xl px-4 py-3 shadow-md">
+          <Clock class="w-5 h-5 text-brand-700" />
+          <div>
+            <p class="text-xs text-slate-700 font-medium">Elkészítési idő</p>
+            <p class="text-sm font-bold text-slate-900">{{ formatTime(recipe.ido) }}</p>
           </div>
         </div>
+        <div class="flex items-center gap-2 bg-accent-400/40 rounded-2xl px-4 py-3 shadow-md">
+          <Users class="w-5 h-5 text-brand-700" />
+          <div>
+            <p class="text-xs text-slate-700 font-medium">Adagok</p>
+            <p class="text-sm font-bold text-slate-900">{{ recipe.adag }} adag</p>
+          </div>
+        </div>
+      </div>
 
-        <!-- Allergens -->
+      <div v-if="recipe.allergenek && recipe.allergenek.length > 0">
+        <h3 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <ChefHat class="w-5 h-5" />
+          Allergének és étkezési típusok
+        </h3>
         <div class="flex flex-wrap gap-2">
-          <span
-            v-for="allergen in recipe.allergenek"
-            :key="allergen"
-            :class="getAllergenColor(allergen)"
-            class="px-3 py-1 rounded-full text-xs font-medium shadow"
-          >
+          <span v-for="allergen in recipe.allergenek" :key="allergen" :class="[
+            'px-4 py-2 rounded-2xl font-semibold text-sm shadow-md',
+            getAllergenColor(allergen)
+          ]">
             {{ allergen }}
           </span>
         </div>
-
-        <!-- Ingredients -->
-        <div>
-          <h4 class="text-lg font-semibold mb-3 text-brand-700">Hozzávalók</h4>
-
-          <ul class="space-y-2">
-            <li
-              v-for="(lepesek, index) in recipe.leiras
-                .split(/\d+\.\s*/)
-                .filter(x => x.trim().length > 1)"
-              :key="index"
-              class="flex items-start gap-3 text-slate-800"
-            >
-
-              <span>{{ index + 1 }}. {{ lepesek }}</span>
-            </li>
-          </ul>
-        </div>
-
       </div>
+
+      <div>
+        <h3 class="text-lg font-bold text-slate-900 mb-3">Leírás</h3>
+        <p class="text-slate-800 leading-relaxed text-base">
+          {{ recipe.leiras }}
+        </p>
+      </div>
+
+      <div class="bg-accent-400/30 rounded-3xl p-6 border-2 border-accent-500/40 shadow-md">
+        <p class="text-sm text-slate-700 text-center">
+          <span class="font-semibold text-slate-900">💡 Tipp:</span>
+          A részletes elkészítési útmutató hamarosan elérhető lesz!
+        </p>
+      </div>
+
     </div>
 
     <template #footer>
