@@ -93,7 +93,7 @@ Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-    return redirect()->route('bejelentkezes');
+    return redirect()->route('home');
 })->name('logout');
 
 Route::post('/interakcio/like', [InterakcioController::class, 'likeRecept'])->middleware('auth');

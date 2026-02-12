@@ -60,13 +60,11 @@ const closeMobileMenu = () => {
                 blur-3xl animate-gradient-slow" />
 
     <header class="lg:hidden fixed top-0 left-0 right-0 z-30 p-4">
-      <div
-        class="relative flex items-center justify-center bg-accent-300/90 backdrop-blur-lg rounded-2xl px-4 py-3 shadow-xl">
-        <h1 class="text-2xl font-bold">
-          <span class="text-accent-400">Food</span><span class="text-brand-500">R</span>
-        </h1>
-        <button @click="toggleMobileMenu"
-          class="absolute right-4 p-2 rounded-xl bg-accent-400/50 hover:bg-accent-400 transition">
+      <div class="flex items-center justify-between bg-accent-300/90 backdrop-blur-lg rounded-2xl px-4 py-3 shadow-xl">
+        <a href="/"><h1 class="text-2xl font-bold">
+                <span class="text-accent-400 text-outline-shadow">Food</span><span class="text-brand-500 text-outline-shadow">R</span>
+        </h1></a>
+        <button @click="toggleMobileMenu" class="p-2 rounded-xl bg-accent-400/50 hover:bg-accent-400 transition">
           <Menu v-if="!isMobileMenuOpen" class="w-6 h-6 text-slate-900" />
           <CloseIcon v-else class="w-6 h-6 text-slate-900" />
         </button>
