@@ -58,18 +58,17 @@ const formatTime = (minutes) => {
 }
 
 const getAllergenColor = (allergen) => {
-  const styles = {
-    'Vegán': 'bg-green-500/60 text-slate-900 border border-green-600',
-    'Vegetáriánus': 'bg-lime-500/60 text-slate-900 border border-lime-600',
-    'Glutén': 'bg-amber-500/60 text-slate-900 border border-amber-600',
-    'Tojás': 'bg-yellow-500/60 text-slate-900 border border-yellow-600',
-    'Tej': 'bg-blue-500/60 text-slate-900 border border-blue-600',
-    'Dió': 'bg-orange-500/60 text-slate-900 border border-orange-600',
-    'Földimogyoró': 'bg-red-500/60 text-slate-900 border border-red-600',
+  const colors = {
+    'Vegán': 'bg-green-500 text-white',
+    'Vegetáriánus': 'bg-lime-500 text-white',
+    'Glutén': 'bg-amber-500 text-white',
+    'Tojás': 'bg-yellow-500 text-slate-800',
+    'Tej': 'bg-blue-500 text-white',
+    'Dió': 'bg-orange-500 text-white',
+    'Földimogyoró': 'bg-red-500 text-white',
   }
-  return styles[allergen] || 'bg-slate-500 text-white border border-slate-600'
+  return colors[allergen] || 'bg-slate-500 text-white'
 }
-
 const handleAddToFavorites = () => {
   if (!props.recipe) return
   
@@ -128,8 +127,25 @@ const showSuccessMessage = (message) => {
 </script>
 
 <template>
-  <Dialog v-model:visible="dialogVisible" :modal="true" :dismissableMask="true" :draggable="false" :closable="false"
-    :style="{ width: '90vw', maxWidth: '900px' }" class="recipe-modal">
+<Dialog
+  v-model:visible="dialogVisible"
+  modal
+  :pt="{
+  root: { class: 'max-w-2xl !border-0 !shadow-none !bg-transparent' },
+  header: { 
+    class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient rounded-t-3xl !border-0' 
+  },
+  footer: { 
+    class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient rounded-b-3xl !border-0 !p-4' 
+  },
+  content: { 
+    class: 'bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 !border-0' 
+  },
+  mask: { 
+    class: 'backdrop-blur-md' 
+  }
+}"
+>
     <template #header>
       <h3 class="text-2xl font-bold text-accent-200">
         {{ recipe?.nev }}
@@ -138,16 +154,7 @@ const showSuccessMessage = (message) => {
 
     <div v-if="recipe" class="space-y-6">
 
-      <div class="relative rounded-3xl overflow-hidden aspect-video sm:aspect-[21/9] shadow-lg">
-        <img :src="recipe.kep_url" :alt="recipe.nev" class="w-full h-full object-cover" />
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60" />
-
-        <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-2xl">
-            {{ recipe.nev }}
-          </h2>
-        </div>
-      </div>
+      
 
       <!-- Fő háttér (sidebar stílus) -->
       <div class="relative space-y-6 rounded-3xl p-6
@@ -186,24 +193,28 @@ const showSuccessMessage = (message) => {
         </div>
       </div>
 
-      <div>
-        <h3 class="text-lg font-bold text-slate-900 mb-3">Leírás</h3>
-        <p class="text-slate-800 leading-relaxed text-base">
-          {{ recipe.leiras }}
-        </p>
-      </div>
+       <div>
+          <h4 class="text-lg font-semibold mb-3 text-brand-700">Leírás</h4>
 
-      <div class="bg-accent-400/30 rounded-3xl p-6 border-2 border-accent-500/40 shadow-md">
-        <p class="text-sm text-slate-700 text-center">
-          <span class="font-semibold text-slate-900">💡 Tipp:</span>
-          A részletes elkészítési útmutató hamarosan elérhető lesz!
-        </p>
-      </div>
+          <ul class="space-y-2">
+            <li
+              v-for="(lepesek, index) in recipe.leiras
+                .split(/\d+\.\s*/)
+                .filter(x => x.trim().length > 1)"
+              :key="index"
+              class="flex items-start gap-3 text-slate-800"
+            >
+
+              <span>{{ index + 1 }}. {{ lepesek }}</span>
+            </li>
+          </ul>
+        </div>
+
 
     </div>
 
     <template #footer>
-      <div class="flex flex-col sm:flex-row gap-3">
+      <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
         <button @click="dialogVisible = false" class="flex-1 p-3 rounded-3xl bg-accent-400/50 hover:bg-accent-400 
                  text-slate-900 font-semibold shadow-md
                  transition-all hover:scale-[1.02]
@@ -234,109 +245,3 @@ const showSuccessMessage = (message) => {
     </template>
   </Dialog>
 </template>
-
-<style>
-.recipe-modal .p-dialog {
-  border-radius: 1rem !important;
-  overflow: hidden;
-
-  border: 5px solid #f97316 !important;
-}
-
-.recipe-modal .p-dialog-header {
-  background: linear-gradient(to bottom right,
-      #fdba74,
-      #fed7aa,
-      #fdba74);
-  border-bottom: none;
-  padding: 1.25rem 1.5rem;
-  border-radius: 1rem 1rem 0 0;
-  border-color: #f97316;
-}
-
-.recipe-modal .p-dialog-content {
-  background: linear-gradient(to bottom right,
-      #fdba74,
-      #fed7aa,
-      #fdba74);
-  padding: 1.5rem;
-  max-height: 60vh;
-  overflow-y: auto;
-  border-color: #f97316;
-}
-
-.recipe-modal .p-dialog-footer {
-  background: linear-gradient(to bottom right,
-      #fed7aa,
-      #fdba74);
-  border-top: none;
-  padding: 1.25rem 1.5rem;
-  border-radius: 0 0 1rem 1rem;
-  border-color: #f97316;
-}
-
-.recipe-modal .p-dialog-mask {
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-}
-
-@media (max-width: 640px) {
-  .recipe-modal .p-dialog {
-    border-radius: 1rem !important;
-    border-width: 3px !important;
-  }
-
-  .recipe-modal .p-dialog-content {
-    padding: 1rem;
-    max-height: 65vh;
-  }
-
-  .recipe-modal .p-dialog-header,
-  .recipe-modal .p-dialog-footer {
-    padding: 1rem 1.25rem;
-  }
-}
-
-.recipe-modal .p-dialog-content::-webkit-scrollbar {
-  width: 10px;
-}
-
-.recipe-modal .p-dialog-content::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
-}
-
-.recipe-modal .p-dialog-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-}
-
-.recipe-modal .p-dialog-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.recipe-modal .p-dialog-header,
-.recipe-modal .p-dialog-content,
-.recipe-modal .p-dialog-footer {
-  background-size: 200% 200%;
-  animation: gradient 18s ease infinite;
-}
-
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.recipe-modal .p-dialog-header-close {
-  display: none !important;
-}
-</style>
