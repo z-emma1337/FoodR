@@ -1,5 +1,5 @@
 <script setup>
-import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartOff, Check } from 'lucide-vue-next'
+import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check } from 'lucide-vue-next'
 import Dialog from 'primevue/dialog'
 import { computed, ref, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
@@ -8,6 +8,7 @@ const props = defineProps({
   recipe: Object,
   visible: Boolean
 })
+const isHovering = ref(false);
 
 const emit = defineEmits(['update:visible', 'addToFavorites', 'removeFromFavorites'])
 
@@ -118,22 +119,17 @@ const handleRemoveFromFavorites = () => {
   })
 }
 
-const showSuccessMessage = (message) => {
-  console.log('✅', message)
-  setTimeout(() => {
-    dialogVisible.value = false
-  }, 500)
-}
+
 </script>
 
 <template>
-  <Dialog v-model:visible="dialogVisible" modal :pt="{
+<Dialog v-model:visible="dialogVisible" modal :dismissableMask="true" :pt="{
     root: { class: 'max-w-2xl !border-0 !shadow-none !bg-transparent' },
     header: {
       class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient rounded-t-3xl !border-0'
     },
     footer: {
-      class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient rounded-b-3xl !border-0 !p-4'
+      class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient rounded-b-3xl !border-0 !p-4  !justify-center'
     },
     content: {
       class: 'bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 !border-0'
@@ -141,9 +137,9 @@ const showSuccessMessage = (message) => {
     mask: {
       class: 'backdrop-blur-md'
     },
-    closeButton: {
+    pcCloseButton: {
       root: {
-        class: '!bg-gradient-to-br !from-accent-300 !via-accent-200 !to-accent-300 animate-card-gradient backdrop-blur-xl !text-brand-900 hover:!text-brand-700 hover:!bg-accent-400'
+        class: '!bg-transparent !text-accent-400 hover:!text-accent-300 !shadow-none !border-0 !w-12 !h-12 [&>svg]:!w-8 [&>svg]:!h-8 [&>svg]:!stroke-[2.5]'
       }
     }
   }">
@@ -208,34 +204,48 @@ const showSuccessMessage = (message) => {
 
 
 
-    <template #footer>
-      <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-        <button @click="dialogVisible = false" class="flex-1 p-3 rounded-3xl bg-accent-400/50 hover:bg-accent-400 
-                 text-slate-900 font-semibold shadow-md
-                 transition-all hover:scale-[1.02]
-                 flex items-center justify-center gap-2">
-          <CloseIcon class="w-4 h-4" />
-          Bezárás
-        </button>
+<template #footer>
+  <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full">
 
-        <button v-if="!isLiked" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="flex-1 p-3 rounded-3xl bg-brand-700 hover:bg-brand-800 
-                 text-accent-200 font-semibold shadow-md
+    <button v-if="!isLiked" @click="handleAddToFavorites" :disabled="isCheckingLiked"     @mouseenter="isHovering = true"
+    @mouseleave="isHovering = false" class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
+                 text-brand-700 font-bold shadow-md
                  transition-all hover:scale-[1.02]
                  flex items-center justify-center gap-2
                  disabled:opacity-50 disabled:cursor-not-allowed">
-          <Heart class="w-4 h-4" />
-          Kedvencekhez
+          <Heart
+  v-if="isHovering"
+  :stroke-width="2.5" 
+  fill="currentColor" 
+  class="w-15 h-15 text-brand-700 pt-0.5 transition-all" 
+/>
+          <Heart v-else :stroke-width="2.5" class="w-15 h-15 font-bold pt-0.5" />
+
         </button>
 
-        <button v-else @click="handleRemoveFromFavorites" class="flex-1 p-3 rounded-3xl bg-green-600 hover:bg-red-600 
-                 text-white font-semibold shadow-md
-                 transition-all hover:scale-[1.02]
-                 flex items-center justify-center gap-2 group">
-          <Check class="w-4 h-4 group-hover:hidden" />
-          <HeartOff class="w-4 h-4 hidden group-hover:block" />
-          <span class="group-hover:hidden">Kedvencekben</span>
-          <span class="hidden group-hover:block">Eltávolítás</span>
-        </button>
+  <button 
+    v-else 
+    @click="handleRemoveFromFavorites"
+    @mouseenter="isHovering = true"
+    @mouseleave="isHovering = false"
+    class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
+           text-brand-700 font-bold shadow-md
+           transition-all hover:scale-[1.02]
+           flex items-center justify-center gap-2
+           disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+<Heart
+  v-if="isHovering"
+  :stroke-width="2.5" 
+  class="w-15 h-15 text-brand-700 pt-0.5 transition-all" 
+/>
+<Heart 
+  v-else
+  :stroke-width="2.5" 
+  fill="currentColor" 
+  class="w-15 h-15 text-brand-700 pt-0.5 transition-all" 
+/>
+  </button>
       </div>
     </template>
   </Dialog>
