@@ -1,4 +1,3 @@
-<!-- resources/js/Components/UI/RecipeCard.vue -->
 <script setup>
 import { Clock, Users } from 'lucide-vue-next'
 
@@ -42,7 +41,6 @@ const formatTime = (minutes) => {
   return mins > 0 ? `${hours}ó ${mins}p` : `${hours} óra`
 }
 
-// Allergén színezés
 const getAllergenColor = (allergen) => {
   const colors = {
     'Vegán': 'bg-green-500/30 border-green-400/50 text-green-100',
@@ -53,107 +51,96 @@ const getAllergenColor = (allergen) => {
     'Dió': 'bg-orange-500/30 border-orange-400/50 text-orange-100',
     'Földimogyoró': 'bg-red-500/30 border-red-400/50 text-red-100',
   }
-  
+
   return colors[allergen] || 'bg-white/20 border-white/30 text-white'
 }
 
 </script>
 
 <template>
-  <div
-    :class="[
-      'absolute inset-0 touch-none recipe-card',
-      isBackground ? 'rounded-3xl overflow-hidden' : 'cursor-grab active:cursor-grabbing'
-    ]"
-    :style="{
+  <div :class="[
+    'absolute inset-0 touch-none recipe-card',
+    isBackground ? 'rounded-3xl overflow-hidden' : 'cursor-grab active:cursor-grabbing'
+  ]" :style="{
+      top: '0',
+      left: '0',
+      right: '0',
+      bottom: '0',
+      maxHeight: '100%',
+      maxWidth: '100%',
       zIndex: isBackground ? 1 : 2,
-      transform: isBackground 
-        ? `scale(${nextCardScale})` 
+      transform: isBackground
+        ? `scale(${nextCardScale})`
         : `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${rotation}deg)`,
       opacity: isBackground ? nextCardOpacity : 1,
-      transition: !isBackground && isDragging 
-        ? 'none' 
-        : isBackground 
+      transition: !isBackground && isDragging
+        ? 'none'
+        : isBackground
           ? 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out'
           : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-    }"
-    @mousedown.prevent="!isBackground && $emit('dragstart', $event)"
+    }" @mousedown.prevent="!isBackground && $emit('dragstart', $event)"
     @touchstart.prevent="!isBackground && $emit('dragstart', $event)">
-    
-        
-        <!-- Kártya Content -->
-        <div class="relative w-full h-full rounded-3xl overflow-hidden 
+
+
+    <div class="relative w-full h-full rounded-3xl overflow-hidden 
                     bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300  border-accent-600 border-6">
-          
-          <!-- Kép (teljes magasság) -->
-          <div class="relative w-full h-full overflow-hidden">
-            <img :src="recipe.kep_url" 
-                 :alt="recipe.nev"
-                 class="w-full h-full object-cover select-none pointer-events-none"
-                 draggable="false" />
-            
-            <!-- Gradient overlay - erősebb alsó rész -->
-            <div class="absolute inset-0 bg-gradient-to-b 
+
+      <div class="relative w-full h-full overflow-hidden">
+        <img :src="recipe.kep_url" :alt="recipe.nev" class="w-full h-full object-cover select-none pointer-events-none"
+          draggable="false" />
+
+        <div class="absolute inset-0 bg-gradient-to-b 
                         from-transparent via-transparent to-slate-900/80" />
-            
-            <!-- Like/Dislike indikátor (csak a felső kártyán) -->
-            <div v-if="!isBackground && isDragging" class="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div v-if="dragOffset.x > 50" 
-                   class="transform rotate-12 border-8 border-green-500 
+
+        <div v-if="!isBackground && isDragging"
+          class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div v-if="dragOffset.x > 50" class="transform rotate-12 border-8 border-green-500 
                           rounded-3xl px-8 py-4 text-6xl font-bold text-green-500
                           shadow-2xl bg-white/10 backdrop-blur-sm"
-                   :style="{ opacity: Math.min(dragOffset.x / 100, 1) }">
-                LIKE
-              </div>
-              <div v-if="dragOffset.x < -50" 
-                   class="transform -rotate-12 border-8 border-red-500 
+            :style="{ opacity: Math.min(dragOffset.x / 100, 1) }">
+            LIKE
+          </div>
+          <div v-if="dragOffset.x < -50" class="transform -rotate-12 border-8 border-red-500 
                           rounded-3xl px-8 py-4 text-6xl font-bold text-red-500
                           shadow-2xl bg-white/10 backdrop-blur-sm"
-                   :style="{ opacity: Math.min(Math.abs(dragOffset.x) / 100, 1) }">
-                DISLIKE
-              </div>
+            :style="{ opacity: Math.min(Math.abs(dragOffset.x) / 100, 1) }">
+            DISLIKE
+          </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-6 space-y-2 sm:space-y-3">
+
+          <h2 class="text-2xl sm:text-4xl font-bold text-white leading-tight drop-shadow-lg">
+            {{ recipe.nev }}
+          </h2>
+
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md 
+                            rounded-3xl px-4 py-2 shadow-lg">
+              <Clock class="w-4 h-4 text-white" />
+              <span class="text-sm font-semibold text-white">{{ formatTime(recipe.ido) }}</span>
             </div>
-
-            <!-- Info Section - lent a képen -->
-            <div class="absolute bottom-0 left-0 right-0 p-6 space-y-3">
-              
-              <!-- Név -->
-              <h2 class="text-4xl font-bold text-white leading-tight drop-shadow-lg">
-                {{ recipe.nev }}
-              </h2>
-
-              <!-- Idő és Adag -->
-              <div class="flex items-center gap-3 flex-wrap">
-                <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md 
+            <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md 
                             rounded-3xl px-4 py-2 shadow-lg">
-                  <Clock class="w-4 h-4 text-white" />
-                  <span class="text-sm font-semibold text-white">{{ formatTime(recipe.ido) }}</span>
-                </div>
-                <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md 
-                            rounded-3xl px-4 py-2 shadow-lg">
-                  <Users class="w-4 h-4 text-white" />
-                  <span class="text-sm font-semibold text-white">{{ recipe.adag }} adag</span>
-                </div>
-              </div>
+              <Users class="w-4 h-4 text-white" />
+              <span class="text-sm font-semibold text-white">{{ recipe.adag }} adag</span>
+            </div>
+          </div>
 
-              <!-- Allergének és Diet tagek -->
-              <div v-if="recipe.allergenek && recipe.allergenek.length > 0" 
-                   class="flex items-center gap-2 flex-wrap">
-                <div v-for="allergen in recipe.allergenek" 
-                     :key="allergen"
-                     :class="[
-                       'backdrop-blur-md rounded-3xl px-3 shadow-md border flex items-center',
-                       getAllergenColor(allergen)
-                     ]"
-                     style="padding-top: 0.25rem; padding-bottom: 0.25rem;">
-                  <span class="text-xs font-semibold leading-none">{{ allergen }}</span>
-                </div>
-              </div>
-
+          <div v-if="recipe.allergenek && recipe.allergenek.length > 0"
+            class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <div v-for="allergen in recipe.allergenek" :key="allergen" :class="[
+              'backdrop-blur-md rounded-3xl px-3 shadow-md border flex items-center',
+              getAllergenColor(allergen)
+            ]" style="padding-top: 0.2rem; padding-bottom: 0.2rem;">
+              <span class="text-[10px] sm:text-xs font-semibold leading-none">{{ allergen }}</span>
             </div>
           </div>
 
         </div>
       </div>
+
+    </div>
+  </div>
 
 </template>

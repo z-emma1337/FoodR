@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kedvenc;
+use App\Models\Interakciok;
 use App\Models\Recept;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class KedvencController extends Controller
 {
@@ -17,37 +19,47 @@ class KedvencController extends Controller
     {
         $user = Auth::user();
         
-        $favorites = Kedvenc::where('felhasznalo_id', $user->id)
-            ->with(['recept.receptAlapanyagok.alapanyag.allergenek'])
+        $favorites = DB::table('recept as r')
+            ->join('interakciok as i', 'r.id', '=', 'i.recept_id')
+            ->leftJoin('recept_alapanyag as ra', 'r.id', '=', 'ra.recept_id')
+            ->leftJoin('alapanyag_allergenek as aa', 'ra.alapanyag_id', '=', 'aa.alapanyag_id')
+            ->leftJoin('allergen as al', 'aa.allergen_id', '=', 'al.id')
+            ->where('i.felhasznalo_id', $user->id)
+            ->where('i.liked', 1)
+            ->select(
+                'r.id',
+                'r.nev',
+                'r.leiras',
+                'r.ido',
+                'r.adag',
+                'r.kep_url',
+                DB::raw('GROUP_CONCAT(DISTINCT al.id) as allergen_ids'),
+                DB::raw('GROUP_CONCAT(DISTINCT al.nev) as allergen_names')
+            )
+            ->groupBy('r.id', 'r.nev', 'r.leiras', 'r.ido', 'r.adag', 'r.kep_url')
+            ->orderBy('i.updated_at', 'desc')
             ->get()
-            ->map(function ($kedvenc) {
-                $recept = $kedvenc->recept;
+            ->map(function ($recept) {
+                $allergenIds = $recept->allergen_ids ? explode(',', $recept->allergen_ids) : [];
+                $allergenNames = $recept->allergen_names ? explode(',', $recept->allergen_names) : [];
                 
-                // Ugyanaz a logika, mint a /recipes endpoint-ban
-                $osszesAllergen = $recept->receptAlapanyagok
-                    ->pluck('alapanyag.allergenek')
-                    ->flatten()
-                    ->unique('id');
+                $allergenek = [];
+                foreach ($allergenIds as $index => $id) {
+                    if ($id != 6 && $id != 7) {
+                        $allergenek[] = $allergenNames[$index];
+                    }
+                }
                 
-                $allergenek = $osszesAllergen
-                    ->whereNotIn('id', [6, 7])
-                    ->pluck('nev')
-                    ->values();
-                
-                $nemVegetarianusSzuro = $osszesAllergen->where('id', 6)->isNotEmpty();
-                $nemVeganSzuro = $osszesAllergen->where('id', 7)->isNotEmpty();
-                
-                $dietTags = [];
+                $nemVegetarianusSzuro = in_array('6', $allergenIds);
+                $nemVeganSzuro = in_array('7', $allergenIds);
                 
                 if (!$nemVegetarianusSzuro) {
-                    $dietTags[] = 'Vegetáriánus';
+                    $allergenek[] = 'Vegetáriánus';
                 }
                 
                 if (!$nemVeganSzuro && !$nemVegetarianusSzuro) {
-                    $dietTags[] = 'Vegán';
+                    $allergenek[] = 'Vegán';
                 }
-                
-                $osszesTag = array_merge($allergenek->toArray(), $dietTags);
                 
                 return [
                     'id' => $recept->id,
@@ -56,8 +68,7 @@ class KedvencController extends Controller
                     'ido' => $recept->ido,
                     'adag' => $recept->adag,
                     'kep_url' => $recept->kep_url,
-                    'allergenek' => $osszesTag,
-                    'kedvenc_id' => $kedvenc->id,
+                    'allergenek' => array_unique($allergenek),
                 ];
             });
 
@@ -67,7 +78,7 @@ class KedvencController extends Controller
     /**
      * Add a recipe to favorites.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'recept_id' => ['required', 'exists:recept,id']
@@ -75,50 +86,49 @@ class KedvencController extends Controller
 
         $user = Auth::user();
 
-        // Check if already favorited
-        $exists = Kedvenc::where('felhasznalo_id', $user->id)
+        $interaction = Interakciok::where('felhasznalo_id', $user->id)
             ->where('recept_id', $validated['recept_id'])
-            ->exists();
+            ->first();
 
-        if ($exists) {
-            return response()->json([
-                'message' => 'Ez a recept már a kedvencek között van.'
-            ], 409);
+        if ($interaction) {
+            if ($interaction->liked == 1) {
+                return back()->with('error', 'Ez a recept már a kedvencek között van.');
+            }
+            
+            $interaction->liked = 1;
+            $interaction->save();
+        } else {
+            $interaction = Interakciok::create([
+                'felhasznalo_id' => $user->id,
+                'recept_id' => $validated['recept_id'],
+                'liked' => 1,
+                'mentett' => 0,
+                'vote' => 0,
+            ]);
         }
 
-        $kedvenc = Kedvenc::create([
-            'felhasznalo_id' => $user->id,
-            'recept_id' => $validated['recept_id']
-        ]);
-
-        return response()->json([
-            'message' => 'Recept hozzáadva a kedvencekhez!',
-            'kedvenc' => $kedvenc
-        ], 201);
+        return back()->with('success', 'Recept hozzáadva a kedvencekhez!');
     }
 
     /**
      * Remove a recipe from favorites.
      */
-    public function destroy(int $receptId): JsonResponse
+    public function destroy(int $receptId)
     {
         $user = Auth::user();
 
-        $kedvenc = Kedvenc::where('felhasznalo_id', $user->id)
+        $interaction = Interakciok::where('felhasznalo_id', $user->id)
             ->where('recept_id', $receptId)
             ->first();
 
-        if (!$kedvenc) {
-            return response()->json([
-                'message' => 'Ez a recept nem található a kedvencek között.'
-            ], 404);
+        if (!$interaction || $interaction->liked != 1) {
+            return back()->with('error', 'Ez a recept nem található a kedvencek között.');
         }
 
-        $kedvenc->delete();
+        $interaction->liked = 2;
+        $interaction->save();
 
-        return response()->json([
-            'message' => 'Recept eltávolítva a kedvencekből.'
-        ]);
+        return back()->with('success', 'Recept eltávolítva a kedvencekből.');
     }
 
     /**
@@ -126,14 +136,12 @@ class KedvencController extends Controller
      */
     public function check(int $receptId): JsonResponse
     {
-        $user = Auth::user();
-
-        $isFavorite = Kedvenc::where('felhasznalo_id', $user->id)
-            ->where('recept_id', $receptId)
-            ->exists();
-
-        return response()->json([
-            'is_favorite' => $isFavorite
-        ]);
+       $user = Auth::user();
+       $isFavorite = Interakciok::where('felhasznalo_id', $user->id)
+           ->where('recept_id', $receptId)
+           ->where('liked', 1)
+           ->exists();
+       
+       return response()->json(['is_favorite' => $isFavorite]);
     }
 }
