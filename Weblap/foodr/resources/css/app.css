@@ -25,8 +25,10 @@
   --color-accent-700: #c2410c;
   --color-accent-800: #9a3412;
   --color-accent-900: #7c2d12;
-}
 
+  /* ADD ANIMATIONS HERE */
+  --animate-card-gradient: card-gradient 6s ease infinite;
+}
 
 @layer base {
   :root {
@@ -85,25 +87,12 @@ input {
 
 @layer components {
   input:-webkit-autofill {
-    /* Háttér és belső árnyék */
     -webkit-box-shadow: 0 0 0 1000px white inset;
-    /* white vagy a :root változóval: hsl(var(--input)) */
-
-    /* Szöveg színe */
     -webkit-text-fill-color: #1f2937;
-    /* slate-900 */
-
-    /* Smooth átmenet autofillkor */
     transition: background-color 5000s ease-in-out 0s, color 0.3s ease;
-
-    /* Betűtípus */
     font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-
-    /* Kerekített sarkok és border */
     border-radius: 0.5rem;
-    /* borderRadius.md */
     border: 1px solid #d1d5db;
-    /* slate-300 */
   }
 
   input:-webkit-autofill:focus {
@@ -111,7 +100,6 @@ input {
     box-shadow: 0 0 0 1000px white inset;
   }
 
-  /* Fade + Scale transition */
   .fade-scale-enter-active,
   .fade-scale-leave-active {
     transition: all 0.2s ease;
@@ -128,19 +116,25 @@ input {
     opacity: 1;
     transform: scale(1);
   }
-
 }
 
+/* ADD THE KEYFRAME DEFINITION HERE */
+@keyframes card-gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
 
 @keyframes gradientMove {
   0% {
     background-position: 0% 50%;
   }
-
   50% {
     background-position: 100% 50%;
   }
-
   100% {
     background-position: 0% 50%;
   }
@@ -154,34 +148,28 @@ input {
 .animate-gradient-slow {
   background-size: 300% 300%;
   animation: gradientMove 45s ease infinite;
-
-  
 }
+
 .text-outline-shadow {
   text-shadow:
-     1px 1px 0px black,
+    1px 1px 0px black,
     -1px 1px 0px black,
-     1px -1px 0px black,
+    1px -1px 0px black,
     -1px -1px 0px black;
 }
 
-.animate-gradient {
-  animation: gradient 18s ease infinite;
-  background-size: 400% 400%;
-}
-
-.animate-gradient-slow {
-  animation: gradient 35s ease infinite;
-  background-size: 400% 400%;
-}
-
 @keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-/* Mobile Menu Transitions */
 .menu-fade-enter-active,
 .menu-fade-leave-active {
   transition: opacity 0.3s ease;
@@ -208,7 +196,6 @@ input {
     opacity: 0;
     transform: translateY(20px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -217,27 +204,6 @@ input {
 
 .animate-fade-in {
   animation: fade-in 0.5s ease-out;
-}
-
-.menu-fade-enter-active,
-.menu-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.menu-fade-enter-from,
-.menu-fade-leave-to {
-  opacity: 0;
-}
-
-.menu-slide-enter-active,
-.menu-slide-leave-active {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.menu-slide-enter-from,
-.menu-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-20px) scale(0.95);
 }
 
 .fade-animation {
@@ -257,22 +223,6 @@ input {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out;
 }
 
 .accent-hatter {
