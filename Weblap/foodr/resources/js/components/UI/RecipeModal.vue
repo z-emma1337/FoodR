@@ -56,7 +56,7 @@ const getAllergenColor = (allergen) => {
   }"
 >
     <template #header>
-      <h3 class="text-2xl font-bold text-brand-500 text-outline-shadow">
+      <h3 class="text-2xl font-bold text-accent-200">
         {{ recipe?.nev }}
       </h3>
     </template>
@@ -71,6 +71,7 @@ const getAllergenColor = (allergen) => {
       <div class="relative space-y-6 rounded-3xl p-6
                   bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
          animate-card-gradient backdrop-blur-xl shadow-xl">
+<img :src="recipe.kep_url" alt="Recept kép" class="w-full h-64 object-cover rounded-3xl shadow-lg border-brand-600 border-6">
 
         <!-- Recipe Info -->
         <div class="flex flex-wrap gap-4 text-sm text-slate-700">

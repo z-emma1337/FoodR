@@ -163,10 +163,10 @@ const closeMobileMenu = () => {
                       animate-card-gradient backdrop-blur-xl">
 
             <div class="p-6 pb-4">
-              <h1 class="text-6xl font-bold text-center">
+              <a href="/"><h1 class="text-6xl font-bold text-center">
                 <span class="text-accent-400 text-outline-shadow">Food</span><span
                   class="text-brand-500 text-outline-shadow">R</span>
-              </h1>
+              </h1></a>
             </div>
 
             <nav class="flex-1 px-3 space-y-1 overflow-y-auto">
