@@ -53,12 +53,24 @@ const saveInteraction = async (type) => {
     })
   })
 }
+
+// Fisher-Yates shuffle algoritmus a random sorrendhez
+const shuffleArray = (array) => {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
 // Receptek betöltése
 onMounted(async () => {
   try {
     const response = await fetch('/recipes')
     const data = await response.json()
-    recipes.value = data
+    // Random sorrendbe rakjuk a recepteket
+    recipes.value = shuffleArray(data)
   } catch (error) {
     console.error('Hiba a receptek betöltésekor:', error)
   }
@@ -101,30 +113,29 @@ const handleDragMove = (e) => {
   const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
   const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY
   
-const deltaX = clientX - dragStartPos.value.x
-let deltaY = clientY - dragStartPos.value.y
+  const deltaX = clientX - dragStartPos.value.x
+  let deltaY = clientY - dragStartPos.value.y
 
-// aktuális kártya DOM elem
-const cardEl = document.querySelector('.recipe-card') // vagy adj neki refet, ha tisztább megoldást akarsz
+  // aktuális kártya DOM elem
+  const cardEl = document.querySelector('.recipe-card') // vagy adj neki refet, ha tisztább megoldást akarsz
 
-if (cardEl) {
-  const rect = cardEl.getBoundingClientRect()
-  const viewportHeight = window.innerHeight
+  if (cardEl) {
+    const rect = cardEl.getBoundingClientRect()
+    const viewportHeight = window.innerHeight
 
-  // top limit (legalább 10px-re legyen a képernyő tetejétől)
-  if (rect.top + deltaY < 10) {
-    deltaY = 75 - rect.top
+    // top limit (legalább 10px-re legyen a képernyő tetejétől)
+    if (rect.top + deltaY < 10) {
+      deltaY = 75 - rect.top
+    }
+
+    // bottom limit (legalább 10px-re legyen az aljától)
+    if (rect.bottom + deltaY > viewportHeight - 10) {
+      deltaY = (viewportHeight - 70) - rect.bottom
+    }
   }
 
-  // bottom limit (legalább 10px-re legyen az aljától)
-  if (rect.bottom + deltaY > viewportHeight - 10) {
-    deltaY = (viewportHeight - 70) - rect.bottom
-  }
-}
-
-dragOffset.value = { x: deltaX, y: deltaY }
-rotation.value = deltaX * 0.1
-
+  dragOffset.value = { x: deltaX, y: deltaY }
+  rotation.value = deltaX * 0.1
 }
 
 const handleDragEnd = () => {
@@ -288,85 +299,93 @@ const nextCard = () => {
 </script>
 
 <template>
-  <AppLayout>
-    <div class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
-
+  <div class="relative">
+    <!-- Dinamikus háttér az AppLayout mögött -->
+    <div 
+      v-if="dragOffset.x > 50"
+      class="fixed inset-0 bg-gradient-to-l from-green-500 via-green-500/50 to-transparent pointer-events-none z-0"
+    />
+    
+    <AppLayout class="relative z-10">
       <!-- Nincs több recept üzenet -->
-      <div v-if="currentIndex >= recipes.length" class="text-center space-y-4 animate-fade-in">
-        <div class="w-24 h-24 mx-auto rounded-full bg-accent-400/30 
-                    flex items-center justify-center">
-          <ChefHat class="w-12 h-12 text-accent-600" />
+      <div v-if="currentIndex >= recipes.length" class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
+        <div class="text-center space-y-4 animate-fade-in">
+          <div class="w-24 h-24 mx-auto rounded-full bg-accent-400/30 
+                      flex items-center justify-center">
+            <ChefHat class="w-12 h-12 text-accent-600" />
+          </div>
+          <h2 class="text-3xl font-bold text-accent-200">Elfogytak a receptek! 🎉</h2>
+          <p class="text-accent-300">Nézd meg a kedvenceidet, vagy gyere vissza később!</p>
         </div>
-        <h2 class="text-3xl font-bold text-accent-200">Elfogytak a receptek! 🎉</h2>
-        <p class="text-accent-300">Nézd meg a kedvenceidet, vagy gyere vissza később!</p>
       </div>
 
       <!-- Kártya és gombok konténer -->
-      <div v-else class="flex flex-col items-center gap-6 w-full max-w-md px-4">
+      <div v-else class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
+        <div class="flex flex-col items-center gap-6 w-full max-w-md px-4">
 
-        <!-- Kártya Stack -->
-        <div class="relative w-full h-[600px]">
+          <!-- Kártya Stack -->
+          <div class="relative w-full h-[600px]">
 
-          <!-- Következő kártya (háttérben) - smooth animációval jön előre -->
-          <RecipeCard 
-            v-if="nextRecipe" 
-            :recipe="nextRecipe" 
-            :is-background="true"
-            :next-card-scale="nextCardScale"
-            :next-card-opacity="nextCardOpacity" />
+            <!-- Következő kártya (háttérben) - smooth animációval jön előre -->
+            <RecipeCard 
+              v-if="nextRecipe" 
+              :recipe="nextRecipe" 
+              :is-background="true"
+              :next-card-scale="nextCardScale"
+              :next-card-opacity="nextCardOpacity" />
 
-          <!-- Aktuális kártya - csak ha shouldShowCurrentCard true -->
-          <RecipeCard
-            v-if="currentRecipe && shouldShowCurrentCard"
-            :recipe="currentRecipe"
-            :is-dragging="isDragging"
-            :drag-offset="dragOffset"
-            :rotation="rotation"
-            @dragstart="handleDragStart"
-          />
+            <!-- Aktuális kártya - csak ha shouldShowCurrentCard true -->
+            <RecipeCard
+              v-if="currentRecipe && shouldShowCurrentCard"
+              :recipe="currentRecipe"
+              :is-dragging="isDragging"
+              :drag-offset="dragOffset"
+              :rotation="rotation"
+              @dragstart="handleDragStart"
+            />
+
+          </div>
+
+          <!-- Action Buttons - KÍVÜL a kártyán -->
+          <div class="flex items-center gap-6 -translate-y-3">
+
+            <!-- Dislike Button -->
+            <button 
+              @click="swipeLeftClick" 
+              :disabled="isAnimating" 
+              class="group relative w-16 h-16 rounded-full 
+                     bg-gradient-to-br from-red-500 to-red-600
+                     shadow-lg hover:shadow-xl
+                     transform hover:scale-110 active:scale-95
+                     transition-all duration-200
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     flex items-center justify-center">
+              <div class="absolute inset-0 rounded-full bg-red-400/50 
+                          blur-xl group-hover:blur-2xl transition-all" />
+              <X class="relative w-8 h-8 text-white" />
+            </button>
+
+            <!-- Like Button -->
+            <button 
+              @click="swipeRightClick" 
+              :disabled="isAnimating" 
+              class="group relative w-20 h-20 rounded-full 
+                     bg-gradient-to-br from-green-500 to-green-600
+                     shadow-lg hover:shadow-xl
+                     transform hover:scale-110 active:scale-95
+                     transition-all duration-200
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     flex items-center justify-center">
+              <div class="absolute inset-0 rounded-full bg-green-400/50 
+                          blur-xl group-hover:blur-2xl transition-all" />
+              <Heart class="relative w-10 h-10 text-white fill-white" />
+            </button>
+
+          </div>
 
         </div>
-
-        <!-- Action Buttons - KÍVÜL a kártyán -->
-        <div class="flex items-center gap-6 -translate-y-3">
-
-          <!-- Dislike Button -->
-          <button 
-            @click="swipeLeftClick" 
-            :disabled="isAnimating" 
-            class="group relative w-16 h-16 rounded-full 
-                   bg-gradient-to-br from-red-500 to-red-600
-                   shadow-lg hover:shadow-xl
-                   transform hover:scale-110 active:scale-95
-                   transition-all duration-200
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   flex items-center justify-center">
-            <div class="absolute inset-0 rounded-full bg-red-400/50 
-                        blur-xl group-hover:blur-2xl transition-all" />
-            <X class="relative w-8 h-8 text-white" />
-          </button>
-
-          <!-- Like Button -->
-          <button 
-            @click="swipeRightClick" 
-            :disabled="isAnimating" 
-            class="group relative w-20 h-20 rounded-full 
-                   bg-gradient-to-br from-green-500 to-green-600
-                   shadow-lg hover:shadow-xl
-                   transform hover:scale-110 active:scale-95
-                   transition-all duration-200
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   flex items-center justify-center">
-            <div class="absolute inset-0 rounded-full bg-green-400/50 
-                        blur-xl group-hover:blur-2xl transition-all" />
-            <Heart class="relative w-10 h-10 text-white fill-white" />
-          </button>
-
-        </div>
-
       </div>
 
-    </div>
-  </AppLayout>
+    </AppLayout>
+  </div>
 </template>
-
