@@ -1,5 +1,5 @@
 <script setup>
-import { Head, router, usePage } from '@inertiajs/vue3'
+import { Head, router, usePage, } from '@inertiajs/vue3'
 import {
   LogOut,
   LogIn,
@@ -55,103 +55,112 @@ const closeMobileMenu = () => {
             bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800
             animate-gradient overflow-hidden
             touch-pan-y">
+    <!-- glow -->
     <div class="pointer-events-none absolute inset-0
                 bg-gradient-to-br from-accent-500/20 via-transparent to-accent-600/20
                 blur-3xl animate-gradient-slow" />
 
+    <!-- MOBILE HEADER -->
     <header class="lg:hidden fixed top-0 left-0 right-0 z-30 p-4 ">
-      <div class="flex items-center justify-between bg-accent-300/90 backdrop-blur-lg rounded-2xl px-4 py-3 shadow-xl border-accent-600 border-3">
-        <a href="/"><a href="/"><h1 class="text-2xl font-bold">
-                      <span class="text-accent-400 text-outline-shadow text-outline-shadow">Food</span><span
-                  class="text-brand-500 text-outline-shadow text-outline-shadow">R</span>        </h1></a></a>
-        <button @click="toggleMobileMenu" class="p-2 rounded-xl bg-accent-400/50 hover:bg-accent-400 border-accent-600 border-2 transition">
+      <div
+        class="flex items-center justify-between bg-accent-300/90 backdrop-blur-lg rounded-2xl px-4 py-3 shadow-xl border-accent-600 border-3">
+        <a href="/">
+          <h1 class="text-2xl font-bold">
+            <span class="text-accent-400 text-outline-shadow">Food</span><span
+              class="text-brand-500 text-outline-shadow">R</span>
+          </h1>
+        </a>
+        <button @click="toggleMobileMenu"
+          class="p-2 rounded-xl bg-accent-400/50 hover:bg-accent-400 border-accent-600 border-2 transition">
           <Menu v-if="!isMobileMenuOpen" class="w-6 h-6 text-slate-900" />
           <CloseIcon v-else class="w-6 h-6 text-slate-900" />
         </button>
       </div>
     </header>
 
+    <!-- MOBILE MENU OVERLAY -->
     <Transition name="menu-fade">
       <div v-if="isMobileMenuOpen" @click="closeMobileMenu"
         class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40">
       </div>
     </Transition>
 
-    <Transition name="menu-slide">
-      <div v-if="isMobileMenuOpen"
-        class="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto border-accent-600 border-6 rounded-4xl">
-        <div class="rounded-3xl overflow-hidden shadow-2xl">
+   <!-- MOBILE MENU PANEL -->
+<Transition name="menu-slide">
+  <div v-if="isMobileMenuOpen"
+    class="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto border-accent-600 border-6 rounded-4xl">
+    <div class="rounded-3xl overflow-hidden shadow-2xl">
 
-            <div class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-6">
+      <div class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-6 relative">
 
-              <!-- User Section -->
-             <div class="mt-auto p-4">
-              <div class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 
-                          shadow-lg p-5 backdrop-blur-sm text-center">
+<!-- Bezárás gomb -->
+        <button @click="closeMobileMenu" 
+          class="absolute top-3 right-3 w-10 h-10 rounded-full transition-all flex items-center justify-center z-10">
+<CloseIcon class="w-8 h-8 text-brand-600" :stroke-width="3" />
+        </button>
+        <!-- User Section -->
+        <div class="mt-auto p-4">
+          <div class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 
+                      shadow-lg p-5 backdrop-blur-sm text-center">
 
-                  <div v-if="user" class="space-y-4  text-center py-2">
-                    <div class="flex justify-center">
-                      <div class="w-15 h-15 rounded-full bg-accent-500/30 
-                                flex items-center justify-center shadow-md">
-                        <User class="w-8 h-8 text-slate-700" />
-                      </div>
-                    </div>
-                    <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
-                    <p class="text-base text-slate-700">{{ user.email }}</p>
-                  </div>
-                  <div v-else class="space-y-4 text-center py-2">
-                    <div class="flex justify-center">
-                      <div class="w-15 h-15 rounded-full bg-accent-500/30 
-                                flex items-center justify-center shadow-md">
-                        <User class="w-8 h-8 text-slate-700" />
-                      </div>
-                    </div>
-                    <div>
-                      <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
-                      <p class="text-base text-slate-700 mt-1">Jelentkezz be a funkciók eléréséhez</p>
-                      </div>
-                  </div>
+            <div v-if="user" class="space-y-4 text-center py-2">
+              <div class="flex justify-center">
+                <div class="w-15 h-15 rounded-full bg-accent-500/30 
+                            flex items-center justify-center shadow-md">
+                  <User class="w-8 h-8 text-slate-700" />
+                </div>
               </div>
+              <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
+              <p class="text-base text-slate-700">{{ user.email }}</p>
+            </div>
+            <div v-else class="space-y-4 text-center py-2">
+              <div class="flex justify-center">
+                <div class="w-15 h-15 rounded-full bg-accent-500/30 
+                            flex items-center justify-center shadow-md">
+                  <User class="w-8 h-8 text-slate-700" />
+                </div>
+              </div>
+              <div>
+                <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
+                <p class="text-base text-slate-700 mt-1 pb-5">Jelentkezz be a funkciók eléréséhez</p>
 
-              <nav class="space-y-2">
-                <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu" class="flex items-center px-4 py-3 rounded-xl
-                          transition hover:bg-accent-400 text-slate-900">
-                  <component :is="item.icon" class="h-5 w-5 mr-3" />
-                  {{ item.label }}
-                </a>
-
-
-                <a v-for="item in RightnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu" class="flex items-center px-4 py-3 rounded-xl
-                          transition hover:bg-accent-400 text-slate-900">
-                  <component :is="item.icon" class="h-5 w-5 mr-3" />
-                  {{ item.label }}
-                </a>
-              </nav>
-
-              <div class="mt-auto">
-                <button v-if="user" @click="logout" class="w-full py-2 rounded-lg bg-brand-700 text-accent-200
-                     hover:bg-brand-800 transition-all
-                     text-sm font-medium shadow-md flex items-center justify-center gap-2">
+                <button v-if="user" @click="logout" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
+                         hover:bg-brand-800 transition-all
+                         font-medium shadow-md flex items-center justify-center gap-2">
                   <LogOut class="w-4 h-4" />
                   Kijelentkezés
                 </button>
-
-                <button v-else @click="login" class="w-full py-2 rounded-lg bg-brand-700 text-accent-200
-                     hover:bg-brand-800 transition-all
-                     text-sm font-medium shadow-md flex items-center justify-center gap-2">
+                <button v-else @click="login" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
+                         hover:bg-brand-800 transition-all
+                         font-medium shadow-md flex items-center justify-center gap-2">
                   <LogIn class="w-4 h-4" />
                   Bejelentkezés
                 </button>
               </div>
-
             </div>
           </div>
+
+          <!-- Navigation -->
+          <nav class="space-y-2 pt-6 pb-6">
+            <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu" class="flex items-center justify-center px-4 py-3 rounded-xl
+        transition hover:bg-accent-400 text-slate-900">
+              <component :is="item.icon" class="h-5 w-5 mr-3" />
+              {{ item.label }}
+            </a>
+
+            <!-- Settings -->
+            <a v-for="item in RightnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu" class="flex items-center justify-center px-4 py-3 rounded-xl
+                      transition hover:bg-accent-400 text-slate-900">
+              <component :is="item.icon" class="h-5 w-5 mr-3" />
+              {{ item.label }}
+            </a>
+          </nav>
+
         </div>
       </div>
-    </Transition>
-
-
-
+    </div>
+  </div>
+</Transition>
     <!-- LEFT SIDEBAR (Desktop) -->
     <aside class="hidden lg:flex flex-col w-80 h-[calc(100vh-2rem)] fixed top-4 left-4 z-20">
       <div class="rounded-3xl overflow-hidden shadow-2xl h-full  border-accent-600 border-6">
@@ -159,12 +168,12 @@ const closeMobileMenu = () => {
                       bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
                       animate-card-gradient backdrop-blur-xl">
 
-            <div class="p-6 pb-4">
-              <a href="/"><h1 class="text-6xl font-bold text-center">
-                <span class="text-accent-400 text-outline-shadow">Food</span><span
-                  class="text-brand-500 text-outline-shadow">R</span>
-              </h1></a>
-            </div>
+          <div class="p-6 pb-4">
+            <h1 class="text-6xl font-bold text-center">
+              <span class="text-accent-400 text-outline-shadow">Food</span><span
+                class="text-brand-500 text-outline-shadow">R</span>
+            </h1>
+          </div>
 
           <nav class="flex-1 px-3 space-y-1 overflow-y-auto">
             <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-3xl
