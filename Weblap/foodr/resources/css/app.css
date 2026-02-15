@@ -229,3 +229,7 @@ input {
   @apply bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
          animate-card-gradient backdrop-blur-xl;
 }
+
+button{
+  cursor: pointer;
+}

@@ -123,7 +123,7 @@ const handleRemoveFromFavorites = () => {
 </script>
 
 <template>
-<Dialog v-model:visible="dialogVisible" modal :dismissableMask="true" :pt="{
+  <Dialog v-model:visible="dialogVisible" modal :dismissableMask="true" :pt="{
     root: { class: 'max-w-2xl !border-0 !shadow-none !bg-transparent' },
     header: {
       class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient rounded-t-3xl !border-0'
@@ -160,7 +160,7 @@ const handleRemoveFromFavorites = () => {
         <img :src="recipe.kep_url" alt="Recept kép"
           class="w-full h-64 object-cover rounded-3xl shadow-lg border-brand-600 border-6">
 
-<!-- Recipe Info -->
+        <!-- Recipe Info -->
         <div class="flex flex-wrap gap-4 text-sm text-slate-700">
           <div class="flex items-center gap-2">
             <Clock :size="18" class="text-brand-600" />
@@ -171,7 +171,7 @@ const handleRemoveFromFavorites = () => {
             <span>{{ recipe.adag }} adag</span>
           </div>
         </div>
-        
+
         <!-- Allergens on new line -->
         <div v-if="recipe.allergenek && recipe.allergenek.length > 0" class="mt-3">
           <div class="flex flex-wrap gap-2">
@@ -184,68 +184,63 @@ const handleRemoveFromFavorites = () => {
           </div>
         </div>
       </div>
-      </div>
+    </div>
+
+    <div>
+      <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Hozzávalók</h4>
+
+      <ul class="space-y-2">
+        <li v-for="(lepesek, index) in recipe.leiras
+          .split(/\d+\.\s*/)
+          .filter(x => x.trim().length > 1)" :key="index" class="flex items-start gap-3 text-slate-800">
+
+          <span>{{ index + 1 }}. {{ lepesek }}</span>
+        </li>
+      </ul>
+    </div>
+
+
+    <div>
+      <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Leírás</h4>
+
+      <ul class="space-y-2">
+        <li v-for="(lepesek, index) in recipe.leiras
+          .split(/\d+\.\s*/)
+          .filter(x => x.trim().length > 1)" :key="index" class="flex items-start gap-3 text-slate-800">
+
+          <span>{{ index + 1 }}. {{ lepesek }}</span>
+        </li>
+      </ul>
+    </div>
 
 
 
-      <div>
-        <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Leírás</h4>
 
-        <ul class="space-y-2">
-          <li v-for="(lepesek, index) in recipe.leiras
-            .split(/\d+\.\s*/)
-            .filter(x => x.trim().length > 1)" :key="index" class="flex items-start gap-3 text-slate-800">
+    <template #footer>
+      <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full">
 
-            <span>{{ index + 1 }}. {{ lepesek }}</span>
-          </li>
-        </ul>
-      </div>
-
-
-
-
-<template #footer>
-  <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full">
-
-    <button v-if="!isLiked" @click="handleAddToFavorites" :disabled="isCheckingLiked"     @mouseenter="isHovering = true"
-    @mouseleave="isHovering = false" class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
+        <button v-if="!isLiked" @click="handleAddToFavorites" :disabled="isCheckingLiked"
+          @mouseenter="isHovering = true" @mouseleave="isHovering = false" class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
                  text-brand-700 font-bold shadow-md
                  transition-all hover:scale-[1.02]
                  flex items-center justify-center gap-2
                  disabled:opacity-50 disabled:cursor-not-allowed">
-          <Heart
-  v-if="isHovering"
-  :stroke-width="2.5" 
-  fill="currentColor" 
-  class="w-15 h-15 text-brand-700 pt-0.5 transition-all" 
-/>
+          <Heart v-if="isHovering" :stroke-width="2.5" fill="currentColor"
+            class="w-15 h-15 text-brand-700 pt-0.5 transition-all" />
           <Heart v-else :stroke-width="2.5" class="w-15 h-15 font-bold pt-0.5" />
 
         </button>
 
-  <button 
-    v-else 
-    @click="handleRemoveFromFavorites"
-    @mouseenter="isHovering = true"
-    @mouseleave="isHovering = false"
-    class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
+        <button v-else @click="handleRemoveFromFavorites" @mouseenter="isHovering = true"
+          @mouseleave="isHovering = false" class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
            text-brand-700 font-bold shadow-md
            transition-all hover:scale-[1.02]
            flex items-center justify-center gap-2
-           disabled:opacity-50 disabled:cursor-not-allowed"
-  >
-<Heart
-  v-if="isHovering"
-  :stroke-width="2.5" 
-  class="w-15 h-15 text-brand-700 pt-0.5 transition-all" 
-/>
-<Heart 
-  v-else
-  :stroke-width="2.5" 
-  fill="currentColor" 
-  class="w-15 h-15 text-brand-700 pt-0.5 transition-all" 
-/>
-  </button>
+           disabled:opacity-50 disabled:cursor-not-allowed">
+          <Heart v-if="isHovering" :stroke-width="2.5" class="w-15 h-15 text-brand-700 pt-0.5 transition-all" />
+          <Heart v-else :stroke-width="2.5" fill="currentColor"
+            class="w-15 h-15 text-brand-700 pt-0.5 transition-all" />
+        </button>
       </div>
     </template>
   </Dialog>

@@ -12,7 +12,7 @@ import {
   Menu,
   X as CloseIcon
 } from 'lucide-vue-next'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import Avatar from 'primevue/avatar'
 
 const page = usePage()
@@ -21,14 +21,14 @@ const likedCount = computed(() => page.props.likedCount ?? 0)
 const isMobileMenuOpen = ref(false)
 
 const LeftnavItems = ref([
-  { label: 'SwipeR', url: '/', icon: Home },
-  { label: 'FavoR', url: '/kedvencek', icon: Heart },
-  { label: 'FeedR', url: '/felfedezes', icon: Search },
+  { label: 'SwipeR', url: '/', icon: Home, active: true },
+  { label: 'FavoR', url: '/kedvencek', icon: Heart, active: false },
+  { label: 'FeedR', url: '/felfedezes', icon: Search, active: false },
 ])
 
 const RightnavItems = ref([
-  { label: 'Profilom', url: '/profil', icon: User },
-  { label: 'Beállítások', url: '/beallitasok', icon: Settings },
+  { label: 'Profilom', url: '/profil', icon: User, active: false },
+  { label: 'Beállítások', url: '/beallitasok', icon: Settings, active: false },
   { label: 'Súgó', url: '/sugo', icon: HelpCircle },
 ])
 
@@ -48,6 +48,16 @@ const toggleMobileMenu = () => {
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
 }
+
+watch(() => page.url, (currentPath) => {
+  LeftnavItems.value.forEach(item => {
+    item.active = item.url === currentPath
+  })
+  RightnavItems.value.forEach(item => {
+    item.active = item.url === currentPath
+  })
+}, { immediate: true })
+
 </script>
 
 <template>
@@ -85,82 +95,85 @@ const closeMobileMenu = () => {
       </div>
     </Transition>
 
-   <!-- MOBILE MENU PANEL -->
-<Transition name="menu-slide">
-  <div v-if="isMobileMenuOpen"
-    class="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto border-accent-600 border-6 rounded-4xl">
-    <div class="rounded-3xl overflow-hidden shadow-2xl">
+    <!-- MOBILE MENU PANEL -->
+    <Transition name="menu-slide">
+      <div v-if="isMobileMenuOpen"
+        class="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto border-accent-600 border-6 rounded-4xl">
+        <div class="rounded-3xl overflow-hidden shadow-2xl">
 
-      <div class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-6 relative">
+          <div
+            class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-6 relative">
 
-<!-- Bezárás gomb -->
-        <button @click="closeMobileMenu" 
-          class="absolute top-3 right-3 w-10 h-10 rounded-full transition-all flex items-center justify-center z-10">
-<CloseIcon class="w-8 h-8 text-brand-600" :stroke-width="3" />
-        </button>
-        <!-- User Section -->
-        <div class="mt-auto p-4">
-          <div class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 
+            <!-- Bezárás gomb -->
+            <button @click="closeMobileMenu"
+              class="absolute top-3 right-3 w-10 h-10 rounded-full transition-all flex items-center justify-center z-10">
+              <CloseIcon class="w-8 h-8 text-brand-600" :stroke-width="3" />
+            </button>
+            <!-- User Section -->
+            <div class="mt-auto p-4">
+              <div class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 
                       shadow-lg p-5 backdrop-blur-sm text-center">
 
-            <div v-if="user" class="space-y-4 text-center py-2">
-              <div class="flex justify-center">
-                <div class="w-15 h-15 rounded-full bg-accent-500/30 
+                <div v-if="user" class="space-y-4 text-center py-2">
+                  <div class="flex justify-center">
+                    <div class="w-15 h-15 rounded-full bg-accent-500/30 
                             flex items-center justify-center shadow-md">
-                  <User class="w-8 h-8 text-slate-700" />
+                      <User class="w-8 h-8 text-slate-700" />
+                    </div>
+                  </div>
+                  <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
+                  <p class="text-base text-slate-700">{{ user.email }}</p>
                 </div>
-              </div>
-              <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
-              <p class="text-base text-slate-700">{{ user.email }}</p>
-            </div>
-            <div v-else class="space-y-4 text-center py-2">
-              <div class="flex justify-center">
-                <div class="w-15 h-15 rounded-full bg-accent-500/30 
+                <div v-else class="space-y-4 text-center py-2">
+                  <div class="flex justify-center">
+                    <div class="w-15 h-15 rounded-full bg-accent-500/30 
                             flex items-center justify-center shadow-md">
-                  <User class="w-8 h-8 text-slate-700" />
-                </div>
-              </div>
-              <div>
-                <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
-                <p class="text-base text-slate-700 mt-1 pb-5">Jelentkezz be a funkciók eléréséhez</p>
+                      <User class="w-8 h-8 text-slate-700" />
+                    </div>
+                  </div>
+                  <div>
+                    <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
+                    <p class="text-base text-slate-700 mt-1 pb-5">Jelentkezz be a funkciók eléréséhez</p>
 
-                <button v-if="user" @click="logout" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
+                    <button v-if="user" @click="logout" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
                          hover:bg-brand-800 transition-all
                          font-medium shadow-md flex items-center justify-center gap-2">
-                  <LogOut class="w-4 h-4" />
-                  Kijelentkezés
-                </button>
-                <button v-else @click="login" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
+                      <LogOut class="w-4 h-4" />
+                      Kijelentkezés
+                    </button>
+                    <button v-else @click="login" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
                          hover:bg-brand-800 transition-all
                          font-medium shadow-md flex items-center justify-center gap-2">
-                  <LogIn class="w-4 h-4" />
-                  Bejelentkezés
-                </button>
+                      <LogIn class="w-4 h-4" />
+                      Bejelentkezés
+                    </button>
+                  </div>
+                </div>
               </div>
+
+              <!-- Navigation -->
+              <nav class="space-y-2 pt-6 pb-6">
+                <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu"
+              :class="item.active ? 'bg-accent-500/30' : ''"
+              class="flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
+                  <component :is="item.icon" class="h-5 w-5 mr-3" />
+                  {{ item.label }}
+                </a>
+
+                <!-- Settings -->
+                <a v-for="item in RightnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu"
+              :class="item.active ? 'bg-accent-500/30' : ''"
+              class="flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
+                  <component :is="item.icon" class="h-5 w-5 mr-3" />
+                  {{ item.label }}
+                </a>
+              </nav>
+
             </div>
           </div>
-
-          <!-- Navigation -->
-          <nav class="space-y-2 pt-6 pb-6">
-            <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu" class="flex items-center justify-center px-4 py-3 rounded-xl
-        transition hover:bg-accent-400 text-slate-900">
-              <component :is="item.icon" class="h-5 w-5 mr-3" />
-              {{ item.label }}
-            </a>
-
-            <!-- Settings -->
-            <a v-for="item in RightnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu" class="flex items-center justify-center px-4 py-3 rounded-xl
-                      transition hover:bg-accent-400 text-slate-900">
-              <component :is="item.icon" class="h-5 w-5 mr-3" />
-              {{ item.label }}
-            </a>
-          </nav>
-
         </div>
       </div>
-    </div>
-  </div>
-</Transition>
+    </Transition>
     <!-- LEFT SIDEBAR (Desktop) -->
     <aside class="hidden lg:flex flex-col w-80 h-[calc(100vh-2rem)] fixed top-4 left-4 z-20">
       <div class="rounded-3xl overflow-hidden shadow-2xl h-full  border-accent-600 border-6">
@@ -176,8 +189,9 @@ const closeMobileMenu = () => {
           </div>
 
           <nav class="flex-1 px-3 space-y-1 overflow-y-auto">
-            <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-3xl
-                        transition hover:bg-accent-400 hover:scale-[1.02] text-slate-900">
+            <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu"
+              :class="item.active ? 'bg-accent-500/30' : ''"
+              class="flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
               <component :is="item.icon" class="h-5 w-5 mr-3" />
               <span class="flex flex-1 items-center justify-between gap-2">
                 <span>{{ item.label }}</span>
@@ -208,8 +222,9 @@ const closeMobileMenu = () => {
           </div>
 
           <nav class="flex-1 px-3 space-y-1">
-            <a v-for="item in RightnavItems" :key="item.label" :href="item.url" class="group flex items-center px-4 py-3 rounded-3xl
-                        transition hover:bg-accent-400 hover:scale-[1.02] text-slate-900">
+            <a v-for="item in RightnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu"
+              :class="item.active ? 'bg-accent-500/30' : ''" class="group flex items-center px-4 py-3 rounded-3xl
+                        transition hover:bg-accent-500/30 hover:scale-[1.02] text-slate-900">
               <component :is="item.icon" class="h-5 w-5 mr-3" />
               {{ item.label }}
             </a>
