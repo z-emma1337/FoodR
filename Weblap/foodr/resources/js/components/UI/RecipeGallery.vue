@@ -103,7 +103,6 @@ const handleRemoveFromFavorites = async (recipe) => {
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);
   scroll-behavior: smooth;
-}
 
 /* Animations */
 @keyframes fadeIn {
@@ -116,6 +115,7 @@ const handleRemoveFromFavorites = async (recipe) => {
     transform: translateY(0) scale(1);
   }
 }
+                border-accent-600 border-6
 
 @keyframes borderGlow {
   0%, 100% {
@@ -127,7 +127,6 @@ const handleRemoveFromFavorites = async (recipe) => {
 }
 
 /* Tablet */
-@media (min-width: 640px) {
   .recipe-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.25rem;
@@ -137,32 +136,14 @@ const handleRemoveFromFavorites = async (recipe) => {
     padding: 2rem;
   }
 }
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+          <RecipeGalleryCard v-for="recipe in recipes" :key="recipe.id" :recipe="recipe" @open-modal="openModal" />
+        </div>
 
-/* Desktop */
-@media (min-width: 1024px) {
-  .recipe-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
-  
-  .gallery-container {
-    padding: 2rem;
-    border-radius: 1.75rem;
-    height: calc(100vh - 6rem);
-  }
-}
+      </div>
+    </div>
 
-/* Mobile optimizations */
-@media (max-width: 639px) {
-  .gallery-container {
-    height: calc(100vh - 8rem);
-    padding: 1rem;
-    border-radius: 1.25rem;
-    border-width: 1.5px;
-  }
-  
-  .recipe-grid {
-    gap: 0.875rem;
-  }
-}
-</style>
+    <RecipeModal :recipe="selectedRecipe" v-model:visible="isModalVisible"
+      @addToFavorites="handleAddToFavorites" @removeFromFavorites="handleRemoveFromFavorites" />
+  </div>
+</template>

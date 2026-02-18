@@ -132,14 +132,14 @@ const handleRemoveFromFavorites = () => {
       class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient rounded-b-3xl !border-0 !p-4  !justify-center'
     },
     content: {
-      class: 'bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 !border-0'
+      class: 'bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 !border-0 foodr-scrollbar'
     },
     mask: {
       class: 'backdrop-blur-md'
     },
     pcCloseButton: {
       root: {
-        class: '!bg-transparent !text-accent-400 hover:!text-accent-300 !shadow-none !border-0 !w-12 !h-12 [&>svg]:!w-8 [&>svg]:!h-8 [&>svg]:!stroke-[2.5]'
+        class: '!bg-transparent !no-press-transition !text-accent-400 hover:!text-accent-300 !shadow-none !border-0 !w-12 !h-12 [&>svg]:!w-8 [&>svg]:!h-8 [&>svg]:!stroke-[2.5]'
       }
     }
   }">

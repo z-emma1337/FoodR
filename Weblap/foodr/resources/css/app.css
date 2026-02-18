@@ -225,11 +225,39 @@ input {
   }
 }
 
-.accent-hatter {
-  @apply bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
-         animate-card-gradient backdrop-blur-xl;
-}
-
-button{
+/* általában App.vue scoped=false stílusban vagy global css-ben */
+button {
   cursor: pointer;
 }
+
+/* app.css vagy globals.css */
+
+/* FoodR scrollbar – vékony, diszkrét, sötét témához illő */
+.foodr-scrollbar {
+  scrollbar-width: thin;                    /* Firefox */
+  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);   /* Firefox thumb + track */
+}
+
+/* WebKit / Chrome / Edge / Safari */
+.foodr-scrollbar::-webkit-scrollbar {
+  width: 6px;                               /* 2 helyett 6px jobb tapintás mobil+desktopon */
+  height: 6px;                              /* horizontális scroll esetén */
+}
+
+.foodr-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);          /* nagyon halvány track */
+  border-radius: 9999px;
+}
+
+.foodr-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.25);          /* kissé erősebb thumb */
+  border-radius: 9999px;
+  min-height: 60px;                         /* ne legyen túl rövid hosszú listáknál */
+  border: 1px solid rgba(0, 0, 0, 0.1);     /* opcionális: finom keret a thumb-on */
+}
+
+.foodr-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);           /* hoverkor kicsit hangsúlyosabb */
+}
+
+/* Ha világos témát is támogatnál később, akkor media query vagy class-al bővíthető */
