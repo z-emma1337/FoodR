@@ -64,12 +64,8 @@ class ReceptAlapanyagController extends Controller
             ->join('alapanyag as a', 'ra.alapanyag_id', '=', 'a.id')
             ->where('ra.recept_id', $recept->id)
             ->select(
-                'ra.id',                    // Pivot rekord saját ID-ja.
-                'ra.alapanyag_id',          // Alapanyag ID-ja.
                 'a.nev as alapanyag_nev',   // Alapanyag neve (a join-ból).
                 'ra.mennyiseg',             // Mennyiség (pl. "200 g").
-                'ra.created_at',            // Létrehozás dátuma.
-                'ra.updated_at'             // Utolsó módosítás dátuma.
             )
             ->orderBy('a.nev')
             ->get();

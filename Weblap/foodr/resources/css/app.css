@@ -261,3 +261,13 @@ button {
 }
 
 /* Ha világos témát is támogatnál később, akkor media query vagy class-al bővíthető */
+
+body {
+  overflow: hidden;
+}
+
+@media (min-width: 640px) { /* sm breakpoint */
+  body {
+    overflow: auto;
+  }
+}

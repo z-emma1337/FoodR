@@ -58,6 +58,8 @@ watch(() => page.url, (currentPath) => {
   })
 }, { immediate: true })
 
+
+
 </script>
 
 <template>
@@ -175,7 +177,7 @@ watch(() => page.url, (currentPath) => {
       </div>
     </Transition>
     <!-- LEFT SIDEBAR (Desktop) -->
-    <aside class="hidden lg:flex flex-col w-80 h-[calc(100vh-2rem)] fixed top-4 left-4 z-20">
+    <aside class="hidden lg:flex flex-col w-1/6 min-w-[250px]  h-[calc(100vh-2rem)] fixed top-4 left-4 z-20">
       <div class="rounded-3xl overflow-hidden shadow-2xl h-full  border-accent-600 border-6">
         <div class="h-full flex flex-col
                       bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
@@ -209,7 +211,7 @@ watch(() => page.url, (currentPath) => {
     </aside>
 
     <!-- RIGHT SIDEBAR (Desktop) -->
-    <aside class="hidden lg:flex flex-col w-80 h-[calc(100vh-2rem)] fixed top-4 right-4 z-20">
+<aside class="hidden lg:flex flex-col w-1/6 min-w-[250px] h-[calc(100vh-2rem)] fixed top-4 right-4 z-20">
       <div class="rounded-3xl overflow-hidden shadow-2xl h-full border-accent-600 border-6">
         <div class="h-full flex flex-col
                       bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
@@ -276,13 +278,13 @@ watch(() => page.url, (currentPath) => {
 
     <!-- PAGE CONTENT -->
     <main class="flex-1 flex flex-col 
-             pt-20 lg:pt-6 px-4 sm:px-6 md:px-10 pb-6
-             lg:ml-[calc(320px+1rem)] lg:mr-[calc(320px+1rem)]
+             
+             lg:ml-[calc(250px+1rem)] lg:mr-[calc(250px+1rem)]
              z-10 overflow-hidden">
-      <div class="max-w-7xl mx-auto w-full">
-        <slot />
-      </div>
-    </main>
+  <div class="max-w-7xl mx-auto w-full">
+    <slot />
+  </div>
+</main>
 
   </div>
 </template>
