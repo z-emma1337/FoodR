@@ -16,6 +16,7 @@ const loadRecipes = async () => {
   }
 }
 
+
 onMounted(() => {
   loadRecipes()
 })
@@ -25,15 +26,7 @@ const openModal = (recipe) => {
   isModalVisible.value = true
 }
 
-const handleAddToFavorites = async (recipe) => {
-  console.log('Recept hozzáadva a kedvencekhez:', recipe.nev)
-  await loadRecipes()
-}
 
-const handleRemoveFromFavorites = async (recipe) => {
-  console.log('Recept eltávolítva a kedvencekből:', recipe.nev)
-  await loadRecipes()
-}
 </script>
 
 <template>

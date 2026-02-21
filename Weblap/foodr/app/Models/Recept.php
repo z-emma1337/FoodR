@@ -26,4 +26,9 @@ class Recept extends Model
     {
         return $this->hasMany(ReceptAlapanyag::class, 'recept_id');
     }
+
+        public function interakciok()
+    {
+        return $this->hasMany(Interakciok::class, 'recept_id');
+    }
 }

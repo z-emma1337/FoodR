@@ -12,6 +12,8 @@ use App\Models\Interakciok;
 use App\Http\Controllers\InterakcioController;
 use App\Http\Controllers\KedvencController;
 
+
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
@@ -36,47 +38,59 @@ Route::get('/felfedezes', function () {
 
 Route::get('/recipes', function () {
     return \App\Models\Recept::with([
-        'receptAlapanyagok.alapanyag.allergenek'
+        'receptAlapanyagok.alapanyag.allergenek',
+        'interakciok'                    // ← N+1 query elkerülése miatt hozzáadva
     ])
-    ->get()
-    ->map(function($recept) {
-        $osszesAllergen = $recept->receptAlapanyagok
-            ->pluck('alapanyag.allergenek')
-            ->flatten()
-            ->unique('id');
-        
-        $allergenek = $osszesAllergen
-            ->whereNotIn('id', [6, 7])
-            ->pluck('nev')
-            ->values();
-        
-        $nemVegetarianusSzuro = $osszesAllergen->where('id', 6)->isNotEmpty();
-        $nemVeganSzuro = $osszesAllergen->where('id', 7)->isNotEmpty();
-        
-        $dietTags = [];
-        
-        if (!$nemVegetarianusSzuro) {
-            $dietTags[] = 'Vegetáriánus';
-        }
-        
-        if (!$nemVeganSzuro && !$nemVegetarianusSzuro) {
-            $dietTags[] = 'Vegán';
-        }
-        
-        $osszesTag = array_merge($allergenek->toArray(), $dietTags);
-        
-        return [
-            'id' => $recept->id,
-            'nev' => $recept->nev,
-            'leiras' => $recept->leiras,
-            'ido' => $recept->ido,
-            'adag' => $recept->adag,
-            'kep_url' => $recept->kep_url,
-            'allergenek' => $osszesTag
-        ];
-    });
-});
+        ->get()
+        ->map(function ($recept) {
+            $osszesAllergen = $recept->receptAlapanyagok
+                ->pluck('alapanyag.allergenek')
+                ->flatten()
+                ->unique('id');
 
+            $allergenek = $osszesAllergen
+                ->whereNotIn('id', [6, 7])
+                ->pluck('nev')
+                ->values();
+
+            $nemVegetarianus = $osszesAllergen->where('id', 6)->isNotEmpty();
+            $nemVegan = $osszesAllergen->where('id', 7)->isNotEmpty();
+
+            $dietTags = [];
+            if (!$nemVegetarianus) {
+                $dietTags[] = 'Vegetáriánus';
+            }
+            if (!$nemVegan && !$nemVegetarianus) {
+                $dietTags[] = 'Vegán';
+            }
+
+            // Hozzávalók – tiszta lista
+            $hozzavalok = $recept->receptAlapanyagok->map(fn($ra) => [
+                'nev' => $ra->alapanyag->nev,
+                'adag' => $ra->adag ?? 'ízlés szerint'
+            ]);
+
+            // 🔥 JAVÍTOTT RÉSZ – a bejelentkezett felhasználó ID-ja
+            $felhasznaloId = Auth::id() ?? 0;   // Auth::id() mindig a helyes felhasznalo_id-t adja
+    
+            $liked = $recept->interakciok
+                ->where('felhasznalo_id', $felhasznaloId)
+                ->first()
+                ->liked ?? 0;
+
+            return [
+                'id' => $recept->id,
+                'nev' => $recept->nev,
+                'leiras' => $recept->leiras,
+                'ido' => $recept->ido,
+                'adag' => $recept->adag,
+                'kep_url' => $recept->kep_url,
+                'allergenek' => array_merge($allergenek->toArray(), $dietTags),
+                'hozzavalok' => $hozzavalok,
+                'liked' => $liked
+            ];
+        });
+});
 Route::get('/check-username', function (Request $request) {
     $username = $request->query('username');
     $available = !Felhasznalo::where('nev', $username)->exists();
@@ -111,22 +125,25 @@ Route::get('/interakciok', function () {
     return \App\Models\Recept::whereIn('id', $likedReceptek)->get();
 });
 Route::middleware('auth')->group(function () {
-    
+
     Route::get('/api/kedvencek', [KedvencController::class, 'index'])
         ->name('kedvencek.index');
-    
+
     Route::post('/api/kedvencek', [KedvencController::class, 'store'])
         ->name('kedvencek.store');
-    
+
     Route::delete('/api/kedvencek/{receptId}', [KedvencController::class, 'destroy'])
         ->name('kedvencek.destroy');
-    
+
     Route::get('/api/kedvencek/check/{receptId}', [KedvencController::class, 'check'])
         ->name('kedvencek.check');
-    
+
     Route::get('/kedvencek', function () {
         return Inertia::render('Kedvencek');
     })->name('kedvencek');
+
+    Route::get('/recept-alapanyagok', [App\Http\Controllers\ReceptAlapanyagController::class, 'index']);
+
 });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

@@ -1,5 +1,5 @@
 <script setup>
-import { Clock, Users } from 'lucide-vue-next'
+import { Clock, ShoppingBasket, Users } from 'lucide-vue-next'
 
 const props = defineProps({
   recipe: {
@@ -124,6 +124,11 @@ const getAllergenColor = (allergen) => {
                             rounded-3xl px-4 py-2 shadow-lg">
               <Users class="w-4 h-4 text-white" />
               <span class="text-sm font-semibold text-white">{{ recipe.adag }} adag</span>
+            </div>
+                        <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md 
+                            rounded-3xl px-4 py-2 shadow-lg">
+              <ShoppingBasket class="w-4 h-4 text-white" />
+              <span class="text-sm font-semibold text-white">{{ recipe.hozzavalok.length }} hozzávaló</span>
             </div>
           </div>
 

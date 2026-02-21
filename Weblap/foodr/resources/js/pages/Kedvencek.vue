@@ -1,6 +1,9 @@
 <script setup>
 import AppLayout from '@/layouts/AppLayout.vue'
-import RecipeGallery from '@/components/UI/RecipeGallery.vue'
+import KedvencGallery from '@/components/UI/KedvencGallery.vue'
+import { ref, onMounted } from 'vue'
+
+
 </script>
 
 <template>
@@ -8,7 +11,7 @@ import RecipeGallery from '@/components/UI/RecipeGallery.vue'
     <div class="w-full py-4 sm:py-6">
 
       <!-- Recipe Gallery -->
-      <RecipeGallery />
+      <KedvencGallery />
       
     </div>
   </AppLayout>
