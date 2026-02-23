@@ -129,7 +129,7 @@ const submit = () => {
 
     <p class="mt-6 text-center text-sm text-slate-800 transition-all duration-300">
       Már van fiókod?
-      <Link href="/bejelentkezes"
+      <Link href="/"
         class="font-medium text-brand-600 hover:underline transition-all duration-200inline-block">
         Bejelentkezés
       </Link>

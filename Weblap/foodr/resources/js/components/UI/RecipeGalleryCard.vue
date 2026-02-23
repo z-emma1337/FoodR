@@ -129,22 +129,24 @@ const openModal = () => {
               bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
               shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
               border-accent-600 border-[3px] flex flex-col group w-full h-full">
-              
+
     <!-- Kép konténer -->
-    <div @click="openModal" class="cursor-pointer relative w-full aspect-[4/3] sm:aspect-[3/4] flex-shrink-0 overflow-hidden">
-      <img :src="recipe.kep_url" :alt="recipe.nev"
-           class="absolute inset-0 w-full h-full object-cover 
+    <div @click="openModal"
+      class="cursor-pointer relative w-full aspect-[4/3] sm:aspect-[3/4] flex-shrink-0 overflow-hidden">
+      <img :src="recipe.kep_url" :alt="recipe.nev" class="absolute inset-0 w-full h-full object-cover 
                   transition-transform duration-500 ease-out 
                   group-hover:scale-110 origin-center" />
-      <div class="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-transparent to-slate-900/70 transition-opacity duration-300 group-hover:opacity-80" />
-      
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-transparent to-slate-900/70 transition-opacity duration-300 group-hover:opacity-80" />
+
       <!-- Allergének -->
       <div v-if="recipe.allergenek?.length" class="absolute top-3 left-3 right-3 flex flex-wrap gap-1.5 z-10">
-        <span v-for="allergen in recipe.allergenek.slice(0,4)" :key="allergen"
-              :class="['text-xs font-bold px-2.5 py-1 rounded-full shadow-lg backdrop-blur-sm', getAllergenColor(allergen)]">
+        <span v-for="allergen in recipe.allergenek.slice(0, 4)" :key="allergen"
+          :class="['text-xs font-bold px-2.5 py-1 rounded-full shadow-lg backdrop-blur-sm', getAllergenColor(allergen)]">
           {{ allergen }}
         </span>
-        <span v-if="recipe.allergenek.length > 4" class="text-xs font-bold px-2.5 py-1 rounded-full shadow-lg backdrop-blur-sm bg-slate-700/90 text-white">
+        <span v-if="recipe.allergenek.length > 4"
+          class="text-xs font-bold px-2.5 py-1 rounded-full shadow-lg backdrop-blur-sm bg-slate-700/90 text-white">
           +{{ recipe.allergenek.length - 4 }}
         </span>
       </div>
@@ -178,19 +180,17 @@ const openModal = () => {
       <!-- Gombok -->
       <div class="flex gap-2 mt-auto">
         <button @click.stop="openModal"
-                class="flex-1 py-2.5 sm:py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
+          class="flex-1 py-2.5 sm:py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
           Részletek
         </button>
 
         <!-- Heart gomb -->
-        <button v-if="isLiked"
-                @click.stop="handleRemoveFromFavorites"
-                class="w-12 h-12 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
+        <button v-if="isLiked" @click.stop="handleRemoveFromFavorites"
+          class="w-12 h-12 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
           <HeartCrack class="w-7 h-7" />
         </button>
-        <button v-else
-                @click.stop="handleAddToFavorites"
-                class="w-12 h-12 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
+        <button v-else @click.stop="handleAddToFavorites"
+          class="w-12 h-12 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
           <Heart class="w-7 h-7" />
         </button>
       </div>

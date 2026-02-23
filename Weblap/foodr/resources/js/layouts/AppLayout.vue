@@ -1,5 +1,5 @@
 <script setup>
-import { Head, router, usePage, } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import {
   LogOut,
   LogIn,
@@ -10,35 +10,70 @@ import {
   Settings,
   HelpCircle,
   Menu,
-  X as CloseIcon
+  X as CloseIcon,
+  Lock,
 } from 'lucide-vue-next'
 import { ref, computed, watch } from 'vue'
-import Avatar from 'primevue/avatar'
+import BejelentkezesModal from '@/components/UI/BejelentkezesModal.vue'
+import ProfilomModal from '@/components/UI/ProfilBeallitasok/ProfilomModal.vue'
+import BeallitasokModal from '@/components/UI/ProfilBeallitasok/BeallitasokModal.vue'
+import SugoModal from '@/components/UI/ProfilBeallitasok/SugoModal.vue'
+import { useLoginModal } from '@/composables/useLoginModal'
 
 const page = usePage()
 const user = computed(() => page.props.auth?.user)
 const likedCount = computed(() => page.props.likedCount ?? 0)
 const isMobileMenuOpen = ref(false)
 
+const { loginModalOpen, openLoginModal: _openLoginModal, closeLoginModal } = useLoginModal()
+const profilomOpen = ref(false)
+const beallitasokOpen = ref(false)
+const sugoOpen = ref(false)
+
+const openLoginModal = () => {
+  _openLoginModal()
+  isMobileMenuOpen.value = false
+}
+
+const modalMap = {
+  'Profilom': { open: () => { profilomOpen.value = true }, requiresAuth: true },
+  'Beállítások': { open: () => { beallitasokOpen.value = true }, requiresAuth: true },
+  'Súgó': { open: () => { sugoOpen.value = true }, requiresAuth: true },
+}
+
 const LeftnavItems = ref([
-  { label: 'SwipeR', url: '/', icon: Home, active: true },
-  { label: 'FavoR', url: '/kedvencek', icon: Heart, active: false },
-  { label: 'FeedR', url: '/felfedezes', icon: Search, active: false },
+  { label: 'SwipeR', url: '/', icon: Home, active: true, requiresAuth: false },
+  { label: 'FavoR', url: '/kedvencek', icon: Heart, active: false, requiresAuth: true },
+  { label: 'FeedR', url: '/felfedezes', icon: Search, active: false, requiresAuth: false },
 ])
 
 const RightnavItems = ref([
   { label: 'Profilom', url: '/profil', icon: User, active: false },
   { label: 'Beállítások', url: '/beallitasok', icon: Settings, active: false },
-  { label: 'Súgó', url: '/sugo', icon: HelpCircle },
+  { label: 'Súgó', url: '/sugo', icon: HelpCircle, active: false },
 ])
+
+const handleLeftNav = (item) => {
+  closeMobileMenu()
+  if (item.requiresAuth && !user.value) {
+    openLoginModal()
+    return
+  }
+  router.visit(item.url)
+}
+
+const handleRightNav = (item) => {
+  closeMobileMenu()
+  const entry = modalMap[item.label]
+  if (entry?.requiresAuth && !user.value) {
+    openLoginModal()
+    return
+  }
+  entry?.open()
+}
 
 const logout = () => {
   router.post('/logout')
-}
-
-const login = () => {
-  router.visit('/bejelentkezes')
-  isMobileMenuOpen.value = false
 }
 
 const toggleMobileMenu = () => {
@@ -50,38 +85,37 @@ const closeMobileMenu = () => {
 }
 
 watch(() => page.url, (currentPath) => {
-  LeftnavItems.value.forEach(item => {
-    item.active = item.url === currentPath
-  })
-  RightnavItems.value.forEach(item => {
-    item.active = item.url === currentPath
-  })
+  LeftnavItems.value.forEach(item => { item.active = item.url === currentPath })
+  RightnavItems.value.forEach(item => { item.active = item.url === currentPath })
 }, { immediate: true })
-
-
-
 </script>
 
 <template>
   <div class="relative flex min-h-screen
             bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800
-            animate-gradient overflow-hidden
-            touch-pan-y">
-    <!-- glow -->
+            animate-gradient overflow-hidden touch-pan-y">
+
+    <!-- Glow -->
     <div class="pointer-events-none absolute inset-0
                 bg-gradient-to-br from-accent-500/20 via-transparent to-accent-600/20
                 blur-3xl animate-gradient-slow" />
 
+    <BejelentkezesModal :open="loginModalOpen" @close="closeLoginModal" />
+
+    <ProfilomModal :open="profilomOpen" @close="profilomOpen = false" />
+    <BeallitasokModal :open="beallitasokOpen" @close="beallitasokOpen = false" />
+    <SugoModal :open="sugoOpen" @close="sugoOpen = false" />
+
     <!-- MOBILE HEADER -->
-    <header class="lg:hidden fixed top-0 left-0 right-0 z-30 p-4 ">
+    <header class="lg:hidden fixed top-0 left-0 right-0 z-30 p-4">
       <div
         class="flex items-center justify-between bg-accent-300/90 backdrop-blur-lg rounded-2xl px-4 py-3 shadow-xl border-accent-600 border-3">
-        <a href="/">
+        <button @click="router.visit('/')">
           <h1 class="text-2xl font-bold">
             <span class="text-accent-400 text-outline-shadow">Food</span><span
               class="text-brand-500 text-outline-shadow">R</span>
           </h1>
-        </a>
+        </button>
         <button @click="toggleMobileMenu"
           class="p-2 rounded-xl bg-accent-400/50 hover:bg-accent-400 border-accent-600 border-2 transition">
           <Menu v-if="!isMobileMenuOpen" class="w-6 h-6 text-slate-900" />
@@ -93,8 +127,7 @@ watch(() => page.url, (currentPath) => {
     <!-- MOBILE MENU OVERLAY -->
     <Transition name="menu-fade">
       <div v-if="isMobileMenuOpen" @click="closeMobileMenu"
-        class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40">
-      </div>
+        class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40" />
     </Transition>
 
     <!-- MOBILE MENU PANEL -->
@@ -102,24 +135,21 @@ watch(() => page.url, (currentPath) => {
       <div v-if="isMobileMenuOpen"
         class="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto border-accent-600 border-6 rounded-4xl">
         <div class="rounded-3xl overflow-hidden shadow-2xl">
-
           <div
             class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-6 relative">
 
-            <!-- Bezárás gomb -->
             <button @click="closeMobileMenu"
               class="absolute top-3 right-3 w-10 h-10 rounded-full transition-all flex items-center justify-center z-10">
               <CloseIcon class="w-8 h-8 text-brand-600" :stroke-width="3" />
             </button>
+
             <!-- User Section -->
             <div class="mt-auto p-4">
-              <div class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 
-                      shadow-lg p-5 backdrop-blur-sm text-center">
-
+              <div
+                class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 shadow-lg p-5 backdrop-blur-sm text-center">
                 <div v-if="user" class="space-y-4 text-center py-2">
                   <div class="flex justify-center">
-                    <div class="w-15 h-15 rounded-full bg-accent-500/30 
-                            flex items-center justify-center shadow-md">
+                    <div class="w-15 h-15 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
                       <User class="w-8 h-8 text-slate-700" />
                     </div>
                   </div>
@@ -128,60 +158,55 @@ watch(() => page.url, (currentPath) => {
                 </div>
                 <div v-else class="space-y-4 text-center py-2">
                   <div class="flex justify-center">
-                    <div class="w-15 h-15 rounded-full bg-accent-500/30 
-                            flex items-center justify-center shadow-md">
+                    <div class="w-15 h-15 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
                       <User class="w-8 h-8 text-slate-700" />
                     </div>
                   </div>
-                  <div>
-                    <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
-                    <p class="text-base text-slate-700 mt-1 pb-5">Jelentkezz be a funkciók eléréséhez</p>
-
-                    <button v-if="user" @click="logout" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
-                         hover:bg-brand-800 transition-all
-                         font-medium shadow-md flex items-center justify-center gap-2">
-                      <LogOut class="w-4 h-4" />
-                      Kijelentkezés
-                    </button>
-                    <button v-else @click="login" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200 
-                         hover:bg-brand-800 transition-all
-                         font-medium shadow-md flex items-center justify-center gap-2">
-                      <LogIn class="w-4 h-4" />
-                      Bejelentkezés
-                    </button>
-                  </div>
+                  <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
+                  <p class="text-base text-slate-700 mt-1 pb-5">Jelentkezz be a funkciók eléréséhez</p>
+                  <button @click="openLoginModal" class="w-full py-3 rounded-xl bg-brand-700 text-accent-200
+                       hover:bg-brand-800 transition-all font-medium shadow-md flex items-center justify-center gap-2">
+                    <LogIn class="w-4 h-4" />
+                    Bejelentkezés
+                  </button>
                 </div>
               </div>
 
               <!-- Navigation -->
               <nav class="space-y-2 pt-6 pb-6">
-                <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu"
-              :class="item.active ? 'bg-accent-500/30' : ''"
-              class="flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
+                <button v-for="item in LeftnavItems" :key="item.label" @click="handleLeftNav(item)"
+                  :class="item.active ? 'bg-accent-500/30' : ''"
+                  class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
                   <component :is="item.icon" class="h-5 w-5 mr-3" />
                   {{ item.label }}
-                </a>
+                  <Lock v-if="item.requiresAuth && !user" class="w-3.5 h-3.5 ml-auto text-slate-500" />
+                </button>
 
-                <!-- Settings -->
-                <a v-for="item in RightnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu"
-              :class="item.active ? 'bg-accent-500/30' : ''"
-              class="flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
+                <button v-for="item in RightnavItems" :key="item.label" @click="handleRightNav(item)"
+                  :class="item.active ? 'bg-accent-500/30' : ''"
+                  class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
                   <component :is="item.icon" class="h-5 w-5 mr-3" />
                   {{ item.label }}
-                </a>
+                  <Lock v-if="!user" class="w-3.5 h-3.5 ml-auto text-slate-500" />
+                </button>
+
+                <button v-if="user" @click="logout"
+                  class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
+                  <LogOut class="h-5 w-5 mr-3" />
+                  Kijelentkezés
+                </button>
               </nav>
-
             </div>
           </div>
         </div>
       </div>
     </Transition>
+
     <!-- LEFT SIDEBAR (Desktop) -->
-    <aside class="hidden lg:flex flex-col w-1/6 min-w-[250px]  h-[calc(100vh-2rem)] fixed top-4 left-4 z-20">
-      <div class="rounded-3xl overflow-hidden shadow-2xl h-full  border-accent-600 border-6">
-        <div class="h-full flex flex-col
-                      bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
-                      animate-card-gradient backdrop-blur-xl">
+    <aside class="hidden lg:flex flex-col w-1/6 min-w-[250px] h-[calc(100vh-2rem)] fixed top-4 left-4 z-20">
+      <div class="rounded-3xl overflow-hidden shadow-2xl h-full border-accent-600 border-6">
+        <div
+          class="h-full flex flex-col bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 animate-card-gradient backdrop-blur-xl">
 
           <div class="p-6 pb-4">
             <h1 class="text-6xl font-bold text-center">
@@ -191,9 +216,9 @@ watch(() => page.url, (currentPath) => {
           </div>
 
           <nav class="flex-1 px-3 space-y-1 overflow-y-auto">
-            <a v-for="item in LeftnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu"
+            <button v-for="item in LeftnavItems" :key="item.label" @click="handleLeftNav(item)"
               :class="item.active ? 'bg-accent-500/30' : ''"
-              class="flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
+              class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
               <component :is="item.icon" class="h-5 w-5 mr-3" />
               <span class="flex flex-1 items-center justify-between gap-2">
                 <span>{{ item.label }}</span>
@@ -201,21 +226,20 @@ watch(() => page.url, (currentPath) => {
                   class="px-2 py-1 rounded-full bg-brand-600 text-accent-200 text-xs font-semibold">
                   {{ likedCount }}
                 </span>
+                <Lock v-else-if="item.requiresAuth && !user" class="w-3.5 h-3.5 text-slate-500" />
               </span>
-            </a>
+            </button>
           </nav>
 
         </div>
       </div>
-
     </aside>
 
     <!-- RIGHT SIDEBAR (Desktop) -->
-<aside class="hidden lg:flex flex-col w-1/6 min-w-[250px] h-[calc(100vh-2rem)] fixed top-4 right-4 z-20">
+    <aside class="hidden lg:flex flex-col w-1/6 min-w-[250px] h-[calc(100vh-2rem)] fixed top-4 right-4 z-20">
       <div class="rounded-3xl overflow-hidden shadow-2xl h-full border-accent-600 border-6">
-        <div class="h-full flex flex-col
-                      bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
-                      animate-card-gradient backdrop-blur-xl">
+        <div
+          class="h-full flex flex-col bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 animate-card-gradient backdrop-blur-xl">
 
           <div class="p-6 pb-4">
             <h2 class="text-3xl font-bold text-center">
@@ -224,38 +248,38 @@ watch(() => page.url, (currentPath) => {
           </div>
 
           <nav class="flex-1 px-3 space-y-1">
-            <a v-for="item in RightnavItems" :key="item.label" :href="item.url" @click="closeMobileMenu"
-              :class="item.active ? 'bg-accent-500/30' : ''" class="group flex items-center px-4 py-3 rounded-3xl
-                        transition hover:bg-accent-500/30 hover:scale-[1.02] text-slate-900">
+            <button v-for="item in RightnavItems" :key="item.label" @click="handleRightNav(item)"
+              :class="item.active ? 'bg-accent-500/30' : ''" class="w-full group flex items-center px-4 py-3 rounded-3xl
+                     transition hover:bg-accent-500/30 hover:scale-[1.02] text-slate-900">
               <component :is="item.icon" class="h-5 w-5 mr-3" />
-              {{ item.label }}
-            </a>
+              <span class="flex-1 text-left">{{ item.label }}</span>
+              <Lock v-if="!user" class="w-3.5 h-3.5 text-slate-500" />
+            </button>
           </nav>
 
           <div class="mt-auto p-4">
-            <div class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 
-                          shadow-lg p-5 backdrop-blur-sm text-center">
+            <div
+              class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 shadow-lg p-5 backdrop-blur-sm text-center">
 
-              <div v-if="user" class="space-y-4  text-center py-2">
+              <div v-if="user" class="space-y-4 text-center py-2">
                 <div class="flex justify-center">
-                  <div class="w-20 h-20 rounded-full bg-accent-500/30 
-                                flex items-center justify-center shadow-md">
+                  <div class="w-20 h-20 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
                     <User class="w-10 h-10 text-slate-700" />
                   </div>
                 </div>
                 <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
                 <p class="text-base text-slate-700">{{ user.email }}</p>
-                <button @click="logout" class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 
+                <button @click="logout" class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200
                                  hover:bg-brand-800 transition-all hover:scale-[1.02]
                                  font-medium shadow-md flex items-center justify-center gap-2">
                   <LogOut class="w-4 h-4" />
                   Kijelentkezés
                 </button>
               </div>
+
               <div v-else class="space-y-4 text-center py-2">
                 <div class="flex justify-center">
-                  <div class="w-20 h-20 rounded-full bg-accent-500/30 
-                                flex items-center justify-center shadow-md">
+                  <div class="w-20 h-20 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
                     <User class="w-10 h-10 text-slate-700" />
                   </div>
                 </div>
@@ -263,7 +287,7 @@ watch(() => page.url, (currentPath) => {
                   <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
                   <p class="text-base text-slate-700 mt-1">Jelentkezz be a funkciók eléréséhez</p>
                 </div>
-                <button @click="login" class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 
+                <button @click="openLoginModal" class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200
                                  hover:bg-brand-800 transition-all hover:scale-[1.02]
                                  font-medium shadow-md flex items-center justify-center gap-2">
                   <LogIn class="w-4 h-4" />
@@ -277,14 +301,13 @@ watch(() => page.url, (currentPath) => {
     </aside>
 
     <!-- PAGE CONTENT -->
-    <main class="flex-1 flex flex-col 
-             
+    <main class="flex-1 flex flex-col
              lg:ml-[calc(250px+1rem)] lg:mr-[calc(250px+1rem)]
              z-10 overflow-hidden">
-  <div class="max-w-7xl mx-auto w-full">
-    <slot />
-  </div>
-</main>
+      <div class="max-w-7xl mx-auto w-full">
+        <slot />
+      </div>
+    </main>
 
   </div>
 </template>

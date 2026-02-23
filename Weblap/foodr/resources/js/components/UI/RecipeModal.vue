@@ -186,50 +186,44 @@ const handleRemoveFromFavorites = () => {
       </div>
     </div>
 
-   
+
 
 
     <!-- LEÍRÁS (lépések) -->
-<div>
-  <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Leírás</h4>
-  
-  <div class="space-y-4">
-    <div 
-      v-for="(lepes, index) in recipe.leiras
-        .split(/\d+\.\s*/)
-        .filter(x => x.trim().length > 1)" 
-      :key="index" 
-      class="flex items-start gap-4 text-slate-800"
-    >
-      <!-- Számozott kör -->
-      <div class="w-7 h-7 flex-shrink-0 bg-brand-600 text-accent-200 font-semibold rounded-full flex items-center justify-center text-sm pb-0.5">
-        {{ index + 1 }}
-      </div>
-      
-      <p class="leading-relaxed">{{ lepes.trim() }}</p>
-    </div>
-  </div>
-</div>
+    <div>
+      <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Leírás</h4>
 
-<!-- HOZZÁVALÓK -->
-<div>
-  <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Hozzávalók</h4>
-  
-  <div class="space-y-3">
-    <div 
-      v-for="(hozzavalok, index) in recipe.hozzavalok" 
-      :key="index" 
-      class="flex items-start gap-3 text-slate-800"
-    >
-      <!-- Brand pötty -->
-      <div class="w-2.5 h-2.5 mt-2 bg-brand-600 rounded-full flex-shrink-0"></div>
-      
-      <span class="leading-relaxed">
-        {{ hozzavalok.nev }} <span>{{ hozzavalok.adag }}g</span>
-      </span>
+      <div class="space-y-4">
+        <div v-for="(lepes, index) in recipe.leiras
+          .split(/\d+\.\s*/)
+          .filter(x => x.trim().length > 1)" :key="index" class="flex items-start gap-4 text-slate-800">
+          <!-- Számozott kör -->
+          <div
+            class="w-7 h-7 flex-shrink-0 bg-brand-600 text-accent-200 font-semibold rounded-full flex items-center justify-center text-sm pb-0.5">
+            {{ index + 1 }}
+          </div>
+
+          <p class="leading-relaxed">{{ lepes.trim() }}</p>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+
+    <!-- HOZZÁVALÓK -->
+    <div>
+      <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Hozzávalók</h4>
+
+      <div class="space-y-3">
+        <div v-for="(hozzavalok, index) in recipe.hozzavalok" :key="index"
+          class="flex items-start gap-3 text-slate-800">
+          <!-- Brand pötty -->
+          <div class="w-2.5 h-2.5 mt-2 bg-brand-600 rounded-full flex-shrink-0"></div>
+
+          <span class="leading-relaxed">
+            {{ hozzavalok.nev }} <span>{{ hozzavalok.adag }}g</span>
+          </span>
+        </div>
+      </div>
+    </div>
 
 
     <template #footer>

@@ -33,7 +33,8 @@ const openModal = (recipe) => {
   <div class="w-full h-full flex items-center justify-center">
 
     <!-- Külső wrapper: keret + lekerekítés + levágás -->
-    <div class=" rounded-3xl overflow-hidden
+    <div
+      class=" rounded-3xl overflow-hidden
                 border-accent-600 border-6
                 bg-gradient-to-br from-brand-800 via-brand-600 to-accent-700 animate-gradient backdrop-blur-sm shadow-2xl w-full h-full mx-8">
 
@@ -49,7 +50,7 @@ const openModal = (recipe) => {
       </div>
     </div>
 
-    <RecipeModal :recipe="selectedRecipe" v-model:visible="isModalVisible"
-      @addToFavorites="handleAddToFavorites" @removeFromFavorites="handleRemoveFromFavorites" />
+    <RecipeModal :recipe="selectedRecipe" v-model:visible="isModalVisible" @addToFavorites="handleAddToFavorites"
+      @removeFromFavorites="handleRemoveFromFavorites" />
   </div>
 </template>

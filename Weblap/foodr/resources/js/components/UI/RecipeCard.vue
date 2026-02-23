@@ -62,23 +62,23 @@ const getAllergenColor = (allergen) => {
     'absolute inset-0 touch-none recipe-card',
     isBackground ? 'rounded-3xl overflow-hidden' : 'cursor-grab active:cursor-grabbing'
   ]" :style="{
-      top: '0',
-      left: '0',
-      right: '0',
-      bottom: '0',
-      maxHeight: '100%',
-      maxWidth: '100%',
-      zIndex: isBackground ? 1 : 2,
-      transform: isBackground
-        ? `scale(${nextCardScale})`
-        : `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${rotation}deg)`,
-      opacity: isBackground ? nextCardOpacity : 1,
-      transition: !isBackground && isDragging
-        ? 'none'
-        : isBackground
-          ? 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out'
-          : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-    }" @mousedown.prevent="!isBackground && $emit('dragstart', $event)"
+    top: '0',
+    left: '0',
+    right: '0',
+    bottom: '0',
+    maxHeight: '100%',
+    maxWidth: '100%',
+    zIndex: isBackground ? 1 : 2,
+    transform: isBackground
+      ? `scale(${nextCardScale})`
+      : `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${rotation}deg)`,
+    opacity: isBackground ? nextCardOpacity : 1,
+    transition: !isBackground && isDragging
+      ? 'none'
+      : isBackground
+        ? 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out'
+        : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+  }" @mousedown.prevent="!isBackground && $emit('dragstart', $event)"
     @touchstart.prevent="!isBackground && $emit('dragstart', $event)">
 
 
@@ -125,7 +125,7 @@ const getAllergenColor = (allergen) => {
               <Users class="w-4 h-4 text-white" />
               <span class="text-sm font-semibold text-white">{{ recipe.adag }} adag</span>
             </div>
-                        <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md 
+            <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md 
                             rounded-3xl px-4 py-2 shadow-lg">
               <ShoppingBasket class="w-4 h-4 text-white" />
               <span class="text-sm font-semibold text-white">{{ recipe.hozzavalok.length }} hozzávaló</span>

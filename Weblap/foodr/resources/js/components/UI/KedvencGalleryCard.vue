@@ -1,6 +1,6 @@
 <script setup>
 // RecipeGalleryCard.vue
-import { Clock, ShoppingBasket, Users,X,Heart,Trash2 } from 'lucide-vue-next'
+import { Clock, ShoppingBasket, Users, X, Heart, Trash2 } from 'lucide-vue-next'
 
 import { computed, ref, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
@@ -132,7 +132,8 @@ const openModal = () => {
            shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
            border-accent-600 border-3 flex flex-col group w-full h-full">
     <!-- Kép konténer – zoom wrapper -->
-    <div   @click="openModal" class="cursor-pointer relative w-full aspect-[4/3] sm:aspect-[3/4] flex-shrink-0 overflow-hidden">
+    <div @click="openModal"
+      class="cursor-pointer relative w-full aspect-[4/3] sm:aspect-[3/4] flex-shrink-0 overflow-hidden">
       <img :src="recipe.kep_url" :alt="recipe.nev" class=" absolute inset-0 w-full h-full object-cover 
                transition-transform duration-500 ease-out 
                group-hover:scale-110 origin-center" />
@@ -163,41 +164,37 @@ const openModal = () => {
     </div>
 
     <!-- Alsó info + gomb konténer -->
-<div class="p-3 sm:p-4 flex flex-col min-h-[140px] justify-between">
-  <!-- Idő + adag – fent -->
-  <div class="flex gap-2 text-xs sm:text-sm flex-wrap items-center justify-center mb-4">
-    <div class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
-      <Clock class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
-      <span class="text-slate-700 font-semibold">{{ formatTime(recipe.ido) }}</span>
-    </div>
-    <div class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
-      <Users class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
-      <span class="text-slate-700 font-semibold">{{ recipe.adag }} adag</span>
-    </div>
-    <div class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
-      <ShoppingBasket class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
-      <span class="text-slate-700 font-semibold">{{ recipe.hozzavalok.length }} hozzávaló</span>
-    </div>
-  </div>
+    <div class="p-3 sm:p-4 flex flex-col min-h-[140px] justify-between">
+      <!-- Idő + adag – fent -->
+      <div class="flex gap-2 text-xs sm:text-sm flex-wrap items-center justify-center mb-4">
+        <div class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
+          <Clock class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
+          <span class="text-slate-700 font-semibold">{{ formatTime(recipe.ido) }}</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
+          <Users class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
+          <span class="text-slate-700 font-semibold">{{ recipe.adag }} adag</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
+          <ShoppingBasket class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
+          <span class="text-slate-700 font-semibold">{{ recipe.hozzavalok.length }} hozzávaló</span>
+        </div>
+      </div>
 
-  <!-- Gombok – alul egy sorban -->
-  <div class="flex gap-2 mt-auto">
-    <!-- Részletek gomb -->
-    <button
-      @click.stop="openModal"
-      class="flex-1 py-2.5 sm:py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2"
-    >
-      Részletek
-    </button>
+      <!-- Gombok – alul egy sorban -->
+      <div class="flex gap-2 mt-auto">
+        <!-- Részletek gomb -->
+        <button @click.stop="openModal"
+          class="flex-1 py-2.5 sm:py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
+          Részletek
+        </button>
 
-    <!-- Törlés gomb -->
-<button
-  @click.stop="handleRemoveFromFavorites"
-  class="delete-btn w-13 h-13 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center"
->
-  <Trash2 class="trash-icon w-7 h-7" />
-</button>
-  </div>
-</div>
+        <!-- Törlés gomb -->
+        <button @click.stop="handleRemoveFromFavorites"
+          class="delete-btn w-13 h-13 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
+          <Trash2 class="trash-icon w-7 h-7" />
+        </button>
+      </div>
+    </div>
   </div>
 </template>
