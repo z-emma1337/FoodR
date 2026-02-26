@@ -11,7 +11,6 @@ import {
   HelpCircle,
   Menu,
   X as CloseIcon,
-  Lock,
 } from 'lucide-vue-next'
 import { ref, computed, watch } from 'vue'
 import BejelentkezesModal from '@/components/UI/BejelentkezesModal.vue'
@@ -179,7 +178,6 @@ watch(() => page.url, (currentPath) => {
                   class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
                   <component :is="item.icon" class="h-5 w-5 mr-3" />
                   {{ item.label }}
-                  <Lock v-if="item.requiresAuth && !user" class="w-3.5 h-3.5 ml-auto text-slate-500" />
                 </button>
 
                 <button v-for="item in RightnavItems" :key="item.label" @click="handleRightNav(item)"
@@ -187,7 +185,6 @@ watch(() => page.url, (currentPath) => {
                   class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
                   <component :is="item.icon" class="h-5 w-5 mr-3" />
                   {{ item.label }}
-                  <Lock v-if="!user" class="w-3.5 h-3.5 ml-auto text-slate-500" />
                 </button>
 
                 <button v-if="user" @click="logout"
@@ -226,7 +223,6 @@ watch(() => page.url, (currentPath) => {
                   class="px-2 py-1 rounded-full bg-brand-600 text-accent-200 text-xs font-semibold">
                   {{ likedCount }}
                 </span>
-                <Lock v-else-if="item.requiresAuth && !user" class="w-3.5 h-3.5 text-slate-500" />
               </span>
             </button>
           </nav>
@@ -253,7 +249,6 @@ watch(() => page.url, (currentPath) => {
                      transition hover:bg-accent-500/30 hover:scale-[1.02] text-slate-900">
               <component :is="item.icon" class="h-5 w-5 mr-3" />
               <span class="flex-1 text-left">{{ item.label }}</span>
-              <Lock v-if="!user" class="w-3.5 h-3.5 text-slate-500" />
             </button>
           </nav>
 
