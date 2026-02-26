@@ -33,23 +33,12 @@ watch(() => props.visible, async (newVal) => {
 
 // Ellenőrizzük, hogy kedvenc-e
 const checkIfLiked = async () => {
-  if (!props.recipe) return
+  if (props.recipe.liked ==1) {
+    isLiked.value = true
 
-  isCheckingLiked.value = true
-  try {
-    const response = await fetch(`/api/kedvencek/check/${props.recipe.id}`, {
-      headers: { 'Accept': 'application/json' },
-      credentials: 'include'
-    })
-    if (response.ok) {
-      const data = await response.json()
-      isLiked.value = data.is_favorite || false
-    }
-  } catch (error) {
-    console.error('Hiba a kedvenc ellenőrzésekor:', error)
+  }
+  else {
     isLiked.value = false
-  } finally {
-    isCheckingLiked.value = false
   }
 }
 
@@ -84,7 +73,7 @@ const handleAddToFavorites = () => {
     return
   }
 
-  router.post('/api/kedvencek', { recept_id: props.recipe.id }, {
+  router.post('/interakcio/like', { recept_id: props.recipe.id }, {
     preserveScroll: true,
     preserveState: true,
     onSuccess: () => {
@@ -99,24 +88,30 @@ const handleAddToFavorites = () => {
   })
 }
 
-// Kedvencek eltávolítása
-const handleRemoveFromFavorites = () => {
+const handleRemoveFromFavorites = async () => {
   if (!props.recipe) return
 
-  router.delete(`/api/kedvencek/${props.recipe.id}`, {
+  if (!page.props.auth?.user) {
+    router.visit('/bejelentkezes')
+    return
+  }
+
+  router.post('/interakcio/unlike', { recept_id: props.recipe.id }, {
     preserveScroll: true,
     preserveState: true,
     onSuccess: () => {
       isLiked.value = false
-      emit('removeFromFavorites', props.recipe)
-      // showSuccessMessage('Eltávolítva a kedvencekből')
+      emit('removed', props.recipe.id)
+      // showSuccessMessage('Eltávolítva a kedvencek közül! ❤️') ha van helper
     },
     onError: (errors) => {
       console.error('Hiba:', errors)
-      alert('Hiba történt!')
+      alert(errors.recept_id ? errors.recept_id : 'Ez a recept már a kedvenceid között van!')
     }
   })
 }
+
+
 
 // Modal nyitás
 const openModal = () => {

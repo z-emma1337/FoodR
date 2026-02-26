@@ -54,7 +54,7 @@ const handleRemoveFromFavorites = async (recipe) => {
 
                 <div class="grid xs:grid-cols-2  sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
                     <KedvencGalleryCard v-for="recipe in recipes.filter(r => r.liked === 1)" :key="recipe.id"
-                        :recipe="recipe" @open-modal="openModal" />
+                        :recipe="recipe" @open-modal="openModal"  @removed="recipes = recipes.filter(r => r.id !== $event)"/>
                 </div>
 
             </div>

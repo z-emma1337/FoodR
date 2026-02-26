@@ -36,10 +36,25 @@ Route::get('/felfedezes', function () {
     return Inertia::render('Felfedezes');
 })->name('felfedezes');
 
-Route::get('/recipes', function () {
+Route::match(['get', 'post'], '/recipes', function () {
+
+
+    if (request()->isMethod('post')) {
+        $recipeId = request()->input('recipe_id');
+
+        if ($recipeId && Auth::check()) {
+            \App\Models\Recept::findOrFail($recipeId)
+                ->interakciok()
+                ->where('felhasznalo_id', Auth::id())
+                ->update(['liked' => 0]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
     return \App\Models\Recept::with([
         'receptAlapanyagok.alapanyag.allergenek',
-        'interakciok'                    // ← N+1 query elkerülése miatt hozzáadva
+        'interakciok'
     ])
         ->get()
         ->map(function ($recept) {
@@ -57,22 +72,16 @@ Route::get('/recipes', function () {
             $nemVegan = $osszesAllergen->where('id', 7)->isNotEmpty();
 
             $dietTags = [];
-            if (!$nemVegetarianus) {
-                $dietTags[] = 'Vegetáriánus';
-            }
-            if (!$nemVegan && !$nemVegetarianus) {
-                $dietTags[] = 'Vegán';
-            }
+            if (!$nemVegetarianus) $dietTags[] = 'Vegetáriánus';
+            if (!$nemVegan && !$nemVegetarianus) $dietTags[] = 'Vegán';
 
-            // Hozzávalók – tiszta lista
             $hozzavalok = $recept->receptAlapanyagok->map(fn($ra) => [
                 'nev' => $ra->alapanyag->nev,
                 'adag' => $ra->adag ?? 'ízlés szerint'
             ]);
 
-            // 🔥 JAVÍTOTT RÉSZ – a bejelentkezett felhasználó ID-ja
-            $felhasznaloId = Auth::id() ?? 0;   // Auth::id() mindig a helyes felhasznalo_id-t adja
-    
+            $felhasznaloId = Auth::id() ?? 0;
+
             $liked = $recept->interakciok
                 ->where('felhasznalo_id', $felhasznaloId)
                 ->first()
@@ -91,6 +100,7 @@ Route::get('/recipes', function () {
             ];
         });
 });
+
 Route::get('/check-username', function (Request $request) {
     $username = $request->query('username');
     $available = !Felhasznalo::where('nev', $username)->exists();
@@ -112,6 +122,7 @@ Route::post('/logout', function () {
 
 Route::post('/interakcio/like', [InterakcioController::class, 'likeRecept'])->middleware('auth');
 Route::post('/interakcio/dislike', [InterakcioController::class, 'dislikeRecept'])->middleware('auth');
+Route::post('/interakcio/unlike', [InterakcioController::class, 'unlikeRecept'])->middleware('auth');
 
 
 
@@ -125,18 +136,6 @@ Route::get('/interakciok', function () {
     return \App\Models\Recept::whereIn('id', $likedReceptek)->get();
 });
 Route::middleware('auth')->group(function () {
-
-    Route::get('/api/kedvencek', [KedvencController::class, 'index'])
-        ->name('kedvencek.index');
-
-    Route::post('/api/kedvencek', [KedvencController::class, 'store'])
-        ->name('kedvencek.store');
-
-    Route::delete('/api/kedvencek/{receptId}', [KedvencController::class, 'destroy'])
-        ->name('kedvencek.destroy');
-
-    Route::get('/api/kedvencek/check/{receptId}', [KedvencController::class, 'check'])
-        ->name('kedvencek.check');
 
     Route::get('/kedvencek', function () {
         return Inertia::render('Kedvencek');

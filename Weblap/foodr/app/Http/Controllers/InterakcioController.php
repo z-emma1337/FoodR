@@ -76,6 +76,30 @@ class InterakcioController extends Controller
 
     }
 
+    public function UnlikeRecept(Request $request)
+    {
+        // Validáljuk a bejövő adatot
+        $request->validate([
+            'recept_id' => 'required|exists:recept,id'
+        ]);
+
+        $felhasznaloId = Auth::id();
+
+        $interakcio = Interakciok::updateOrCreate(
+            [
+                'felhasznalo_id' => $felhasznaloId,
+                'recept_id' => $request->recept_id
+            ],
+            [
+                'liked' => 0, // 0 = UNLIKE
+                'mentett' => 0,
+                'vote' => 0
+            ]
+        );
+
+    }
+
+
     /**
      * Interakció lekérdezése (opcionális)
      * 

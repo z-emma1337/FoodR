@@ -23,6 +23,7 @@ const { openLoginModal } = useLoginModal()
 const currentRecipe = computed(() => recipes.value[currentIndex.value])
 const nextRecipe = computed(() => recipes.value[currentIndex.value + 1])
 
+
 const saveInteraction = (type) => {
   if (!currentRecipe.value) return Promise.resolve()
 
@@ -164,7 +165,7 @@ onMounted(async () => {
   try {
     const response = await fetch('/recipes')
     const data = await response.json()
-    recipes.value = shuffleArray(data)
+recipes.value = shuffleArray(data).filter(r => r.liked === 0)
   } catch (error) {
     console.error('Hiba a receptek betöltésekor:', error)
   }
@@ -259,6 +260,7 @@ const nextCard = () => {
           <p class="text-accent-300">Nézd meg a kedvenceidet, vagy gyere vissza később!</p>
         </div>
       </div>
+
 
       <!-- Kártya és gombok -->
       <div v-else class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
