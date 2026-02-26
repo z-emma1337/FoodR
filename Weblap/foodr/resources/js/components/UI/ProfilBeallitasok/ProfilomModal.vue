@@ -15,7 +15,7 @@ const likedCount = computed(() => page.props.likedCount ?? 0)
     <Transition name="modal-fade">
         <div v-if="open" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
             @click.self="emit('close')">
-            <div class="relative w-full max-w-lg rounded-3xl shadow-2xl border-accent-600 border-6 overflow-hidden">
+            <div class="relative w-full max-w-lg rounded-3xl shadow-2xl border-accent-600 border-6 overflow-hidden foodr-scrollbar">
                 <div class="bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 flex flex-col max-h-[85vh]">
 
                     <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
