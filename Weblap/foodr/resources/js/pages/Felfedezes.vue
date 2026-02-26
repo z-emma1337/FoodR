@@ -7,6 +7,7 @@ import RecipeGallery from '@/components/UI/RecipeGallery.vue'
   <AppLayout>
     <div class="w-full py-4 sm:py-6">
 
+
       <!-- Recipe Gallery -->
       <RecipeGallery />
       

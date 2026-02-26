@@ -8,11 +8,10 @@ const props = defineProps({
   recipe: Object,
   visible: Boolean
 })
-const isHovering = ref(false);
 
 const emit = defineEmits(['update:visible', 'addToFavorites', 'removeFromFavorites'])
 
-const isLiked = ref(false)
+const isLiked = ref(props.recipe?.liked ?? false)
 const isCheckingLiked = ref(false)
 const page = usePage()
 
@@ -21,11 +20,11 @@ const dialogVisible = computed({
   set: (value) => emit('update:visible', value)
 })
 
-watch(() => props.visible, async (newVal) => {
-  if (newVal && props.recipe) {
-    await checkIfLiked()
+watch(() => props.recipe, (newRecipe) => {
+  if (newRecipe) {
+    isLiked.value = newRecipe.liked ?? false
   }
-})
+}, { immediate: true })
 
 const checkIfLiked = async () => {
   if (!props.recipe) return
@@ -70,6 +69,9 @@ const getAllergenColor = (allergen) => {
   }
   return colors[allergen] || 'bg-slate-500 text-white'
 }
+
+
+
 const handleAddToFavorites = () => {
   if (!props.recipe) return
 
@@ -78,52 +80,50 @@ const handleAddToFavorites = () => {
     return
   }
 
-  router.post('/api/kedvencek', {
-    recept_id: props.recipe.id
-  }, {
+  router.post('/interakcio/like', { recept_id: props.recipe.id }, {
     preserveScroll: true,
     preserveState: true,
     onSuccess: () => {
-      console.log('Recept hozzáadva a kedvencekhez!')
       isLiked.value = true
       emit('addToFavorites', props.recipe)
-      showSuccessMessage('Hozzáadva a kedvencekhez! ❤️')
+      // showSuccessMessage('Hozzáadva a kedvencekhez! ❤️') ha van helper
     },
     onError: (errors) => {
       console.error('Hiba:', errors)
-      if (errors.recept_id) {
-        alert(errors.recept_id)
-      } else {
-        alert('Ez a recept már a kedvenceid között van!')
-      }
+      alert(errors.recept_id ? errors.recept_id : 'Ez a recept már a kedvenceid között van!')
     }
   })
 }
 
-const handleRemoveFromFavorites = () => {
+const handleRemoveFromFavorites = async () => {
   if (!props.recipe) return
 
-  router.delete(`/api/kedvencek/${props.recipe.id}`, {
+  if (!page.props.auth?.user) {
+    router.visit('/bejelentkezes')
+    return
+  }
+
+  router.post('/interakcio/unlike', { recept_id: props.recipe.id }, {
     preserveScroll: true,
     preserveState: true,
     onSuccess: () => {
-      console.log('Recept eltávolítva a kedvencekből')
       isLiked.value = false
-      emit('removeFromFavorites', props.recipe)
-      showSuccessMessage('Eltávolítva a kedvencekből')
+      emit('removed', props.recipe.id)
+      // showSuccessMessage('Eltávolítva a kedvencek közül! ❤️') ha van helper
     },
     onError: (errors) => {
       console.error('Hiba:', errors)
-      alert('Hiba történt!')
+      alert(errors.recept_id ? errors.recept_id : 'Ez a recept már a kedvenceid között van!')
     }
   })
 }
+
 
 
 </script>
 
 <template>
-  <Dialog v-model:visible="dialogVisible" modal :dismissableMask="true" :pt="{
+  <Dialog v-model:visible="dialogVisible" modal :dismissableMask="true" :pt=" {
     root: { class: 'max-w-2xl !border-0 !shadow-none !bg-transparent' },
     header: {
       class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient rounded-t-3xl !border-0'
@@ -142,7 +142,8 @@ const handleRemoveFromFavorites = () => {
         class: '!bg-transparent !no-press-transition !text-accent-400 hover:!text-accent-300 !shadow-none !border-0 !w-12 !h-12 [&>svg]:!w-8 [&>svg]:!h-8 [&>svg]:!stroke-[2.5]'
       }
     }
-  }">
+    
+  }" :draggable="false">
     <template #header>
       <h3 class="text-2xl font-bold text-accent-200">
         {{ recipe?.nev }}
@@ -229,27 +230,22 @@ const handleRemoveFromFavorites = () => {
     <template #footer>
       <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full">
 
-        <button v-if="!isLiked" @click="handleAddToFavorites" :disabled="isCheckingLiked"
-          @mouseenter="isHovering = true" @mouseleave="isHovering = false" class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
+        <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked"
+          class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
                  text-brand-700 font-bold shadow-md
                  transition-all hover:scale-[1.02]
                  flex items-center justify-center gap-2
                  disabled:opacity-50 disabled:cursor-not-allowed">
-          <Heart v-if="isHovering" :stroke-width="2.5" fill="currentColor"
-            class="w-15 h-15 text-brand-700 pt-0.5 transition-all" />
-          <Heart v-else :stroke-width="2.5" class="w-15 h-15 font-bold pt-0.5" />
-
+          <Heart :stroke-width="2.5"  class="w-15 h-15 text-brand-700 pt-0.5 transition-all" />
         </button>
 
-        <button v-else @click="handleRemoveFromFavorites" @mouseenter="isHovering = true"
-          @mouseleave="isHovering = false" class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
+        <button v-else @click="handleRemoveFromFavorites"
+          class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
            text-brand-700 font-bold shadow-md
            transition-all hover:scale-[1.02]
            flex items-center justify-center gap-2
            disabled:opacity-50 disabled:cursor-not-allowed">
-          <Heart v-if="isHovering" :stroke-width="2.5" class="w-15 h-15 text-brand-700 pt-0.5 transition-all" />
-          <Heart v-else :stroke-width="2.5" fill="currentColor"
-            class="w-15 h-15 text-brand-700 pt-0.5 transition-all" />
+          <HeartCrack :stroke-width="2.5" class="w-15 h-15 text-brand-700 pt-0.5 transition-all" />
         </button>
       </div>
     </template>

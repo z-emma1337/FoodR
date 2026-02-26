@@ -7,7 +7,6 @@
   --color-brand-100: #f5d2d3;
   --color-brand-200: #ebb3b5;
   --color-brand-300: #e39597;
-  --color-brand-400: #da7678;
   --color-brand-500: #b21f24;
   --color-brand-600: #901a1d;
   --color-brand-700: #6e1417;
@@ -86,19 +85,7 @@ input {
 }
 
 @layer components {
-  input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px white inset;
-    -webkit-text-fill-color: #1f2937;
-    transition: background-color 5000s ease-in-out 0s, color 0.3s ease;
-    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    border-radius: 0.5rem;
-    border: 1px solid #d1d5db;
-  }
 
-  input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #1f2937;
-    box-shadow: 0 0 0 1000px white inset;
-  }
 
   .fade-scale-enter-active,
   .fade-scale-leave-active {

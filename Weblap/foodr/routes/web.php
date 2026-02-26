@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Allergen;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -54,7 +55,7 @@ Route::match(['get', 'post'], '/recipes', function () {
 
     return \App\Models\Recept::with([
         'receptAlapanyagok.alapanyag.allergenek',
-        'interakciok'
+        'interakciok',
     ])
         ->get()
         ->map(function ($recept) {
@@ -96,7 +97,7 @@ Route::match(['get', 'post'], '/recipes', function () {
                 'kep_url' => $recept->kep_url,
                 'allergenek' => array_merge($allergenek->toArray(), $dietTags),
                 'hozzavalok' => $hozzavalok,
-                'liked' => $liked
+                'liked' => $liked,
             ];
         });
 });
@@ -142,7 +143,8 @@ Route::middleware('auth')->group(function () {
     })->name('kedvencek');
 
     Route::get('/recept-alapanyagok', [App\Http\Controllers\ReceptAlapanyagController::class, 'index']);
-
+    Route::get('/allergenek', [App\Http\Controllers\AllergenController::class, 'index']);
 });
+
 
 require __DIR__ . '/settings.php';
