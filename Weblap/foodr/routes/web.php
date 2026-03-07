@@ -9,7 +9,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\InterakcioController;
-
+use App\Mail\WelcomeUser;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 
 Route::get('/', function () {
@@ -142,6 +144,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/recept-alapanyagok', [App\Http\Controllers\ReceptAlapanyagController::class, 'index']);
     Route::get('/allergenek', [App\Http\Controllers\AllergenController::class, 'index']);
 });
+
+Route::get('/email/verify', function () {
+    return Inertia::render('VerifyEmail');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/felfedezes');
+})->middleware(['signed'])->name('verification.verify');
+
+
 
 
 require __DIR__ . '/settings.php';

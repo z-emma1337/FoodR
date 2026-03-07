@@ -3,18 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\Notifiable;
 
-class Felhasznalo extends Authenticatable
+class Felhasznalo extends Authenticatable implements MustVerifyEmail
 {
+    use Notifiable;
+
     protected $table = 'felhasznalo';
 
-protected $fillable = [
-    'nev',
-    'email',
-    'jelszo',
-    'allergen_id',
-];
-
+    protected $fillable = [
+        'nev',
+        'email',
+        'jelszo',
+        'allergen_id',
+    ];
 
     protected $hidden = [
         'jelszo',
@@ -23,5 +26,10 @@ protected $fillable = [
     public function getAuthPassword()
     {
         return $this->jelszo;
+    }
+
+    public function sendEmailVerificationNotification() 
+    {
+        $this->notify(new \App\Notifications\VerifyEmailNotification);
     }
 }
