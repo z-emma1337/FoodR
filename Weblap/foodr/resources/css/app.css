@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 
 @theme inline {
-  /* BRAND – meglévő */
   --color-brand-50: #fbeaea;
   --color-brand-100: #f5d2d3;
   --color-brand-200: #ebb3b5;
@@ -13,7 +12,6 @@
   --color-brand-800: #4c0f11;
   --color-brand-900: #2a0a0a;
 
-  /* ACCENT – AMBER / ORANGE */
   --color-accent-50: #fff7ed;
   --color-accent-100: #ffedd5;
   --color-accent-200: #fed7aa;
@@ -25,7 +23,6 @@
   --color-accent-800: #9a3412;
   --color-accent-900: #7c2d12;
 
-  /* ADD ANIMATIONS HERE */
   --animate-card-gradient: card-gradient 6s ease infinite;
 }
 
@@ -105,7 +102,6 @@ input {
   }
 }
 
-/* ADD THE KEYFRAME DEFINITION HERE */
 @keyframes card-gradient {
   0%, 100% {
     background-position: 0% 50%;
@@ -212,48 +208,42 @@ input {
   }
 }
 
-/* általában App.vue scoped=false stílusban vagy global css-ben */
 button {
   cursor: pointer;
 }
 
-/* app.css vagy globals.css */
-
-/* FoodR scrollbar – vékony, diszkrét, sötét témához illő */
 .foodr-scrollbar {
-  scrollbar-width: thin;                    /* Firefox */
-  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);   /* Firefox thumb + track */
+  scrollbar-width: thin;                   
+  scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);   
 }
 
-/* WebKit / Chrome / Edge / Safari */
+
 .foodr-scrollbar::-webkit-scrollbar {
-  width: 6px;                               /* 2 helyett 6px jobb tapintás mobil+desktopon */
-  height: 6px;                              /* horizontális scroll esetén */
+  width: 6px;                               
+  height: 6px;                              
 }
 
 .foodr-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);          /* nagyon halvány track */
+  background: rgba(0, 0, 0, 0.05);          
   border-radius: 9999px;
 }
 
 .foodr-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.25);          /* kissé erősebb thumb */
+  background: rgba(0, 0, 0, 0.25);          
   border-radius: 9999px;
-  min-height: 60px;                         /* ne legyen túl rövid hosszú listáknál */
-  border: 1px solid rgba(0, 0, 0, 0.1);     /* opcionális: finom keret a thumb-on */
+  min-height: 60px;                         
+  border: 1px solid rgba(0, 0, 0, 0.1);     
 }
 
 .foodr-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.4);           /* hoverkor kicsit hangsúlyosabb */
+  background: rgba(0, 0, 0, 0.4);          
 }
-
-/* Ha világos témát is támogatnál később, akkor media query vagy class-al bővíthető */
 
 body {
   overflow: hidden;
 }
 
-@media (min-width: 640px) { /* sm breakpoint */
+@media (min-width: 640px) {
   body {
     overflow: auto;
   }

@@ -43,7 +43,7 @@ const checkIfLiked = async () => {
       isLiked.value = data.is_favorite || false
     }
   } catch (error) {
-    console.error('Hiba a kedvenc ellenőrzésekor:', error)
+    console.error(error)
     isLiked.value = false
   } finally {
     isCheckingLiked.value = false
@@ -62,7 +62,7 @@ const getAllergenColor = (allergen) => {
     'Vegán': 'bg-green-500 text-white',
     'Vegetáriánus': 'bg-lime-500 text-white',
     'Glutén': 'bg-amber-500 text-white',
-    'Tojás': 'bg-yellow-500 text-slate-800',
+    'Tojás': 'bg-yellow-500 text-white',
     'Tej': 'bg-blue-500 text-white',
     'Dió': 'bg-orange-500 text-white',
     'Földimogyoró': 'bg-red-500 text-white',
@@ -86,11 +86,9 @@ const handleAddToFavorites = () => {
     onSuccess: () => {
       isLiked.value = true
       emit('addToFavorites', props.recipe)
-      // showSuccessMessage('Hozzáadva a kedvencekhez! ❤️') ha van helper
     },
     onError: (errors) => {
-      console.error('Hiba:', errors)
-      alert(errors.recept_id ? errors.recept_id : 'Ez a recept már a kedvenceid között van!')
+      console.error(errors)
     }
   })
 }
@@ -109,11 +107,9 @@ const handleRemoveFromFavorites = async () => {
     onSuccess: () => {
       isLiked.value = false
       emit('removed', props.recipe.id)
-      // showSuccessMessage('Eltávolítva a kedvencek közül! ❤️') ha van helper
     },
     onError: (errors) => {
-      console.error('Hiba:', errors)
-      alert(errors.recept_id ? errors.recept_id : 'Ez a recept már a kedvenceid között van!')
+      console.error(errors)
     }
   })
 }
@@ -154,14 +150,12 @@ const handleRemoveFromFavorites = async () => {
 
 
 
-      <!-- Fő háttér (sidebar stílus) -->
       <div class="relative space-y-6 rounded-3xl p-6
                   bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
          animate-card-gradient backdrop-blur-xl shadow-xl">
         <img :src="recipe.kep_url" alt="Recept kép"
           class="w-full h-64 object-cover rounded-3xl shadow-lg border-brand-600 border-6">
 
-        <!-- Recipe Info -->
         <div class="flex flex-wrap gap-4 text-sm text-slate-700">
           <div class="flex items-center gap-2">
             <Clock :size="18" class="text-brand-600" />
@@ -173,7 +167,6 @@ const handleRemoveFromFavorites = async () => {
           </div>
         </div>
 
-        <!-- Allergens on new line -->
         <div v-if="recipe.allergenek && recipe.allergenek.length > 0" class="mt-3">
           <div class="flex flex-wrap gap-2">
             <span v-for="allergen in recipe.allergenek" :key="allergen" :class="[
@@ -190,7 +183,6 @@ const handleRemoveFromFavorites = async () => {
 
 
 
-    <!-- LEÍRÁS (lépések) -->
     <div>
       <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Leírás</h4>
 
@@ -198,7 +190,6 @@ const handleRemoveFromFavorites = async () => {
         <div v-for="(lepes, index) in recipe.leiras
           .split(/\d+\.\s*/)
           .filter(x => x.trim().length > 1)" :key="index" class="flex items-start gap-4 text-slate-800">
-          <!-- Számozott kör -->
           <div
             class="w-7 h-7 flex-shrink-0 bg-brand-600 text-accent-200 font-semibold rounded-full flex items-center justify-center text-sm pb-0.5">
             {{ index + 1 }}
@@ -209,14 +200,12 @@ const handleRemoveFromFavorites = async () => {
       </div>
     </div>
 
-    <!-- HOZZÁVALÓK -->
     <div>
       <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Hozzávalók</h4>
 
       <div class="space-y-3">
         <div v-for="(hozzavalok, index) in recipe.hozzavalok" :key="index"
           class="flex items-start gap-3 text-slate-800">
-          <!-- Brand pötty -->
           <div class="w-2.5 h-2.5 mt-2 bg-brand-600 rounded-full flex-shrink-0"></div>
 
           <span class="leading-relaxed">

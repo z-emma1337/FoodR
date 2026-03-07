@@ -1,5 +1,4 @@
 <script setup>
-// RecipeGalleryCard.vue
 import { Clock, Users, ShoppingBasket, Trash2 } from 'lucide-vue-next'
 import { router, usePage } from '@inertiajs/vue3'
 
@@ -40,7 +39,7 @@ const handleRemoveFromFavorites = async () => {
       preserveScroll: true,
       preserveState: true,
       onSuccess: () => {
-        emit('removed', props.recipe.id)  // ← értesítjük a szülőt
+        emit('removed', props.recipe.id)
         resolve()
       },
       onError: (errors) => {
@@ -61,7 +60,7 @@ const openModal = () => {
            shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
            border-accent-600 border-3 flex flex-col group w-full h-full">
 
-    <!-- Kép konténer -->
+
     <div @click="openModal"
       class="cursor-pointer relative w-full aspect-[4/3] sm:aspect-[3/4] flex-shrink-0 overflow-hidden">
       <img :src="recipe.kep_url" :alt="recipe.nev"
@@ -70,7 +69,7 @@ const openModal = () => {
       <div
         class="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-transparent to-slate-900/70 transition-opacity duration-300 group-hover:opacity-80" />
 
-      <!-- Allergének -->
+
       <div v-if="recipe.allergenek && recipe.allergenek.length > 0"
         class="absolute top-3 left-3 right-3 flex flex-wrap gap-1.5 z-10">
         <span v-for="allergen in recipe.allergenek.slice(0, 4)" :key="allergen" :class="[
@@ -85,7 +84,7 @@ const openModal = () => {
         </span>
       </div>
 
-      <!-- Név -->
+
       <div class="absolute bottom-0 left-0 right-0 p-3 z-10">
         <h3 class="text-base sm:text-lg font-bold text-white drop-shadow-lg line-clamp-2">
           {{ recipe.nev }}
@@ -93,7 +92,7 @@ const openModal = () => {
       </div>
     </div>
 
-    <!-- Info + gombok -->
+
     <div class="p-3 sm:p-4 flex flex-col min-h-[140px] justify-between">
       <div class="flex gap-2 text-xs sm:text-sm flex-wrap items-center justify-center mb-4">
         <div class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
@@ -111,13 +110,13 @@ const openModal = () => {
       </div>
 
       <div class="flex gap-2 mt-auto">
-        <!-- Részletek -->
+
         <button @click.stop="openModal"
           class="flex-1 py-2.5 sm:py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
           Részletek
         </button>
 
-        <!-- Törlés (csak kedvencek oldalon van ez a kártya) -->
+
         <button @click.stop="handleRemoveFromFavorites"
           class="delete-btn w-13 h-13 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center hover:bg-red-600">
           <Trash2 class="trash-icon w-7 h-7" />

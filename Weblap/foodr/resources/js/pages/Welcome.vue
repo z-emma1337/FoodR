@@ -57,7 +57,6 @@ const requireAuth = (type, completeFn) => {
   return true
 }
 
-// ── Shared card-exit animation ────────────────────────────────
 const exitCard = async (direction) => {
   dragOffset.value = { x: direction === 'right' ? 1000 : -1000, y: 0 }
   rotation.value = direction === 'right' ? 30 : -30
@@ -84,7 +83,6 @@ const animateSwipe = async (direction) => {
   }
 }
 
-// ── Drag swipe (fast exit) ────────────────────────────────────
 const swipeLeft = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
@@ -115,7 +113,6 @@ const swipeRight = async () => {
   await exitCard('right')
 }
 
-// ── Button swipe (smooth animation) ──────────────────────────
 const swipeLeftClick = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
@@ -250,19 +247,17 @@ const nextCard = () => {
     />
 
     <AppLayout class="relative z-10">
-      <!-- Nincs több recept -->
       <div v-if="currentIndex >= recipes.length" class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
         <div class="text-center space-y-4 animate-fade-in">
           <div class="w-24 h-24 mx-auto rounded-full bg-accent-400/30 flex items-center justify-center">
             <ChefHat class="w-12 h-12 text-accent-600" />
           </div>
-          <h2 class="text-3xl font-bold text-accent-200">Elfogytak a receptek! 🎉</h2>
+          <h2 class="text-3xl font-bold text-accent-200">🎉 Elfogytak a receptek! 🎉</h2>
           <p class="text-accent-300">Nézd meg a kedvenceidet, vagy gyere vissza később!</p>
         </div>
       </div>
 
 
-      <!-- Kártya és gombok -->
       <div v-else class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
         <div class="flex flex-col items-center gap-6 w-full max-w-md px-4">
 
@@ -284,7 +279,6 @@ const nextCard = () => {
             />
           </div>
 
-          <!-- Action Buttons -->
           <div class="flex items-center gap-6 -translate-y-3">
             <button
               @click="swipeLeftClick"

@@ -12,9 +12,6 @@ use Inertia\Inertia;
 
 class KedvencController extends Controller
 {
-    /**
-     * Get all favorites for the authenticated user.
-     */
     public function index(): JsonResponse
     {
         $user = Auth::user();
@@ -75,9 +72,7 @@ class KedvencController extends Controller
         return response()->json($favorites);
     }
 
-    /**
-     * Add a recipe to favorites.
-     */
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -110,9 +105,6 @@ class KedvencController extends Controller
         return back()->with('success', 'Recept hozzáadva a kedvencekhez!');
     }
 
-    /**
-     * Remove a recipe from favorites.
-     */
     public function destroy(int $receptId)
     {
         $user = Auth::user();
@@ -131,9 +123,6 @@ class KedvencController extends Controller
         return back()->with('success', 'Recept eltávolítva a kedvencekből.');
     }
 
-    /**
-     * Check if a recipe is favorited by the user.
-     */
     public function check(int $receptId): JsonResponse
     {
        $user = Auth::user();

@@ -14,17 +14,11 @@ class Kedvenc extends Model
         'recept_id'
     ];
 
-    /**
-     * Get the user that owns the favorite.
-     */
     public function felhasznalo(): BelongsTo
     {
         return $this->belongsTo(Felhasznalo::class, 'felhasznalo_id');
     }
 
-    /**
-     * Get the recipe that is favorited.
-     */
     public function recept(): BelongsTo
     {
         return $this->belongsTo(Recept::class, 'recept_id');

@@ -2,7 +2,7 @@
 import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import RecipeModal from './RecipeModal.vue'
 import KedvencGalleryCard from './KedvencGalleryCard.vue'
-import { X, Filter } from 'lucide-vue-next'
+import { X, Filter, HeartCrack } from 'lucide-vue-next'
 
 const recipes = ref([])
 const selectedRecipe = ref(null)
@@ -12,33 +12,33 @@ const allergenek = ref([])
 const selectedAllergens = ref([])
 
 const loadRecipes = async () => {
-    try {
-        const res = await fetch('/recipes')
-        recipes.value = await res.json()
-    } catch (err) {
-        console.error('Hiba a receptek betöltésekor:', err)
-    }
+  try {
+    const res = await fetch('/recipes')
+    recipes.value = await res.json()
+  } catch (err) {
+    console.error('Hiba a receptek betöltésekor:', err)
+  }
 }
 
 
 onMounted(() => {
-    loadRecipes()
-    loadAllergens()
+  loadRecipes()
+  loadAllergens()
 })
 
 const openModal = (recipe) => {
-    selectedRecipe.value = recipe
-    isModalVisible.value = true
+  selectedRecipe.value = recipe
+  isModalVisible.value = true
 }
 
 const handleAddToFavorites = async (recipe) => {
-    console.log('Recept hozzáadva a kedvencekhez:', recipe.nev)
-    await loadRecipes()
+  console.log('Recept hozzáadva a kedvencekhez:', recipe.nev)
+  await loadRecipes()
 }
 
 const handleRemoveFromFavorites = async (recipe) => {
-    console.log('Recept eltávolítva a kedvencekből:', recipe.nev)
-    await loadRecipes()
+  console.log('Recept eltávolítva a kedvencekből:', recipe.nev)
+  await loadRecipes()
 }
 
 const loadAllergens = async () => {
@@ -57,6 +57,8 @@ const searchedRecipes = computed(() => {
     return recipes.value
   }
   for (const recipe of recipes.value) {
+    if(recipe.liked==1){
+
 
 
     if (recipe.nev.toLowerCase().includes(input) && !result.includes(recipe)) {
@@ -71,7 +73,7 @@ const searchedRecipes = computed(() => {
     if (recipe.allergenek.some(allergen => allergen.toLowerCase().includes(input)) && !result.includes(recipe)) {
       result.push(recipe)
     }
-
+    }
   }
 
 
@@ -81,20 +83,23 @@ const searchedRecipes = computed(() => {
 const filteredRecipes = computed(() => {
   const result = []
   for (const recipe of recipes.value) {
-    
-    // ha a recept tartalmaz olyan allergént, ami nincs bejelölve → skip
-    if (recipe.allergenek.some(a => !selectedAllergens.value.includes(a))) {
-      continue
-    }
 
-    if (recipe.hozzavalok.length > inputHozzavalok.value) {
-      continue
-    }
-    if (recipe.ido > inputIdo.value) {
-      continue
-    }
+    if (recipe.liked == 1) {
 
-    result.push(recipe)
+
+      if (recipe.allergenek.some(a => !selectedAllergens.value.includes(a))) {
+        continue
+      }
+
+      if (recipe.hozzavalok.length > inputHozzavalok.value) {
+        continue
+      }
+      if (recipe.ido > inputIdo.value) {
+        continue
+      }
+
+      result.push(recipe)
+    }
   }
   return result
 })
@@ -119,12 +124,9 @@ watch(allergenek, (ujLista) => {
 })
 
 const recipesToShow = computed(() => {
-  // ha keresés van → keresési találatok
   if (searchInput.value.trim() !== '') {
     return searchedRecipes.value
   }
-
-  // különben → szűrt találatok
   return filteredRecipes.value
 })
 
@@ -140,11 +142,12 @@ const dropdownMenuRef = ref(null)
 
 onMounted(() => {
   const handleClickOutside = (event) => {
+    console.log(recipesToShow.value)
     if (isDropdownOpen.value &&
-        dropdownMenuRef.value &&
-        filterButtonRef.value &&
-        !dropdownMenuRef.value.contains(event.target) &&
-        !filterButtonRef.value.contains(event.target)) {
+      dropdownMenuRef.value &&
+      filterButtonRef.value &&
+      !dropdownMenuRef.value.contains(event.target) &&
+      !filterButtonRef.value.contains(event.target)) {
       isDropdownOpen.value = false
     }
   }
@@ -158,27 +161,37 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="w-full h-full flex items-center justify-center">
+  <div class="w-full h-full flex items-center justify-center">
 
-        <!-- Külső wrapper: keret + lekerekítés + levágás -->
-        <div
-            class=" rounded-3xl overflow-hidden
+    <!-- Külső keret -->
+    <div
+      class=" rounded-3xl overflow-hidden
                 border-accent-600 border-6
                 bg-gradient-to-br from-brand-800 via-brand-600 to-accent-700 animate-gradient backdrop-blur-sm shadow-2xl w-full h-full mx-8">
 
-            <!-- Belső scroll konténer -->
-            <div class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] overflow-y-auto scroll-smooth
+      <!-- Belsőkonténer -->
+      <div class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] overflow-y-auto scroll-smooth
                   p-3
                   foodr-scrollbar">
 
-                   <div class="w-full mb-3 relative sticky top-0 z-50 drop-shadow-[0_0_50px_theme(colors.brand.800)]">
-          <!-- Search input -->
+        <div v-if="recipesToShow.length == 0"
+          class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
+          <div class="text-center space-y-4 animate-fade-in">
+            <div class="w-24 h-24 mx-auto rounded-full bg-accent-400/30 flex items-center justify-center">
+              <HeartCrack class="w-12 h-12 text-accent-600" />
+            </div>
+            <h2 class="text-3xl font-bold text-accent-200">💔 Nincs még kedvenc recepted 💔</h2>
+            <p class="text-accent-300">Likeolj recepteket a SwipeR-ben és a FeedR-ben!</p>
+          </div>
+        </div>
+
+        <div v-else class="w-full mb-3 relative sticky top-0 z-50 drop-shadow-[0_0_50px_theme(colors.brand.800)]">
           <input v-model="searchInput" class="w-full bg-accent-200 text-brand-700 placeholder:text-brand-700 text-sm
            border-4 border-accent-600 rounded-3xl py-2 pl-12 pr-12
            focus:outline-none focus:ring-2 focus:ring-accent-400
            focus:border-transparent transition-all shadow-md" placeholder="Receptek keresése..." />
 
-          <!-- Filter button (left side) -->
+
           <button ref="filterButtonRef" @click="toggleDropdown" class="absolute left-3 top-1/2 -translate-y-1/2
          bg-accent-200 rounded-full p-1.5
          text-brand-700 hover:text-brand-800 transition-all transform
@@ -224,7 +237,7 @@ onMounted(() => {
             </div>
           </transition>
 
-          <!-- Clear button (right side) -->
+
           <button v-if="searchInput" @click="searchInput = ''" class="absolute right-3 top-1/2 -translate-y-1/2
            text-brand-700 hover:text-brand-800 transition-colors">
             <X class="w-5 h-5" stroke-width="3" />
@@ -232,17 +245,17 @@ onMounted(() => {
         </div>
 
 
-                <div class="grid xs:grid-cols-2  sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
-                    <KedvencGalleryCard v-for="recipe in recipesToShow.filter(r => r.liked === 1)" :key="recipe.id"
-                        :recipe="recipe" @open-modal="openModal"  @removed="recipes = recipes.filter(r => r.id !== $event)"/>
-                </div>
-
-            </div>
+        <div class="grid xs:grid-cols-2  sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
+          <KedvencGalleryCard v-for="recipe in recipesToShow.filter(r => r.liked === 1)" :key="recipe.id"
+            :recipe="recipe" @open-modal="openModal" @removed="recipes = recipes.filter(r => r.id !== $event)" />
         </div>
 
-        <RecipeModal :recipe="selectedRecipe" v-model:visible="isModalVisible" @addToFavorites="handleAddToFavorites"
-            @removeFromFavorites="handleRemoveFromFavorites" />
+      </div>
     </div>
+
+    <RecipeModal :recipe="selectedRecipe" v-model:visible="isModalVisible" @addToFavorites="handleAddToFavorites"
+      @removeFromFavorites="handleRemoveFromFavorites" />
+  </div>
 </template>
 <style scoped>
 .dropdown-enter-active,

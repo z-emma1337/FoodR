@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Allergen;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -9,9 +8,7 @@ use App\Models\Felhasznalo;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Models\Interakciok;
 use App\Http\Controllers\InterakcioController;
-use App\Http\Controllers\KedvencController;
 
 
 

@@ -16,7 +16,7 @@ class RegisterController extends Controller
             'nev' => ['required', 'min:3'],
             'email' => ['required', 'email', 'unique:felhasznalo,email'],
             'jelszo' => ['required', Password::min(8), 'confirmed'],
-            'allergen_id' => ['nullable', 'integer'], // opcionális
+            'allergen_id' => ['nullable', 'integer'],
         ]);
 
         Felhasznalo::create([

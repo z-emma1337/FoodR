@@ -1,4 +1,3 @@
-<!-- resources/js/Components/ValidationItem.vue -->
 <script setup>
 import { Check } from 'lucide-vue-next'
 

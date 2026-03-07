@@ -1,4 +1,3 @@
-<!-- resources/js/components/form/FormButton.vue -->
 <script setup>
 defineProps({
     disabled: Boolean,

@@ -9,8 +9,6 @@ import { ref, onMounted } from 'vue'
 <template>
   <AppLayout>
     <div class="w-full py-4 sm:py-6">
-
-      <!-- Recipe Gallery -->
       <KedvencGallery />
       
     </div>
