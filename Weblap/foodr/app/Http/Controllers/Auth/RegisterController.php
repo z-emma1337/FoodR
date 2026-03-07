@@ -19,16 +19,16 @@ class RegisterController extends Controller
             'allergen_id' => ['nullable', 'integer'],
         ]);
 
-        Felhasznalo::create([
+        $user = Felhasznalo::create([
             'nev' => $validated['nev'],
             'email' => $validated['email'],
             'jelszo' => Hash::make($validated['jelszo']),
             'allergen_id' => $validated['allergen_id']
-
         ]);
 
+        $user->sendEmailVerificationNotification();
 
-
-        return redirect()->route('bejelentkezes');
+        return redirect()->route('bejelentkezes')
+            ->with('message', 'Check your email to verify your account.');
     }
 }

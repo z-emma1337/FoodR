@@ -17,26 +17,35 @@ class LoginController extends Controller
             'authInput' => ['required'],
             'jelszo' => ['required']
         ]);
+    
         $fieldType = filter_var($credentials['authInput'], FILTER_VALIDATE_EMAIL) ? 'email' : 'nev';
         $fieldType = strtolower($fieldType);
-        
+    
         if ($fieldType == 'nev') {
-        $credentials['authInput'] = Felhasznalo::when($fieldType=='nev', function($query) use ($credentials) { 
-            $query->whereRaw('LOWER(nev) = ?', [strtolower($credentials['authInput'])]);
-        })->first();
+            $user = Felhasznalo::whereRaw('LOWER(nev) = ?', [strtolower($credentials['authInput'])])->first();
+            if (!$user) {
+                return back()->withErrors(['authInput' => 'Hibás email/felhasználónév vagy jelszó.']);
+            }
+            $credentials['authInput'] = $user->nev;
         }
-        $credentials['authInput'] = $credentials['authInput']->nev;
-
-        if (
-            Auth::attempt([
-                $fieldType => ($credentials['authInput']),
-                'password' => $credentials['jelszo']
-            ])
-        ) {
+    
+        if (Auth::attempt([
+            $fieldType => $credentials['authInput'],
+            'password' => $credentials['jelszo']
+        ])) {
+            $user = Auth::user();
+    
+            if (!$user->hasVerifiedEmail()) {
+                Auth::logout();
+                return back()->withErrors([
+                    'authInput' => 'Kérjük, erősítsd meg az e-mail címedet a bejelentkezés előtt.'
+                ]);
+            }
+    
             $request->session()->regenerate();
             return redirect()->intended('');
         }
-
+    
         return back()->withErrors([
             'authInput' => 'Hibás email/felhasználónév vagy jelszó.',
         ]);
