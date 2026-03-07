@@ -165,14 +165,10 @@ onMounted(() => {
 
     <!-- Külső keret -->
     <div
-      class=" rounded-3xl overflow-hidden
-                border-accent-600 border-6
-                bg-gradient-to-br from-brand-800 via-brand-600 to-accent-700 animate-gradient backdrop-blur-sm shadow-2xl w-full h-full mx-8">
+      class="rounded-3xl overflow-hidden border-4 border-accent-600 bg-gradient-to-br from-brand-800 via-brand-600 to-accent-700 animate-gradient backdrop-blur-sm shadow-2xl w-full h-full mx-12">
 
-      <!-- Belsőkonténer -->
-      <div class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] overflow-y-auto scroll-smooth
-                  p-3
-                  foodr-scrollbar">
+      <!-- Belső konténer -->
+      <div class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] overflow-y-auto scroll-smooth p-3 foodr-scrollbar ">
 
         <div v-if="recipesToShow.length == 0"
           class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">

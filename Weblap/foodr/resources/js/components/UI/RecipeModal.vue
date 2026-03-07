@@ -6,10 +6,11 @@ import { router, usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
   recipe: Object,
-  visible: Boolean
+  visible: Boolean,
+  open: { type: Boolean, required: true }
 })
 
-const emit = defineEmits(['update:visible', 'addToFavorites', 'removeFromFavorites'])
+const emit = defineEmits(['addToFavorites', 'removeFromFavorites', 'close'])
 
 const isLiked = ref(props.recipe?.liked ?? false)
 const isCheckingLiked = ref(false)
@@ -119,124 +120,135 @@ const handleRemoveFromFavorites = async () => {
 </script>
 
 <template>
-  <Dialog v-model:visible="dialogVisible" modal :dismissableMask="true" :pt=" {
-    root: { class: 'max-w-2xl !border-0 !shadow-none !bg-transparent' },
-    header: {
-      class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient rounded-t-3xl !border-0'
-    },
-    footer: {
-      class: 'bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient rounded-b-3xl !border-0 !p-4  !justify-center'
-    },
-    content: {
-      class: 'bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 !border-0 foodr-scrollbar'
-    },
-    mask: {
-      class: 'backdrop-blur-md'
-    },
-    pcCloseButton: {
-      root: {
-        class: '!bg-transparent !no-press-transition !text-accent-400 hover:!text-accent-300 !shadow-none !border-0 !w-12 !h-12 [&>svg]:!w-8 [&>svg]:!h-8 [&>svg]:!stroke-[2.5]'
-      }
-    }
-    
-  }" :draggable="false">
-    <template #header>
-      <h3 class="text-2xl font-bold text-accent-200">
-        {{ recipe?.nev }}
-      </h3>
-    </template>
+  <Transition name="modal-fade">
+    <div v-if="props.open"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      @click.self="emit('close')">
+      <div
+        class="relative w-full max-w-lg rounded-3xl shadow-2xl border-accent-600 border-6 overflow-hidden foodr-scrollbar">
+        <div class="bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 flex flex-col max-h-[85vh]">
 
-    <div v-if="recipe" class="space-y-6">
-
-
-
-      <div class="relative space-y-6 rounded-3xl p-6
-                  bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
-         animate-card-gradient backdrop-blur-xl shadow-xl">
-        <img :src="recipe.kep_url" alt="Recept kép"
-          class="w-full h-64 object-cover rounded-3xl shadow-lg border-brand-600 border-6">
-
-        <div class="flex flex-wrap gap-4 text-sm text-slate-700">
-          <div class="flex items-center gap-2">
-            <Clock :size="18" class="text-brand-600" />
-            <span>{{ formatTime(recipe.ido) }}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <Users :size="18" class="w-5 h-5 text-brand-700" />
-            <span>{{ recipe.adag }} adag</span>
-          </div>
-        </div>
-
-        <div v-if="recipe.allergenek && recipe.allergenek.length > 0" class="mt-3">
-          <div class="flex flex-wrap gap-2">
-            <span v-for="allergen in recipe.allergenek" :key="allergen" :class="[
-              'px-4 py-2 rounded-2xl font-semibold text-sm shadow-md',
-              getAllergenColor(allergen)
-            ]">
-              {{ allergen }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-
-
-    <div>
-      <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Leírás</h4>
-
-      <div class="space-y-4">
-        <div v-for="(lepes, index) in recipe.leiras
-          .split(/\d+\.\s*/)
-          .filter(x => x.trim().length > 1)" :key="index" class="flex items-start gap-4 text-slate-800">
-          <div
-            class="w-7 h-7 flex-shrink-0 bg-brand-600 text-accent-200 font-semibold rounded-full flex items-center justify-center text-sm pb-0.5">
-            {{ index + 1 }}
+          <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
+            <h2 class="text-2xl font-bold text-slate-900">
+              {{ recipe.nev }}
+            </h2>
+            <button @click="emit('close')"
+              class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200">
+              <CloseIcon class="w-10 h-10 text-brand-600" :stroke-width="3" />
+            </button>
           </div>
 
-          <p class="leading-relaxed">{{ lepes.trim() }}</p>
-        </div>
-      </div>
-    </div>
+          <div class="overflow-y-auto px-8 pb-8 space-y-6">
 
-    <div>
-      <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Hozzávalók</h4>
-
-      <div class="space-y-3">
-        <div v-for="(hozzavalok, index) in recipe.hozzavalok" :key="index"
-          class="flex items-start gap-3 text-slate-800">
-          <div class="w-2.5 h-2.5 mt-2 bg-brand-600 rounded-full flex-shrink-0"></div>
-
-          <span class="leading-relaxed">
-            {{ hozzavalok.nev }} <span>{{ hozzavalok.adag }}g</span>
-          </span>
-        </div>
-      </div>
-    </div>
+            <div class="flex flex-col items-center gap-4 mb-2">
+              <img :src="recipe.kep_url" alt="Recept kép"
+                class="w-full h-64 object-cover rounded-3xl shadow-lg border-accent-600 border-6">
+            </div>
 
 
-    <template #footer>
-      <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full">
+            <div class="flex flex-wrap gap-4 text-sm text-slate-700 mb-0">
+              <div class="flex items-center gap-2">
+                <Clock :size="18" class="text-brand-600" />
+                <span>{{ formatTime(recipe.ido) }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <Users :size="18" class="w-5 h-5 text-brand-700" />
 
-        <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked"
-          class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
-                 text-brand-700 font-bold shadow-md
-                 transition-all hover:scale-[1.02]
+
+                <div class="relative flex items-center w-20 rounded-base">
+                  <button type="button" id="adagle" @click="adagLe()"
+                    class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
+                    -
+                  </button>
+                  <input type="text" id="quantity-input" data-input-counter aria-describedby="helper-text-explanation"
+                    class="border-x-0 h-10 placeholder:text-heading text-center w-full bg-neutral-secondary-medium border-default-medium py-2.5 placeholder:text-body"
+                    placeholder="999" required />
+                  <button type="button" id="adagfel" @click="adagFel()"
+                    class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
+                    +
+                  </button>
+                </div>
+
+
+
+              </div>
+            </div>
+
+
+
+            <div v-if="recipe.allergenek && recipe.allergenek.length > 0">
+              <div class="flex flex-wrap gap-2 mt-1">
+                <span v-for="allergen in recipe.allergenek" :key="allergen" :class="[
+                  'px-4 py-2 rounded-3xl font-semibold text-sm shadow-md',
+                  getAllergenColor(allergen)
+                ]">
+                  {{ allergen }}
+                </span>
+              </div>
+            </div>
+
+
+            <div>
+              <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Leírás</h4>
+
+              <div class="space-y-6">
+                <div v-for="(lepes, index) in recipe.leiras
+                  .split(/\d+\.\s*/)
+                  .filter(x => x.trim().length > 1)" :key="index" class="flex items-center gap-2 text-slate-800">
+                  <div
+                    class="w-7 h-7 flex-shrink-0 bg-brand-600 text-accent-200 font-semibold rounded-full flex items-center justify-center text-sm">
+                    {{ index + 1 }}
+                  </div>
+
+                  <p class="leading-relaxed">{{ lepes.trim() }}</p>
+                </div>
+              </div>
+            </div>
+
+
+            <div>
+              <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Hozzávalók</h4>
+
+              <div class="space-y-3">
+                <div v-for="(hozzavalok, index) in recipe.hozzavalok" :key="index"
+                  class="flex items-start gap-3 text-slate-800">
+                  <div class="w-2.5 h-2.5 mt-2 bg-brand-600 rounded-full flex-shrink-0"></div>
+
+                  <span class="leading-relaxed">
+                    {{ hozzavalok.nev }} <span>{{ hozzavalok.adag }}g</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+
+          <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
+            <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="w-full p-2 rounded-full bg-brand-600 hover:bg-brand-400/50 
+                 text-accent-400 font-bold shadow-md
+                 transition-all hover:scale-[1.1]
                  flex items-center justify-center gap-2
                  disabled:opacity-50 disabled:cursor-not-allowed">
-          <Heart :stroke-width="2.5"  class="w-15 h-15 text-brand-700 pt-0.5 transition-all" />
-        </button>
+              <Heart :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
+            </button>
 
-        <button v-else @click="handleRemoveFromFavorites"
-          class="w-full p-2 rounded-full bg-accent-400 hover:bg-accent-400/50 
-           text-brand-700 font-bold shadow-md
-           transition-all hover:scale-[1.02]
-           flex items-center justify-center gap-2
-           disabled:opacity-50 disabled:cursor-not-allowed">
-          <HeartCrack :stroke-width="2.5" class="w-15 h-15 text-brand-700 pt-0.5 transition-all" />
-        </button>
+            <button v-else @click="handleRemoveFromFavorites" class="w-full p-2 rounded-full bg-brand-600 hover:bg-brand-400/50 
+                 text-accent-400 font-bold shadow-md
+                 transition-all hover:scale-[1.1]
+                 flex items-center justify-center gap-2
+                 disabled:opacity-50 disabled:cursor-not-allowed">
+              <HeartCrack :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
+            </button>
+          </div>
+
+        </div>
+
       </div>
-    </template>
-  </Dialog>
+
+    </div>
+
+
+  </Transition>
 </template>

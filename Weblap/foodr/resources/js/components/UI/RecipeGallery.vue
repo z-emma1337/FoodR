@@ -157,7 +157,7 @@ onMounted(() => {
 
     <!-- Külső keret -->
     <div
-      class="rounded-3xl overflow-hidden border-4 border-accent-600 bg-gradient-to-br from-brand-800 via-brand-600 to-accent-700 animate-gradient backdrop-blur-sm shadow-2xl w-full h-full mx-8">
+      class="rounded-3xl overflow-hidden border-4 border-accent-600 bg-gradient-to-br from-brand-800 via-brand-600 to-accent-700 animate-gradient backdrop-blur-sm shadow-2xl w-full h-full mx-12">
 
       <!-- Belső konténer -->
       <div class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] overflow-y-auto scroll-smooth p-3 foodr-scrollbar ">
@@ -233,15 +233,14 @@ onMounted(() => {
 
 
         <div class="grid xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
-          <RecipeGalleryCard v-for="recipe in recipesToShow" :key="recipe.id" :recipe="recipe"
-            @open-modal="openModal" />
+          <RecipeGalleryCard v-for="recipe in recipesToShow" :key="recipe.id" :recipe="recipe" />
         </div>
 
       </div>
     </div>
 
-    <RecipeModal :recipe="selectedRecipe" v-model:visible="isModalVisible" @addToFavorites="handleAddToFavorites"
-      @removeFromFavorites="handleRemoveFromFavorites" />
+    <RecipeModal :recipe="selectedRecipe" @addToFavorites="handleAddToFavorites"
+      @removeFromFavorites="handleRemoveFromFavorites " />
   </div>
 </template>
 
