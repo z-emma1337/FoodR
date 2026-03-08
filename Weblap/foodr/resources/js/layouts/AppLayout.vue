@@ -11,6 +11,7 @@ import {
   HelpCircle,
   Menu,
   X as CloseIcon,
+  PencilLine
 } from 'lucide-vue-next'
 import { ref, computed, watch } from 'vue'
 
@@ -45,6 +46,7 @@ const LeftnavItems = ref([
   { label: 'SwipeR', url: '/', icon: Home, active: true, requiresAuth: false },
   { label: 'FavoR', url: '/kedvencek', icon: Heart, active: false, requiresAuth: true },
   { label: 'FeedR', url: '/felfedezes', icon: Search, active: false, requiresAuth: false },
+  { label: 'CreatR', url: '/receptjeim', icon: PencilLine, active: false, requiresAuth: false },
 ])
 
 const RightnavItems = ref([

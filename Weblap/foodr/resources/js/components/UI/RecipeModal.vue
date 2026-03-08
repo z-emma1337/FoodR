@@ -1,6 +1,5 @@
 <script setup>
 import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check } from 'lucide-vue-next'
-import Dialog from 'primevue/dialog'
 import { computed, ref, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 
@@ -15,15 +14,14 @@ const emit = defineEmits(['addToFavorites', 'removeFromFavorites', 'close'])
 const isLiked = ref(props.recipe?.liked ?? false)
 const isCheckingLiked = ref(false)
 const page = usePage()
+const adagInput = ref(1);
 
-const dialogVisible = computed({
-  get: () => props.visible,
-  set: (value) => emit('update:visible', value)
-})
+
 
 watch(() => props.recipe, (newRecipe) => {
   if (newRecipe) {
     isLiked.value = newRecipe.liked ?? false
+    adagInput.value = newRecipe.adag
   }
 }, { immediate: true })
 
@@ -156,14 +154,14 @@ const handleRemoveFromFavorites = async () => {
 
 
                 <div class="relative flex items-center w-20 rounded-base">
-                  <button type="button" id="adagle" @click="adagLe()"
+                  <button type="button" id="" @click="adagInput>1 ? adagInput-- : null"
                     class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
                     -
                   </button>
-                  <input type="text" id="quantity-input" data-input-counter aria-describedby="helper-text-explanation"
+                  <input type="text" id="" v-model.number="adagInput" data-input-counter aria-describedby="helper-text-explanation"
                     class="border-x-0 h-10 placeholder:text-heading text-center w-full bg-neutral-secondary-medium border-default-medium py-2.5 placeholder:text-body"
-                    placeholder="999" required />
-                  <button type="button" id="adagfel" @click="adagFel()"
+                    required />
+                  <button type="button" id="" @click="adagInput<100 ? adagInput++ : null"
                     class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
                     +
                   </button>
@@ -187,6 +185,22 @@ const handleRemoveFromFavorites = async () => {
               </div>
             </div>
 
+            <div>
+              <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Hozzávalók</h4>
+
+              <div class="space-y-3">
+                <div v-for="(hozzavalok, index) in recipe.hozzavalok" :key="index"
+                  class="flex items-start gap-3 text-slate-800">
+                  <div class="w-2.5 h-2.5 mt-2 bg-brand-600 rounded-full flex-shrink-0"></div>
+
+                  <span class="leading-relaxed">
+                    {{ hozzavalok.nev }} <span>{{ Math.round(hozzavalok.adag/recipe.adag)*adagInput }}g</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+
 
             <div>
               <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Leírás</h4>
@@ -206,27 +220,13 @@ const handleRemoveFromFavorites = async () => {
             </div>
 
 
-            <div>
-              <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Hozzávalók</h4>
-
-              <div class="space-y-3">
-                <div v-for="(hozzavalok, index) in recipe.hozzavalok" :key="index"
-                  class="flex items-start gap-3 text-slate-800">
-                  <div class="w-2.5 h-2.5 mt-2 bg-brand-600 rounded-full flex-shrink-0"></div>
-
-                  <span class="leading-relaxed">
-                    {{ hozzavalok.nev }} <span>{{ hozzavalok.adag }}g</span>
-                  </span>
-                </div>
-              </div>
-            </div>
 
 
 
           </div>
 
           <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
-            <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="w-full p-2 rounded-full bg-brand-600 hover:bg-brand-400/50 
+            <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
                  text-accent-400 font-bold shadow-md
                  transition-all hover:scale-[1.1]
                  flex items-center justify-center gap-2
@@ -234,7 +234,7 @@ const handleRemoveFromFavorites = async () => {
               <Heart :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
             </button>
 
-            <button v-else @click="handleRemoveFromFavorites" class="w-full p-2 rounded-full bg-brand-600 hover:bg-brand-400/50 
+            <button v-else @click="handleRemoveFromFavorites" class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
                  text-accent-400 font-bold shadow-md
                  transition-all hover:scale-[1.1]
                  flex items-center justify-center gap-2

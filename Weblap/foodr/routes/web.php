@@ -36,6 +36,11 @@ Route::get('/felfedezes', function () {
     return Inertia::render('Felfedezes');
 })->name('felfedezes');
 
+Route::get('/receptjeim', function () {
+    return Inertia::render('Receptjeim');
+})->name('receptjeim');
+
+
 Route::match(['get', 'post'], '/recipes', function () {
 
 

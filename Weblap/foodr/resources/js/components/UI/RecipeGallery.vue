@@ -31,10 +31,6 @@ onMounted(() => {
   loadAllergens()
 })
 
-const openModal = (recipe) => {
-  selectedRecipe.value = recipe
-  isModalVisible.value = true
-}
 const loadAllergens = async () => {
   try {
     const res = await fetch('/allergenek')
@@ -51,7 +47,7 @@ const searchedRecipes = computed(() => {
     return recipes.value
   }
   for (const recipe of recipes.value) {
-    if (recipe.liked == 0) {
+
 
 
 
@@ -67,7 +63,7 @@ const searchedRecipes = computed(() => {
       if (recipe.allergenek.some(allergen => allergen.toLowerCase().includes(input)) && !result.includes(recipe)) {
         result.push(recipe)
       }
-    }
+    
   }
 
 
@@ -77,7 +73,7 @@ const searchedRecipes = computed(() => {
 const filteredRecipes = computed(() => {
   const result = []
   for (const recipe of recipes.value) {
-    if (recipe.liked == 0) {
+
       if (recipe.allergenek.some(a => !selectedAllergens.value.includes(a))) {
         continue
       }
@@ -91,7 +87,7 @@ const filteredRecipes = computed(() => {
 
       result.push(recipe)
     }
-  }
+  
   return result
 })
 

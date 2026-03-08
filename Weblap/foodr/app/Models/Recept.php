@@ -14,7 +14,8 @@ class Recept extends Model
         'leiras',
         'ido',
         'adag',
-        'kep_url'
+        'kep_url',
+        'felhasznalo_id'
     ];
 
     public function felhasznalo()
