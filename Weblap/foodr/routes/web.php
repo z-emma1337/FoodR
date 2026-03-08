@@ -40,6 +40,16 @@ Route::get('/receptjeim', function () {
     return Inertia::render('Receptjeim');
 })->name('receptjeim');
 
+Route::match(['get', 'post'], '/felhasznalo', function () {
+
+
+            return [
+                'id' => Auth::id()
+            ];
+
+});
+
+
 
 Route::match(['get', 'post'], '/recipes', function () {
 
@@ -102,6 +112,7 @@ Route::match(['get', 'post'], '/recipes', function () {
                 'allergenek' => array_merge($allergenek->toArray(), $dietTags),
                 'hozzavalok' => $hozzavalok,
                 'liked' => $liked,
+                'felhasznalo_id' => $recept->felhasznalo_id
             ];
         });
 });

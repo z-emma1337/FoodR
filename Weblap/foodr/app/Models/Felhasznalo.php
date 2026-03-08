@@ -17,6 +17,7 @@ class Felhasznalo extends Authenticatable implements MustVerifyEmail
         'email',
         'jelszo',
         'allergen_id',
+        'email_verified_at',
     ];
 
     protected $hidden = [
@@ -28,8 +29,21 @@ class Felhasznalo extends Authenticatable implements MustVerifyEmail
         return $this->jelszo;
     }
 
-    public function sendEmailVerificationNotification() 
+    public function getAuthPasswordName()
+    {
+        return 'jelszo';
+    }
+
+    public function sendEmailVerificationNotification()
     {
         $this->notify(new \App\Notifications\VerifyEmailNotification);
     }
+
+    public function interakciok()
+    {
+        return $this->hasMany(\App\Models\Interakcio::class, 'felhasznalo_id');
+    }
 }
+
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan route:clear

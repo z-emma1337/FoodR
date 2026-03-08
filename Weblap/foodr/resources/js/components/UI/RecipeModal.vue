@@ -158,7 +158,7 @@ const handleRemoveFromFavorites = async () => {
                     class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
                     -
                   </button>
-                  <input type="text" id="" v-model.number="adagInput" data-input-counter aria-describedby="helper-text-explanation"
+                  <input type="number" id="" v-model.number="adagInput" data-input-counter aria-describedby="helper-text-explanation"
                     class="border-x-0 h-10 placeholder:text-heading text-center w-full bg-neutral-secondary-medium border-default-medium py-2.5 placeholder:text-body"
                     required />
                   <button type="button" id="" @click="adagInput<100 ? adagInput++ : null"
