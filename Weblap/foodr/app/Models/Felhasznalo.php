@@ -44,6 +44,3 @@ class Felhasznalo extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(\App\Models\Interakcio::class, 'felhasznalo_id');
     }
 }
-
-docker compose exec app php artisan config:clear
-docker compose exec app php artisan route:clear
