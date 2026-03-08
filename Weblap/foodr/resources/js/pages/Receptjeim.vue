@@ -1,12 +1,12 @@
 <script setup>
 import AppLayout from '@/layouts/AppLayout.vue'
-import RecipeGallery from '@/components/UI/RecipeGallery.vue'
+import ReceptjeimGallery from '@/components/UI/ReceptjeimGallery.vue'
 </script>
 
 <template>
   <AppLayout>
     <div class="w-full py-4 sm:py-6">
-      <RecipeGallery />
+      <ReceptjeimGallery />
       
     </div>
   </AppLayout>
