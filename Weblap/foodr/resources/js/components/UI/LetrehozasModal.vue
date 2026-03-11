@@ -50,8 +50,14 @@ const Letrehozas = () => {
     formData.append('receptIdo', receptIdo.value)
     formData.append('receptAdag', receptAdag.value)
 
-    formData.append('receptHozzavalok', JSON.stringify(receptHozzavalok.value))
-    formData.append('receptLeirasok', JSON.stringify(receptLeirasok.value))
+    receptHozzavalok.value.forEach((h, i) => {
+        formData.append(`receptHozzavalok[${i}][nev]`, h.nev)
+        formData.append(`receptHozzavalok[${i}][adag]`, h.adag)
+    })
+
+    receptLeirasok.value.forEach((l, i) => {
+        formData.append(`receptLeirasok[${i}]`, l.leiras)
+    })
 
     formData.append('kep', Kep.value)
 
@@ -68,7 +74,7 @@ const Letrehozas = () => {
 }
 
 watch([receptNev, receptIdo, receptAdag, receptHozzavalok, receptLeirasok], () => {
-    if (Kep==null || receptNev.value.length <= 1 || receptIdo.value <= 0 || receptAdag.value <= 0 || receptHozzavalok.value.some(h => h.nev.length <= 1 || h.adag <= 0) || receptLeirasok.value.some(l => l.leiras.length <= 1)) {
+    if (Kep == null || receptNev.value.length <= 1 || receptIdo.value <= 0 || receptAdag.value <= 0 || receptHozzavalok.value.some(h => h.nev.length <= 1 || h.adag <= 0) || receptLeirasok.value.some(l => l.leiras.length <= 1)) {
         letrehozhato.value = false;
     }
     else {
@@ -232,11 +238,13 @@ const KepFeltoltes = (FeltoltottKep) => {
                                     </div>
 
 
-                                    <div v-if="Kep" class="absolute inset-0 flex items-center  justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                                    <div v-if="Kep"
+                                        class="absolute inset-0 flex items-center  justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200">
                                         <Pen class="w-15 h-15 text-accent-300" />
                                     </div>
 
-                                    <input id="dropzone-file" type="file" accept="image/jpeg,image/png,image/webp" @change="KepFeltoltes" class="hidden" />
+                                    <input id="dropzone-file" type="file" accept="image/jpeg,image/png,image/webp"
+                                        @change="KepFeltoltes" class="hidden" />
 
                                 </label>
                             </div>

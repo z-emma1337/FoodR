@@ -40,17 +40,13 @@ class ReceptController extends Controller
         ]);
 
 
-            $kep = $request->file('kep');
-            $kiterj = $kep->getClientOriginalExtension();
-            $kepnev = $recept->id . '.' . $kiterj;
 
+        $kep = $request->file('kep');
+        $kiterj = $kep->getClientOriginalExtension();
+        $kepnev = $recept->id . '.' . $kiterj;
+        $kep->move(public_path('imgs/Receptek'), $kepnev);
+        $recept->update(['kep_url' => '/imgs/Receptek/' . $kepnev]);
 
-            $kep->move(public_path('imgs/Receptek'), $kepnev);
-
-            $recept->update([
-                'kep_url' => '/imgs/Receptek/' . $kepnev
-            ]);
-        
 
         foreach ($request->receptHozzavalok as $hozzavalo) {
             $alapanyag = Alapanyag::firstOrCreate([
@@ -62,6 +58,6 @@ class ReceptController extends Controller
             ]);
         }
 
-        return response()->json(['success' => true, 'recept_id' => $recept->id]);
+        return redirect()->back();
     }
 }
