@@ -284,3 +284,9 @@ input[type=number] {
 .my-number-input[type=number] {
   -moz-appearance: textfield;
 }
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
+    transition: none;
+}

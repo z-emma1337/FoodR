@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Recept extends Model
 {
     protected $table = 'recept';
-    
+
     protected $fillable = [
         'felhasznalo_id',
         'nev',
@@ -15,7 +15,6 @@ class Recept extends Model
         'ido',
         'adag',
         'kep_url',
-        'felhasznalo_id'
     ];
 
     public function felhasznalo()
@@ -28,8 +27,14 @@ class Recept extends Model
         return $this->hasMany(ReceptAlapanyag::class, 'recept_id');
     }
 
-        public function interakciok()
+    public function interakciok()
     {
         return $this->hasMany(Interakciok::class, 'recept_id');
+    }
+
+    public function alapanyagok()
+    {
+        return $this->belongsToMany(Alapanyag::class, 'recept_alapanyag', 'recept_id', 'alapanyag_id')
+            ->withPivot('adag');
     }
 }

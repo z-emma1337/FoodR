@@ -1,0 +1,83 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: foodr
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-psecret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_NAME: FoodR
+      APP_ENV: local
+      APP_KEY:
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      APP_LOCALE: en
+      APP_FALLBACK_LOCALE: en
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: foodr
+      DB_USERNAME: root
+      DB_PASSWORD: secret
+      SESSION_DRIVER: database
+      SESSION_LIFETIME: 120
+      FILESYSTEM_DISK: public
+      QUEUE_CONNECTION: database
+      CACHE_STORE: database
+      BROADCAST_CONNECTION: log
+      MAIL_MAILER: smtp
+      MAIL_HOST: mail.foodr.hu
+      MAIL_PORT: 587
+      MAIL_USERNAME: noreply@foodr.hu
+      MAIL_PASSWORD: noreplyfoodr123!
+      MAIL_ENCRYPTION: tls
+      MAIL_FROM_ADDRESS: noreply@foodr.hu
+      MAIL_FROM_NAME: FoodR
+    volumes:
+      - storage_data:/var/www/storage/app/public
+      - wayfinder_data:/var/www/resources/js/actions
+      - wayfinder_routes:/var/www/resources/js/routes
+      - wayfinder_gen:/var/www/resources/js/wayfinder
+
+  frontend:
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      DOCKER: "true"
+    volumes:
+      - ./resources:/var/www/resources
+      - ./vite.config.ts:/var/www/vite.config.ts
+      - wayfinder_data:/var/www/resources/js/actions
+      - wayfinder_routes:/var/www/resources/js/routes
+      - wayfinder_gen:/var/www/resources/js/wayfinder
+    depends_on:
+      - app
+
+volumes:
+  mysql_data:
+  storage_data:
+  wayfinder_data:
+  wayfinder_routes:
+  wayfinder_gen:

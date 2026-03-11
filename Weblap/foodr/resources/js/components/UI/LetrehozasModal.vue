@@ -1,5 +1,5 @@
 <script setup>
-import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check, Trash2 } from 'lucide-vue-next'
+import { Clock, Users, ChefHat, X as CloseIcon, Upload, Trash2, Pen } from 'lucide-vue-next'
 import { computed, ref, watch, onMounted } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 
@@ -9,21 +9,16 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close'])
-const receptNev = ref();
+const receptNev = ref('');
 const receptIdo = ref();
 const receptAdag = ref();
 const receptHozzavalok = ref([{ nev: '', adag: null }]);
-const receptHozzavaloNev = ref();
-const receptHozzavaloAdag = ref();
 const receptLeirasok = ref([{ leiras: '' }])
-const receptLeiras = ref();
+const letrehozhato = ref(false);
+const Kep = ref(null);
+const kepPreview = ref(null);
 
-const nevHiba = ref(false);
-const idoHiba = ref(false);
-const adagHiba = ref(false);
-const hozzavaloHiba= ref(false);
-const hozzavaloadagHiba= ref(false);
-const leirasHiba= ref(false);
+
 
 const addHozzavalo = () => {
     if (receptHozzavalok.value.at(-1).nev && receptHozzavalok.value.at(-1).adag) {
@@ -48,13 +43,52 @@ const torolLeiras = (index) => {
 }
 
 const Letrehozas = () => {
-    nevHiba.value = !receptNev.value
-    idoHiba.value = !receptIdo.value
-    adagHiba.value = !receptAdag.value
-    hozzavaloHiba.value = !receptHozzavalok.value[0].nev
-    hozzavaloadagHiba.value = !receptHozzavalok.value[0].adag 
-    leirasHiba.value = !receptLeirasok.value[0].leiras  
+
+    const formData = new FormData()
+
+    formData.append('receptNev', receptNev.value)
+    formData.append('receptIdo', receptIdo.value)
+    formData.append('receptAdag', receptAdag.value)
+
+    receptHozzavalok.value.forEach((h, i) => {
+        formData.append(`receptHozzavalok[${i}][nev]`, h.nev)
+        formData.append(`receptHozzavalok[${i}][adag]`, h.adag)
+    })
+
+    receptLeirasok.value.forEach((l, i) => {
+        formData.append(`receptLeirasok[${i}]`, l.leiras)
+    })
+
+    formData.append('kep', Kep.value)
+
+    router.post('/receptLetrehozas', formData, {
+        forceFormData: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            emit('close')
+        },
+        onError: (errors) => {
+            console.error(errors)
+        }
+    })
 }
+
+watch([receptNev, receptIdo, receptAdag, receptHozzavalok, receptLeirasok], () => {
+    if (Kep == null || receptNev.value.length <= 1 || receptIdo.value <= 0 || receptAdag.value <= 0 || receptHozzavalok.value.some(h => h.nev.length <= 1 || h.adag <= 0) || receptLeirasok.value.some(l => l.leiras.length <= 1)) {
+        letrehozhato.value = false;
+    }
+    else {
+        letrehozhato.value = true
+    }
+},
+    { deep: true }
+)
+
+const KepFeltoltes = (FeltoltottKep) => {
+    Kep.value = FeltoltottKep.target.files[0]
+    kepPreview.value = URL.createObjectURL(Kep.value)
+}
+
 </script>
 
 <template>
@@ -82,7 +116,7 @@ const Letrehozas = () => {
                         <div class="relative flex items-center w-full mb-5 rounded-base">
 
                             <input v-model="receptNev" type="text"
-                                :class="nevHiba ? 'border-red-500 shadow-red-400 shadow-lg' : 'border-accent-600'"
+                                :class="receptNev.length <= 1 ? 'border-red-500 shadow-red-400 shadow-lg' : 'border-accent-600'"
                                 class="h-10 pl-5 bg-accent-400/60 border-3 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-full rounded-3xl mx-2 py-2.5" />
 
                         </div>
@@ -93,7 +127,7 @@ const Letrehozas = () => {
                                 -
                             </button>
                             <input type="number" placeholder="40" v-model.number="receptIdo" min="1" max="400"
-                                :class="idoHiba ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
+                                :class="receptIdo <= 0 ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
                                 class="h-10 bg-accent-400/60 border-3 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-15 rounded-3xl mx-2 text-center py-2.5"
                                 required />
                             <button type="button" @click="receptIdo++"
@@ -110,7 +144,7 @@ const Letrehozas = () => {
                                 -
                             </button>
                             <input type="number" placeholder="4" v-model.number="receptAdag" min="1" max="100"
-                                :class="adagHiba ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
+                                :class="receptAdag <= 0 ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
                                 class="h-10 bg-accent-400/60 border-3 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-15 rounded-3xl mx-2 text-center py-2.5"
                                 required />
                             <button type="button" @click="receptAdag++"
@@ -126,10 +160,10 @@ const Letrehozas = () => {
                             <div v-for="(hozzavalo, index) in receptHozzavalok" :key="index"
                                 class="flex items-center mb-3 space-x-2">
                                 <input v-model="hozzavalo.nev" type="text" required placeholder="Spagetti tészta"
-                                :class="hozzavaloHiba ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
+                                    :class="hozzavalo.nev.length <= 1 ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
                                     class="h-10 pl-5 bg-accent-400/60 border-3 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-80 rounded-3xl mx-1 py-2.5" />
                                 <input v-model.number="hozzavalo.adag" required type="number" placeholder="500" value=""
-                                :class="hozzavaloadagHiba ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
+                                    :class="hozzavalo.adag <= 0 ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
                                     class="h-10 bg-accent-400/60 border-3 text-center focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-15 rounded-3xl mx-1 py-2.5" />
                                 <label>g</label>
                                 <button v-if="index > 0" @click="torolHozzavalo(index)"
@@ -159,7 +193,7 @@ const Letrehozas = () => {
                                 <p class="text-lg font-bold text-brand-600">{{ index + 1 }}.</p>
                                 <input v-model="leiras.leiras" type="text" required=""
                                     placeholder="Főzze meg a tésztát."
-                                    :class="leirasHiba ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
+                                    :class="leiras.leiras.length <= 1 ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
                                     class="h-10 pl-5 bg-accent-400/60 border-3 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-full rounded-3xl mx-1 py-2.5" />
                                 <button v-if="index > 0" @click="torolLeiras(index)"
                                     class="delete-btn w-10 h-10 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center hover:bg-red-600">
@@ -184,13 +218,44 @@ const Letrehozas = () => {
                         </div>
 
 
+                        <label class="block">Fénykép feltöltése</label>
+                        <div class="relative flex flex-col w-full mb-5 rounded-base items-center">
 
+                            <div class="flex items-center justify-center w-full">
+                                <label for="dropzone-file"
+                                    :style="kepPreview ? { backgroundImage: `url(${kepPreview})` } : {}"
+                                    :class="Kep == null ? 'border-red-500 shadow-red-400 shadow-lg' : 'border-accent-600'"
+                                    class="group relative flex flex-col items-center justify-center w-full h-64 border-3 rounded-3xl bg-accent-400/60 shadow-md bg-cover bg-center bg-no-repeat overflow-hidden">
+
+
+                                    <div v-if="Kep == null"
+                                        class="flex flex-col items-center justify-center text-body pt-5 pb-6">
+                                        <Upload class="w-10 h-10" />
+                                        <p class="mb-2 text-md">
+                                            <span class="font-semibold">Kattints a feltöltéshez</span>
+                                            vagy húzd ide a fényképet.
+                                        </p>
+                                    </div>
+
+
+                                    <div v-if="Kep"
+                                        class="absolute inset-0 flex items-center  justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                                        <Pen class="w-15 h-15 text-accent-300" />
+                                    </div>
+
+                                    <input id="dropzone-file" type="file" accept="image/jpeg,image/png,image/webp"
+                                        @change="KepFeltoltes" class="hidden" />
+
+                                </label>
+                            </div>
+
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
-                        <button @click="Letrehozas()"
+                        <button @click="Letrehozas()" :disabled="!letrehozhato"
                             class="w-full p-2 py-4 rounded-full bg-brand-700 hover:bg-brand-800 text-accent-200 font-bold text-lg shadow-md
-                        transition-all hover:scale-[1.1] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        transition-all hover:scale-[1.1] flex items-center justify-center gap-2 disabled:opacity-50 disabled:transition-none disabled:hover:scale-100 disabled:hover:bg-brand-700">
                             Létrehozás
                         </button>
                     </div>
