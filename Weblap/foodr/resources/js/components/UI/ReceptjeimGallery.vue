@@ -29,6 +29,7 @@ const GetUserId = async () => {
     try {
         const res = await fetch('/felhasznalo')
         felhasznaloid.value = await res.json()
+        console.log("Az id:"+ felhasznaloid.value.id)
     } catch (err) {
         console.error(err)
     }
@@ -61,7 +62,6 @@ const searchedRecipes = computed(() => {
     }
     for (const recipe of recipes.value) {
 
-        if (recipe.felhasznalo_id == felhasznaloid) {
 
 
 
@@ -79,7 +79,7 @@ const searchedRecipes = computed(() => {
             }
 
         }
-    }
+    
 
     return result
 })
@@ -87,7 +87,7 @@ const searchedRecipes = computed(() => {
 const filteredRecipes = computed(() => {
     const result = []
     for (const recipe of recipes.value) {
-        if (recipe.felhasznalo_id == felhasznaloid) {
+
 
 
             if (recipe.allergenek.some(a => !selectedAllergens.value.includes(a))) {
@@ -103,7 +103,7 @@ const filteredRecipes = computed(() => {
 
             result.push(recipe)
         }
-    }
+    
     return result
 })
 
@@ -256,7 +256,7 @@ function CloseModal(){
 
 
                 <div class="grid xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
-                    <RecipeGalleryCard v-for="recipe in recipesToShow.filter(r => r.felhasznalo_id == felhasznaloid)"
+                    <RecipeGalleryCard v-for="recipe in recipesToShow.filter(r => r.felhasznalo_id == felhasznaloid.id)"
                         :key="recipe.id" :recipe="recipe" />
                 </div>
 

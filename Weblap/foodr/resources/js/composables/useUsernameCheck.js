@@ -1,4 +1,3 @@
-// resources/js/composables/useUsernameCheck.js
 import { ref, computed, watch } from 'vue'
 import axios from 'axios'
 
@@ -7,7 +6,7 @@ export function useUsernameCheck(username) {
   const checkingUsername = ref(false)
   const usernameTouched = ref(false)
   
-  // Validációs szabályok
+
   const isUsernameLongEnough = computed(() => username.value.length >= 4)
   
   const hasOnlyValidChars = computed(() => 
@@ -22,11 +21,11 @@ export function useUsernameCheck(username) {
     isUsernameFormatValid.value && isUsernameAvailable.value === true
   )
   
-  // Username ellenőrzés
+
   watch(username, async (val) => {
     usernameTouched.value = true
     
-    // Ha formailag nem jó, ne kérdezzen backendet
+
     if (!isUsernameFormatValid.value) {
       isUsernameAvailable.value = null
       return
@@ -46,7 +45,6 @@ export function useUsernameCheck(username) {
     }
   })
   
-  // Clear function
   const clearUsername = () => {
     username.value = ''
     isUsernameAvailable.value = null
