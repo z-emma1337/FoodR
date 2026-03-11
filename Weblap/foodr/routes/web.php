@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\InterakcioController;
+use App\Http\Controllers\ReceptController;
 use App\Mail\WelcomeUser;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -137,6 +138,7 @@ Route::post('/logout', function () {
 })->name('logout');
 
 Route::post('/interakcio/like', [InterakcioController::class, 'likeRecept'])->middleware('auth');
+Route::post('/receptLetrehozas', [ReceptController::class, 'ReceptHozzaadasa'])->middleware('auth');
 Route::post('/interakcio/dislike', [InterakcioController::class, 'dislikeRecept'])->middleware('auth');
 Route::post('/interakcio/unlike', [InterakcioController::class, 'unlikeRecept'])->middleware('auth');
 
