@@ -9,8 +9,6 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
-
-
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -33,15 +31,6 @@ class LoginController extends Controller
             $fieldType => $credentials['authInput'],
             'password' => $credentials['jelszo']
         ])) {
-            $user = Auth::user();
-    
-            if (!$user->hasVerifiedEmail()) {
-                Auth::logout();
-                return back()->withErrors([
-                    'authInput' => 'Kérjük, erősítsd meg az e-mail címedet a bejelentkezés előtt.'
-                ]);
-            }
-    
             $request->session()->regenerate();
             return redirect()->intended('');
         }
@@ -50,5 +39,4 @@ class LoginController extends Controller
             'authInput' => 'Hibás email/felhasználónév vagy jelszó.',
         ]);
     }
-
 }
