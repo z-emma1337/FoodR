@@ -1,6 +1,6 @@
 <script setup>
 import { Clock, ShoppingBasket, Users } from 'lucide-vue-next'
-
+import { ref, onMounted, onUnmounted } from 'vue'
 const props = defineProps({
   recipe: {
     type: Object,
@@ -55,6 +55,34 @@ const getAllergenColor = (allergen) => {
   return colors[allergen] || 'bg-white/20 border-white/30 text-white'
 }
 
+const swipeAnimacio = ref(false);
+
+let elrejtesTimer = null;   
+let ismetlesTimer = null;
+
+const animacioInditas = () => {
+  swipeAnimacio.value = true;
+  elrejtesTimer = setTimeout(() => {
+    swipeAnimacio.value = false;
+  }, 3000);
+
+  ismetlesTimer = setInterval(() => {
+    swipeAnimacio.value = true;
+    elrejtesTimer = setTimeout(() => {
+      swipeAnimacio.value = false;
+    }, 3000);
+  }, 15000);
+};
+
+onMounted(() => {
+  if (!props.isBackground) animacioInditas();
+});
+
+onUnmounted(() => {
+  clearTimeout(elrejtesTimer);       
+  clearInterval(ismetlesTimer);
+});
+
 </script>
 
 <template>
@@ -80,6 +108,12 @@ const getAllergenColor = (allergen) => {
         : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
   }" @mousedown.prevent="!isBackground && $emit('dragstart', $event)"
     @touchstart.prevent="!isBackground && $emit('dragstart', $event)">
+
+<img 
+  v-if="!isBackground && !isDragging && swipeAnimacio" 
+  class="Swipe absolute bottom-20 left-1/2 -translate-x-1/2 z-10 pointer-events-none select-none" 
+  src="/imgs/swipe.png" alt=""
+/>
 
 
     <div class="relative w-full h-full rounded-3xl overflow-hidden 
