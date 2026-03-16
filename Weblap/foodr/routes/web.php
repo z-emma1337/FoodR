@@ -136,6 +136,7 @@ Route::post('/logout', function () {
     request()->session()->regenerateToken();
     return redirect()->route('home');
 })->name('logout');
+Route::post('/receptLetrehozas', [ReceptController::class, 'ReceptHozzaadasa'])->middleware('auth');
 
 Route::post('/interakcio/like', [InterakcioController::class, 'likeRecept'])->middleware('auth');
 Route::post('/receptLetrehozas', [ReceptController::class, 'ReceptHozzaadasa'])->middleware('auth');
