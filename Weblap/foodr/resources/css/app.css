@@ -291,3 +291,26 @@ button:disabled {
     pointer-events: none;
     transition: none;
 }
+
+.Swipe {
+  animation: swipe 1.5s ease-in-out infinite;
+  transform-origin: center bottom;
+  width: 180px;
+}
+
+@keyframes swipe {
+  0% {
+    transform: translateX(-30px) rotate(-10deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(30px) rotate(10deg);
+    opacity: 0;
+  }
+}

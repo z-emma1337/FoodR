@@ -48,9 +48,6 @@ const searchedRecipes = computed(() => {
   }
   for (const recipe of recipes.value) {
 
-
-
-
       if (recipe.nev.toLowerCase().includes(input) && !result.includes(recipe)) {
         result.push(recipe)
       }

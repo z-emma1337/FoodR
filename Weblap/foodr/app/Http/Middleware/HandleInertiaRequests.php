@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\Interakciok;
-use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -23,7 +22,12 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'nev' => $user->nev,
+                    'email' => $user->email,
+                    'email_verified_at' => $user->email_verified_at,
+                ] : null,
             ],
             'likedCount' => $likedCount,
         ];

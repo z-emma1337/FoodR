@@ -184,7 +184,7 @@ function CloseModal(){
             <div
                 class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] overflow-y-auto scroll-smooth p-3 foodr-scrollbar ">
 
-                <div v-if="recipesToShow.length == 0"
+                <div v-if="recipesToShow.length==0"
                     class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
                     <div class="text-center space-y-4 animate-fade-in">
                         <button @click="OpenRecipeModal" class="w-24 h-24 mx-auto rounded-full border-6 border-accent-600 bg-accent-300 flex items-center justify-center">

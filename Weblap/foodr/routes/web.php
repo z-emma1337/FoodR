@@ -37,16 +37,14 @@ Route::get('/felfedezes', function () {
     return Inertia::render('Felfedezes');
 })->name('felfedezes');
 
-Route::get('/receptjeim', function () {
-    return Inertia::render('Receptjeim');
-})->name('receptjeim');
+
 
 Route::match(['get', 'post'], '/felhasznalo', function () {
 
 
-            return [
-                'id' => Auth::id()
-            ];
+    return [
+        'id' => Auth::id()
+    ];
 
 });
 
@@ -88,8 +86,10 @@ Route::match(['get', 'post'], '/recipes', function () {
             $nemVegan = $osszesAllergen->where('id', 7)->isNotEmpty();
 
             $dietTags = [];
-            if (!$nemVegetarianus) $dietTags[] = 'Vegetáriánus';
-            if (!$nemVegan && !$nemVegetarianus) $dietTags[] = 'Vegán';
+            if (!$nemVegetarianus)
+                $dietTags[] = 'Vegetáriánus';
+            if (!$nemVegan && !$nemVegetarianus)
+                $dietTags[] = 'Vegán';
 
             $hozzavalok = $recept->receptAlapanyagok->map(fn($ra) => [
                 'nev' => $ra->alapanyag->nev,
@@ -160,9 +160,15 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Kedvencek');
     })->name('kedvencek');
 
-    Route::get('/recept-alapanyagok', [App\Http\Controllers\ReceptAlapanyagController::class, 'index']);
-    Route::get('/allergenek', [App\Http\Controllers\AllergenController::class, 'index']);
+
+    Route::get('/receptjeim', function () {
+        return Inertia::render('Receptjeim');
+    })->name('receptjeim');
+
 });
+
+Route::get('/recept-alapanyagok', [App\Http\Controllers\ReceptAlapanyagController::class, 'index']);
+Route::get('/allergenek', [App\Http\Controllers\AllergenController::class, 'index']);
 
 Route::get('/email/verify', function () {
     return Inertia::render('VerifyEmail');
@@ -171,7 +177,7 @@ Route::get('/email/verify', function () {
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
     return redirect('/felfedezes');
-})->middleware(['signed'])->name('verification.verify');
+})->middleware(['auth', 'signed'])->name('verification.verify');
 
 
 

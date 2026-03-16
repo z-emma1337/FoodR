@@ -46,7 +46,7 @@ const LeftnavItems = ref([
   { label: 'SwipeR', url: '/', icon: Home, active: true, requiresAuth: false },
   { label: 'FavoR', url: '/kedvencek', icon: Heart, active: false, requiresAuth: true },
   { label: 'FeedR', url: '/felfedezes', icon: Search, active: false, requiresAuth: false },
-  { label: 'CreatR', url: '/receptjeim', icon: PencilLine, active: false, requiresAuth: false },
+  { label: 'CreatR', url: '/receptjeim', icon: PencilLine, active: false, requiresAuth: true },
 ])
 
 const RightnavItems = ref([
