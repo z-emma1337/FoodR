@@ -57,7 +57,7 @@ const submit = () => {
         jelszo_confirmation: confirmPassword.value,
         allergen_id: 1,
     }, {
-        onSuccess: () => emit('close'),
+        onSuccess: () => emit('switch-to-login'),
         onError: (errors) => {
             const first = Object.values(errors)[0]
             errorMessage.value = Array.isArray(first) ? first[0] : first

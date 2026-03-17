@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 import { Heart, X, ChefHat } from 'lucide-vue-next'
 import AppLayout from '@/layouts/AppLayout.vue'
@@ -23,7 +23,6 @@ const { openLoginModal } = useLoginModal()
 const currentRecipe = computed(() => recipes.value[currentIndex.value])
 const nextRecipe = computed(() => recipes.value[currentIndex.value + 1])
 
-
 const saveInteraction = (type) => {
   if (!currentRecipe.value) return Promise.resolve()
 
@@ -36,7 +35,9 @@ const saveInteraction = (type) => {
       preserveScroll: true,
       preserveState: true,
       onSuccess: () => {
-        router.reload({ only: ['likedCount'], preserveScroll: true, preserveState: true })
+        setTimeout(() => {
+          router.reload({ only: ['likedCount'], preserveScroll: true, preserveState: true })
+        }, 400)
         resolve()
       },
       onError: (errors) => {
@@ -65,22 +66,6 @@ const exitCard = async (direction) => {
   await new Promise(resolve => setTimeout(resolve, 300))
   shouldShowCurrentCard.value = false
   nextCard()
-}
-
-const animateSwipe = async (direction) => {
-  const targetX = direction === 'right' ? 1000 : -1000
-  const targetRotation = direction === 'right' ? 30 : -30
-  const duration = 400
-  const steps = 40
-  const stepDelay = duration / steps
-
-  for (let i = 0; i <= steps; i++) {
-    const progress = i / steps
-    const eased = 1 - Math.pow(1 - progress, 3)
-    dragOffset.value = { x: eased * targetX, y: 0 }
-    rotation.value = eased * targetRotation
-    await new Promise(resolve => setTimeout(resolve, stepDelay))
-  }
 }
 
 const swipeLeft = async () => {
@@ -117,36 +102,26 @@ const swipeLeftClick = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
 
-  if (requireAuth('dislike', async () => { await animateSwipe('left'); await exitCard('left') })) {
+  if (requireAuth('dislike', () => exitCard('left'))) {
     isAnimating.value = false
     return
   }
 
   await saveInteraction('dislike')
-  await animateSwipe('left')
-  nextCardScale.value = 1
-  nextCardOpacity.value = 1
-  await new Promise(resolve => setTimeout(resolve, 100))
-  shouldShowCurrentCard.value = false
-  nextCard()
+  await exitCard('left')
 }
 
 const swipeRightClick = async () => {
   if (isAnimating.value || !currentRecipe.value) return
   isAnimating.value = true
 
-  if (requireAuth('like', async () => { await animateSwipe('right'); await exitCard('right') })) {
+  if (requireAuth('like', () => exitCard('right'))) {
     isAnimating.value = false
     return
   }
 
   await saveInteraction('like')
-  await animateSwipe('right')
-  nextCardScale.value = 1
-  nextCardOpacity.value = 1
-  await new Promise(resolve => setTimeout(resolve, 100))
-  shouldShowCurrentCard.value = false
-  nextCard()
+  await exitCard('right')
 }
 
 const shuffleArray = (array) => {
@@ -162,23 +137,23 @@ onMounted(async () => {
   try {
     const response = await fetch('/recipes')
     const data = await response.json()
-recipes.value = shuffleArray(data).filter(r => r.liked === 0)
+    recipes.value = shuffleArray(data).filter(r => r.liked === 0)
   } catch (error) {
     console.error('Hiba a receptek betöltésekor:', error)
   }
 
   document.addEventListener('mousemove', handleDragMove)
   document.addEventListener('mouseup', handleDragEnd)
-  document.addEventListener('touchmove', handleDragMove, { passive: false })
+  document.addEventListener('touchmove', handleDragMove, { passive: true })
   document.addEventListener('touchend', handleDragEnd)
 })
 
-watch(dragOffset, (newOffset) => {
-  if (!isDragging.value && !isAnimating.value) return
-  const dragProgress = Math.min(Math.abs(newOffset.x) / 200, 1)
-  nextCardScale.value = 0.95 + (dragProgress * 0.05)
-  nextCardOpacity.value = 0.5 + (dragProgress * 0.5)
-}, { deep: true })
+onUnmounted(() => {
+  document.removeEventListener('mousemove', handleDragMove)
+  document.removeEventListener('mouseup', handleDragEnd)
+  document.removeEventListener('touchmove', handleDragMove)
+  document.removeEventListener('touchend', handleDragEnd)
+})
 
 const handleDragStart = (e) => {
   if (isAnimating.value) return
@@ -191,7 +166,6 @@ const handleDragStart = (e) => {
 
 const handleDragMove = (e) => {
   if (!isDragging.value || isAnimating.value) return
-  if (e.type.includes('touch')) e.preventDefault()
 
   const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
   const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY
@@ -209,6 +183,9 @@ const handleDragMove = (e) => {
 
   dragOffset.value = { x: deltaX, y: deltaY }
   rotation.value = deltaX * 0.1
+  const dragProgress = Math.min(Math.abs(deltaX) / 200, 1)
+  nextCardScale.value = 0.95 + dragProgress * 0.05
+  nextCardOpacity.value = 0.5 + dragProgress * 0.5
 }
 
 const handleDragEnd = () => {
@@ -235,10 +212,9 @@ const nextCard = () => {
     nextCardOpacity.value = 0.5
     shouldShowCurrentCard.value = true
     isAnimating.value = false
-  }, 0.000001)
+  }, 0)
 }
 </script>
-
 <template>
   <div class="relative">
     <div

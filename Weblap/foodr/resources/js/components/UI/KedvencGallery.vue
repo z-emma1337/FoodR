@@ -249,7 +249,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <RecipeModal :recipe="selectedRecipe" v-model:visible="isModalVisible" @addToFavorites="handleAddToFavorites"
+    <RecipeModal :recipe="selectedRecipe" @addToFavorites="handleAddToFavorites"
       @removeFromFavorites="handleRemoveFromFavorites" />
   </div>
 </template>
