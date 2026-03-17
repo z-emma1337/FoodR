@@ -314,3 +314,24 @@ button:disabled {
     opacity: 0;
   }
 }
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-fade-enter-active .relative,
+.modal-fade-leave-active .relative {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .relative,
+.modal-fade-leave-to .relative {
+  opacity: 0;
+  transform: scale(0.95) translateY(8px);
+}

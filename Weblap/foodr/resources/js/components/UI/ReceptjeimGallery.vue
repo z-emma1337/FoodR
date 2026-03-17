@@ -62,7 +62,7 @@ const searchedRecipes = computed(() => {
     }
     for (const recipe of recipes.value) {
 
-
+if(recipe.felhasznalo_id == felhasznaloid.value.id) {
 
 
             if (recipe.nev.toLowerCase().includes(input) && !result.includes(recipe)) {
@@ -79,7 +79,7 @@ const searchedRecipes = computed(() => {
             }
 
         }
-    
+    }
 
     return result
 })
@@ -88,7 +88,7 @@ const filteredRecipes = computed(() => {
     const result = []
     for (const recipe of recipes.value) {
 
-
+if(recipe.felhasznalo_id == felhasznaloid.value.id) {
 
             if (recipe.allergenek.some(a => !selectedAllergens.value.includes(a))) {
                 continue
@@ -103,6 +103,7 @@ const filteredRecipes = computed(() => {
 
             result.push(recipe)
         }
+    }
     
     return result
 })
@@ -256,7 +257,7 @@ function CloseModal(){
 
 
                 <div class="grid xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
-                    <RecipeGalleryCard v-for="recipe in recipesToShow.filter(r => r.felhasznalo_id == felhasznaloid.id)"
+                    <RecipeGalleryCard v-for="recipe in recipesToShow"
                         :key="recipe.id" :recipe="recipe" />
                 </div>
 

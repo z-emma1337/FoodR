@@ -28,7 +28,6 @@ class RegisterController extends Controller
 
         $user->sendEmailVerificationNotification();
 
-        return redirect()->route('bejelentkezes')
-            ->with('message', 'Check your email to verify your account.');
+        
     }
 }
