@@ -142,6 +142,8 @@ onMounted(async () => {
     console.error('Hiba a receptek betöltésekor:', error)
   }
 
+  // Csak a kártya div-re tesszük a kezdést (reszponzívabb, nem zabálja a memóriát)
+  // move és end marad document-en, mert a drag kiléphet a div-ből
   document.addEventListener('mousemove', handleDragMove)
   document.addEventListener('mouseup', handleDragEnd)
   document.addEventListener('touchmove', handleDragMove, { passive: true })
@@ -168,21 +170,13 @@ const handleDragMove = (e) => {
   if (!isDragging.value || isAnimating.value) return
 
   const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
-  const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY
 
+  // CSAK X tengely! Nincs szabad Y mozgás (nem zabálja a memóriát, nincs getBoundingClientRect hívás)
   const deltaX = clientX - dragStartPos.value.x
-  let deltaY = clientY - dragStartPos.value.y
 
-  const cardEl = document.querySelector('.recipe-card')
-  if (cardEl) {
-    const rect = cardEl.getBoundingClientRect()
-    const viewportHeight = window.innerHeight
-    if (rect.top + deltaY < 10) deltaY = 75 - rect.top
-    if (rect.bottom + deltaY > viewportHeight - 10) deltaY = (viewportHeight - 70) - rect.bottom
-  }
-
-  dragOffset.value = { x: deltaX, y: deltaY }
+  dragOffset.value = { x: deltaX, y: 0 }
   rotation.value = deltaX * 0.1
+
   const dragProgress = Math.min(Math.abs(deltaX) / 200, 1)
   nextCardScale.value = 0.95 + dragProgress * 0.05
   nextCardOpacity.value = 0.5 + dragProgress * 0.5
@@ -215,15 +209,17 @@ const nextCard = () => {
   }, 0)
 }
 </script>
+
 <template>
-  <div class="relative">
+  <div class="relative min-h-screen">
+    <!-- swipe hint gradient -->
     <div
       v-if="dragOffset.x > 50"
       class="fixed inset-0 bg-gradient-to-l from-green-500 via-green-500/50 to-transparent pointer-events-none z-0"
     />
 
-    <AppLayout class="relative z-10">
-      <div v-if="currentIndex >= recipes.length" class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
+    <AppLayout class="relative z-10 min-h-screen">
+      <div v-if="currentIndex >= recipes.length" class="min-h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
         <div class="text-center space-y-4 animate-fade-in">
           <div class="w-24 h-24 mx-auto rounded-full bg-accent-400/30 flex items-center justify-center">
             <ChefHat class="w-12 h-12 text-accent-600" />
@@ -233,39 +229,49 @@ const nextCard = () => {
         </div>
       </div>
 
+      <div v-else class=" h-full flex flex-col items-center justify-center">
+        <div class="flex flex-col items-center gap-1 w-full max-w-md px-4">
 
-      <div v-else class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
-        <div class="flex flex-col items-center gap-6 w-full max-w-md px-4">
-
-          <div class="relative w-full h-[600px]">
+          <!-- Kártya konténer -->
+          <div 
+            class="relative w-full aspect-[3/4]"
+            @mousedown="handleDragStart"
+            @touchstart="handleDragStart"
+          >
+            <!-- háttér kártya -->
             <RecipeCard
               v-if="nextRecipe"
               :recipe="nextRecipe"
               :is-background="true"
               :next-card-scale="nextCardScale"
-              :next-card-opacity="nextCardOpacity" />
+              :next-card-opacity="nextCardOpacity"
+              class="absolute inset-0"
+            />
 
+            <!-- aktuális kártya -->
             <RecipeCard
               v-if="currentRecipe && shouldShowCurrentCard"
               :recipe="currentRecipe"
               :is-dragging="isDragging"
               :drag-offset="dragOffset"
               :rotation="rotation"
-              @dragstart="handleDragStart"
+              class="absolute inset-0"
             />
           </div>
 
-          <div class="flex items-center gap-6 -translate-y-3">
+          <!-- Gombok – picit belelógnak a kártyába -->
+          <div class="flex items-center gap-5 z-20">
             <button
               @click="swipeLeftClick"
               :disabled="isAnimating"
               class="group relative w-16 h-16 rounded-full
                      bg-gradient-to-br from-red-500 to-red-600
-                     shadow-lg hover:shadow-xl
+                     shadow-xl hover:shadow-2xl
                      transform hover:scale-110 active:scale-95
                      transition-all duration-200
                      disabled:opacity-50 disabled:cursor-not-allowed
-                     flex items-center justify-center">
+                     flex items-center justify-center"
+            >
               <div class="absolute inset-0 rounded-full bg-red-400/50 blur-xl group-hover:blur-2xl transition-all" />
               <X class="relative w-8 h-8 text-white" />
             </button>
@@ -275,11 +281,12 @@ const nextCard = () => {
               :disabled="isAnimating"
               class="group relative w-20 h-20 rounded-full
                      bg-gradient-to-br from-green-500 to-green-600
-                     shadow-lg hover:shadow-xl
+                     shadow-xl hover:shadow-2xl
                      transform hover:scale-110 active:scale-95
                      transition-all duration-200
                      disabled:opacity-50 disabled:cursor-not-allowed
-                     flex items-center justify-center">
+                     flex items-center justify-center"
+            >
               <div class="absolute inset-0 rounded-full bg-green-400/50 blur-xl group-hover:blur-2xl transition-all" />
               <Heart class="relative w-10 h-10 text-white fill-white" />
             </button>
