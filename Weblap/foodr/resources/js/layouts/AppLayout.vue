@@ -128,7 +128,7 @@ watch(() => page.url, (currentPath) => {
         class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40" />
     </Transition>
 
-  
+
     <Transition name="menu-slide">
       <div v-if="isMobileMenuOpen"
         class="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto border-accent-600 border-3 rounded-4xl">
@@ -239,12 +239,15 @@ watch(() => page.url, (currentPath) => {
               class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 shadow-lg p-5 backdrop-blur-sm text-center">
               <div v-if="user" class="space-y-4 text-center py-2">
                 <div class="flex justify-center">
-                  <div class="w-20 h-20 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
-                    <User class="w-10 h-10 text-slate-700" />
+                  <div class="w-20 h-20 rounded-full overflow-hidden shadow-md">
+                    <img src="/imgs/Profilkepek/avatar.png" alt="Profilkép"
+                      class="w-full h-full object-cover scale-[1.2]" />
                   </div>
                 </div>
+
                 <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
                 <p class="text-base text-slate-700">{{ user.email }}</p>
+
                 <button @click="logout"
                   class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
                   <LogOut class="w-4 h-4" />

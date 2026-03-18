@@ -62,14 +62,10 @@ const isVerified = computed(() => !!user.value?.email_verified_at);
                                     Kedvenc recept
                                 </p>
                             </div>
-                            <div class="rounded-2xl bg-gradient-to-br p-4 text-center shadow-sm" :class="isVerified
-                                    ? 'from-accent-400/40 to-accent-500/40'
-                                    : 'from-amber-400/40 to-amber-500/40'
-                                ">
+                            <div class="rounded-2xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 p-4 text-center shadow-sm">
                                 <ShieldCheck v-if="isVerified" class="w-6 h-6 text-brand-600 mx-auto mb-1" />
-                                <ShieldAlert v-else class="w-6 h-6 text-amber-600 mx-auto mb-1" />
-                                <p class="text-2xl font-bold" :class="isVerified ? 'text-slate-900' : 'text-amber-700'
-                                    ">
+                                <ShieldAlert v-else class="w-6 h-6 text-brand-600 mx-auto mb-1" />
+                                <p class="text-2xl font-bold text-slate-900">
                                     {{ isVerified ? "Aktív" : "Inaktív" }}
                                 </p>
                                 <p class="text-xs text-slate-600 font-medium">
