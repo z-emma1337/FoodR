@@ -18,6 +18,7 @@ const confirmPassword = ref('')
 const showPassword = ref(false)
 const showPasswordConfirm = ref(false)
 const errorMessage = ref('')
+const emailError = ref('')
 
 const {
     isUsernameAvailable,
@@ -50,6 +51,7 @@ const isFormValid = computed(() =>
 
 const submit = () => {
     errorMessage.value = ''
+    emailError.value = ''
     router.post('/regisztracio', {
         nev: username.value,
         email: email.value,
@@ -59,8 +61,14 @@ const submit = () => {
     }, {
         onSuccess: () => emit('switch-to-login'),
         onError: (errors) => {
-            const first = Object.values(errors)[0]
-            errorMessage.value = Array.isArray(first) ? first[0] : first
+            if (errors.email) {
+                emailError.value = Array.isArray(errors.email) ? errors.email[0] : errors.email
+            }
+            const nonEmailErrors = Object.entries(errors).filter(([k]) => k !== 'email')
+            if (nonEmailErrors.length > 0) {
+                const first = nonEmailErrors[0][1]
+                errorMessage.value = Array.isArray(first) ? first[0] : first
+            }
         }
     })
 }
@@ -74,6 +82,7 @@ watch(() => props.open, (val) => {
         showPassword.value = false
         showPasswordConfirm.value = false
         errorMessage.value = ''
+        emailError.value = ''
         clearUsername()
     }
 })
@@ -113,6 +122,9 @@ watch(() => props.open, (val) => {
                     <div class="transform transition-all duration-300">
                         <label class="block text-sm font-medium text-slate-800 mb-1">Email cím</label>
                         <FormInput v-model="email" type="email" :icon="Mail" placeholder="email@pelda.hu" required />
+                        <div v-if="emailError" class="mt-2">
+                            <ValidationItem :valid="false" :text="emailError" />
+                        </div>
                     </div>
 
                     <div class="transform transition-all duration-300">

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { usePage } from '@inertiajs/vue3'
+import { usePage, router } from '@inertiajs/vue3'
 import ToggleSwitch from 'primevue/toggleswitch';
 import {
     X as CloseIcon, Settings, Bell, Shield, Eye, EyeOff,
@@ -13,6 +13,29 @@ const emit = defineEmits(['close'])
 const page = usePage()
 const user = computed(() => page.props.auth?.user)
 
+const confirmMode = ref(false)
+const deleting = ref(false)
+
+function handleDeleteClick() {
+    if (deleting.value) return
+    if (!confirmMode.value) {
+        confirmMode.value = true
+        return
+    }
+    deleting.value = true
+    router.delete('/fiok-torles', {
+        onFinish: () => {
+            deleting.value = false
+            confirmMode.value = false
+        },
+    })
+}
+
+function handleDeleteMouseLeave() {
+    if (!deleting.value) {
+        confirmMode.value = false
+    }
+}
 </script>
 
 <template>
@@ -47,8 +70,6 @@ const user = computed(() => page.props.auth?.user)
                                             <p class="text-xs text-slate-500">es ide is, el van baszva a toggle cucc, meg a szine</p>
                                         </div>
                                     </div>
-
-                                    <!-- itt van a gomb, nem tudom meg hogyan kell modify olni a szinet rendesen-->
                                     <ToggleSwitch v-model="checked" />
                                 </div>
 
@@ -109,11 +130,25 @@ const user = computed(() => page.props.auth?.user)
                             <div
                                 class="rounded-2xl bg-red-50 border border-red-200 divide-y divide-red-100 shadow-sm overflow-hidden">
                                 <button
-                                    class="w-full flex items-center gap-3 p-4 text-left hover:bg-red-100 transition-colors">
-                                    <Trash2 class="w-5 h-5 text-red-500 shrink-0" />
+                                    @click="handleDeleteClick"
+                                    @mouseleave="handleDeleteMouseLeave"
+                                    :disabled="deleting"
+                                    class="w-full flex items-center gap-3 p-4 text-left transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                                    :class="confirmMode ? 'bg-red-100' : 'hover:bg-red-100'">
+                                    <Trash2 class="w-5 h-5 shrink-0 transition-colors duration-200"
+                                        :class="confirmMode ? 'text-red-700' : 'text-red-500'" />
                                     <div>
-                                        <p class="text-sm font-semibold text-red-700">Fiók törlése</p>
-                                        <p class="text-xs text-red-400">Ez a művelet visszavonhatatlan</p>
+                                        <p class="text-sm font-semibold transition-colors duration-200"
+                                            :class="confirmMode ? 'text-red-800' : 'text-red-700'">
+                                            <template v-if="deleting">Törlés folyamatban...</template>
+                                            <template v-else-if="confirmMode">Biztosan törölni szeretnéd?</template>
+                                            <template v-else>Fiók törlése</template>
+                                        </p>
+                                        <p class="text-xs transition-colors duration-200"
+                                            :class="confirmMode && !deleting ? 'text-red-600 font-medium' : 'text-red-400'">
+                                            <template v-if="confirmMode && !deleting">Kattints még egyszer a végleges törléshez</template>
+                                            <template v-else>Ez a művelet visszavonhatatlan</template>
+                                        </p>
                                     </div>
                                 </button>
                             </div>

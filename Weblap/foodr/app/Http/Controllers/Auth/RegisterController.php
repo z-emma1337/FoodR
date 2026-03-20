@@ -17,6 +17,15 @@ class RegisterController extends Controller
             'email' => ['required', 'email', 'unique:felhasznalo,email'],
             'jelszo' => ['required', Password::min(8), 'confirmed'],
             'allergen_id' => ['nullable', 'integer'],
+        ], [
+            'nev.required' => 'A felhasználónév megadása kötelező.',
+            'nev.min' => 'A felhasználónév legalább 3 karakter hosszú legyen.',
+            'email.required' => 'Az email cím megadása kötelező.',
+            'email.email' => 'Érvényes email címet adj meg.',
+            'email.unique' => 'Ez az email cím már foglalt.',
+            'jelszo.required' => 'A jelszó megadása kötelező.',
+            'jelszo.min' => 'A jelszónak legalább 8 karakter hosszúnak kell lennie.',
+            'jelszo.confirmed' => 'A két jelszó nem egyezik.',
         ]);
 
         $user = Felhasznalo::create([
@@ -27,7 +36,5 @@ class RegisterController extends Controller
         ]);
 
         $user->sendEmailVerificationNotification();
-
-        
     }
 }
