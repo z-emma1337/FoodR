@@ -119,8 +119,8 @@ Route::match(['get', 'post'], '/recipes', function () {
 });
 
 Route::get('/check-username', function (Request $request) {
-    $username = $request->query('username');
-    $available = !Felhasznalo::where('nev', $username)->exists();
+    $username = strtolower($request->query('username'));
+    $available = !Felhasznalo::whereRaw('LOWER(nev) = ?', [$username])->exists();
     return response()->json(['available' => $available]);
 });
 
@@ -178,7 +178,15 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
     return redirect('/felfedezes');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
-
+Route::delete('/fiok-torles', function () {
+    $felhasznalo = Auth::user();
+    \App\Models\Recept::where('felhasznalo_id', $felhasznalo->id)->delete();
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    $felhasznalo->delete();
+    return redirect()->route('home');
+})->middleware('auth')->name('fiok.torles');
 
 
 require __DIR__ . '/settings.php';

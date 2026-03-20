@@ -41,6 +41,7 @@ const closeRegisztracio = () => flipTo('login')
 const authInput = ref('')
 const password = ref('')
 const showPassword = ref(false)
+const rememberMe = ref(false)
 const errorMessage = ref('')
 
 const isFormValid = computed(() => authInput.value.length > 0 && password.value.length > 0)
@@ -49,7 +50,8 @@ const submit = () => {
     errorMessage.value = ''
     router.post('/bejelentkezes', {
         authInput: authInput.value.toLowerCase(),
-        jelszo: password.value
+        jelszo: password.value,
+        remember: rememberMe.value,
     }, {
         onSuccess: () => resolveLoginSuccess(),
         onError: () => { errorMessage.value = 'Hibás email cím vagy jelszó' }
@@ -61,6 +63,7 @@ watch(() => props.open, (val) => {
         authInput.value = ''
         password.value = ''
         showPassword.value = false
+        rememberMe.value = false
         errorMessage.value = ''
         visibleFace.value = 'login'
         rotateY.value = 0
@@ -119,6 +122,16 @@ onUnmounted(() => {
                             <FormInput v-model="password" :type="showPassword ? 'text' : 'password'" :icon="Lock"
                                 placeholder="••••••••" :show-toggle="true" :toggle-state="showPassword"
                                 @toggle="showPassword = !showPassword" />
+
+                            <label class="flex items-center gap-2 cursor-pointer select-none w-fit">
+                                <div class="relative">
+                                    <input type="checkbox" v-model="rememberMe" class="sr-only peer" />
+                                    <div class="w-10 h-5 rounded-full transition-colors duration-200 bg-accent-600 peer-checked:bg-brand-600"></div>
+                                    <div class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 peer-checked:translate-x-5"></div>
+                                </div>
+                                <span class="text-sm text-slate-700">Emlékezz rám</span>
+                            </label>
+
                             <div v-if="errorMessage"
                                 class="rounded-3xl bg-brand-200 px-3 py-2 text-center text-sm text-brand-900">
                                 {{ errorMessage }}
