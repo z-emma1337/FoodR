@@ -5,6 +5,7 @@ import { Heart, X, ChefHat } from 'lucide-vue-next'
 import AppLayout from '@/layouts/AppLayout.vue'
 import RecipeCard from '@/components/UI/RecipeCard.vue'
 import { useLoginModal } from '@/composables/useLoginModal'
+import { Head } from '@inertiajs/vue3'
 
 const recipes = ref([])
 const currentIndex = ref(0)
@@ -211,6 +212,7 @@ const nextCard = () => {
 </script>
 
 <template>
+        <Head title="SwipeR" />
   <div class="relative min-h-screen">
     <!-- swipe hint gradient -->
     <div

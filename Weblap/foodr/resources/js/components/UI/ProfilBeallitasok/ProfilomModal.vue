@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import {
     X as CloseIcon,
@@ -18,6 +18,13 @@ const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const likedCount = computed(() => page.props.likedCount ?? 0);
 const isVerified = computed(() => !!user.value?.email_verified_at);
+const pfpurl = ref("/imgs/Profilkepek/avatar.png")
+const ikonpfp = ref(["chef.png", "drumstick.png", "fish.png", "pizza.png","avatar.png"])
+const isDropUpOpen = ref(false)
+
+const toggleDropUp = () => {
+    isDropUpOpen.value = !isDropUpOpen.value
+}
 </script>
 
 <template>
@@ -37,9 +44,23 @@ const isVerified = computed(() => !!user.value?.email_verified_at);
 
                     <div class="overflow-y-auto px-8 pb-8 space-y-6">
                         <div class="flex flex-col items-center gap-4 py-4">
-                            <div
-                                class="w-24 h-24 rounded-full bg-accent-500/30 flex items-center justify-center shadow-lg border-4 border-accent-400/50">
-                                <User class="w-12 h-12 text-brand-600" />
+                            <Transition name="DropUp" v-show="isDropUpOpen">
+                                <div
+                                    class="z-10 absolute bg-accent-300 cursor-pointer rounded-3xl border-2 border-accent-400 top-10 shadow-lg p-2 flex flex-wrap">
+                                    <div v-for="url in ikonpfp" :key="url"
+                                        class="w-12 h-12 rounded-full overflow-hidden shadow-md m-1">
+                                        <button @click="pfpurl=`/imgs/Profilkepek/${url}`">
+                                        <img :src="`/imgs/Profilkepek/${url}`" alt="Profilkép"
+                                            class="w-full h-full object-cover scale-[1.2]" />
+                                            </button>
+                                    </div>
+                                </div>
+
+                            </Transition>
+
+                            <div @click="toggleDropUp"
+                                class="w-24 h-24 cursor-pointer rounded-full overflow-hidden shadow-md">
+                                <img :src="pfpurl" alt="Profilkép" class="w-full h-full object-cover scale-[1.2]" />
                             </div>
                             <div class="text-center">
                                 <p class="text-2xl font-bold text-slate-900">
@@ -50,6 +71,8 @@ const isVerified = computed(() => !!user.value?.email_verified_at);
                                 </p>
                             </div>
                         </div>
+
+
 
                         <div class="grid grid-cols-2 gap-3">
                             <div
@@ -62,7 +85,8 @@ const isVerified = computed(() => !!user.value?.email_verified_at);
                                     Kedvenc recept
                                 </p>
                             </div>
-                            <div class="rounded-2xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 p-4 text-center shadow-sm">
+                            <div
+                                class="rounded-2xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 p-4 text-center shadow-sm">
                                 <ShieldCheck v-if="isVerified" class="w-6 h-6 text-brand-600 mx-auto mb-1" />
                                 <ShieldAlert v-else class="w-6 h-6 text-brand-600 mx-auto mb-1" />
                                 <p class="text-2xl font-bold text-slate-900">

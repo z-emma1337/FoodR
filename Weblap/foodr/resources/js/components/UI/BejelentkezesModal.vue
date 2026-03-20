@@ -126,7 +126,7 @@ onUnmounted(() => {
                             <label class="flex items-center gap-2 cursor-pointer select-none w-fit">
                                 <div class="relative">
                                     <input type="checkbox" v-model="rememberMe" class="sr-only peer" />
-                                    <div class="w-10 h-5 rounded-full transition-colors duration-200 bg-accent-600 peer-checked:bg-brand-600"></div>
+                                    <div class="w-10 h-5 rounded-full transition-colors duration-200 bg-brand-700 opacity-50 peer-checked:opacity-100 peer-checked:bg-brand-600"></div>
                                     <div class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 peer-checked:translate-x-5"></div>
                                 </div>
                                 <span class="text-sm text-slate-700">Emlékezz rám</span>

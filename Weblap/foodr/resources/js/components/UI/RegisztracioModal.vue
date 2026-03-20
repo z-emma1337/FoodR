@@ -46,7 +46,7 @@ const isFormValid = computed(() =>
     isUsernameValid.value &&
     isPasswordValid.value &&
     doPasswordsMatch.value &&
-    email.value.length > 0
+    email.value.length > 0 
 )
 
 const submit = () => {
