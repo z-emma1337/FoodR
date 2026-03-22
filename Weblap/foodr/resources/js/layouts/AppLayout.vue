@@ -240,7 +240,7 @@ watch(() => page.url, (currentPath) => {
               <div v-if="user" class="space-y-4 text-center py-2">
                 <div class="flex justify-center">
                   <div class="w-20 h-20 rounded-full overflow-hidden shadow-md">
-                    <img src="/imgs/Profilkepek/avatar.png" alt="Profilkép"
+                    <img :src=user.profilkepurl alt="Profilkép"
                       class="w-full h-full object-cover scale-[1.2]" />
                   </div>
                 </div>

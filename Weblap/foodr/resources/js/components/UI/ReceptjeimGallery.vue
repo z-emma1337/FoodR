@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
-import RecipeGalleryCard from './RecipeGalleryCard.vue'
-import RecipeModal from './RecipeModal.vue'
+
 import { X, Filter, Plus } from 'lucide-vue-next'
 import LetrehozasModal from './LetrehozasModal.vue'
+import ReceptjeimGalleryCard from './ReceptjeimGalleryCard.vue'
 
 
 const recipes = ref([])
@@ -29,7 +29,7 @@ const GetUserId = async () => {
     try {
         const res = await fetch('/felhasznalo')
         felhasznaloid.value = await res.json()
-        console.log("Az id:"+ felhasznaloid.value.id)
+        console.log("Az id:" + felhasznaloid.value.id)
     } catch (err) {
         console.error(err)
     }
@@ -62,7 +62,7 @@ const searchedRecipes = computed(() => {
     }
     for (const recipe of recipes.value) {
 
-if(recipe.felhasznalo_id == felhasznaloid.value.id) {
+        if (recipe.felhasznalo_id == felhasznaloid.value.id) {
 
 
             if (recipe.nev.toLowerCase().includes(input) && !result.includes(recipe)) {
@@ -88,7 +88,7 @@ const filteredRecipes = computed(() => {
     const result = []
     for (const recipe of recipes.value) {
 
-if(recipe.felhasznalo_id == felhasznaloid.value.id) {
+        if (recipe.felhasznalo_id == felhasznaloid.value.id) {
 
             if (recipe.allergenek.some(a => !selectedAllergens.value.includes(a))) {
                 continue
@@ -104,7 +104,7 @@ if(recipe.felhasznalo_id == felhasznaloid.value.id) {
             result.push(recipe)
         }
     }
-    
+
     return result
 })
 
@@ -164,11 +164,11 @@ onMounted(() => {
 })
 
 const ModalOpen = ref(false)
-function OpenRecipeModal(){
-  ModalOpen.value = true;
+function OpenRecipeModal() {
+    ModalOpen.value = true;
 }
 
-function CloseModal(){
+function CloseModal() {
     ModalOpen.value = false;
 }
 
@@ -185,13 +185,14 @@ function CloseModal(){
             <div
                 class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] overflow-y-auto scroll-smooth p-3 foodr-scrollbar ">
 
-                <div v-if="recipesToShow.length==0"
+                <div v-if="recipesToShow.length == 0"
                     class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
                     <div class="text-center space-y-4 animate-fade-in">
-                        <button @click="OpenRecipeModal" class="w-24 h-24 mx-auto rounded-full border-6 border-accent-600 bg-accent-300 flex items-center justify-center">
+                        <button @click="OpenRecipeModal"
+                            class="w-24 h-24 mx-auto rounded-full border-6 border-accent-600 bg-accent-300 flex items-center justify-center">
                             <Plus class="w-15 h-15 text-brand-600" />
                         </button>
-                        <h2 class="text-3xl font-bold text-accent-200">🍴 Még nincs saját recepted 🍴</h2>
+                        <p class="text-3xl font-bold text-accent-200">🍴 Még nincs saját recepted 🍴</p>
                         <p class="text-accent-300">A gombra kattintva hozd létre első receptedet!</p>
                     </div>
                 </div>
@@ -257,8 +258,18 @@ function CloseModal(){
 
 
                 <div class="grid xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
-                    <RecipeGalleryCard v-for="recipe in recipesToShow"
-                        :key="recipe.id" :recipe="recipe" />
+                    <div @click="OpenRecipeModal" class="rounded-2xl overflow-hidden cursor-pointer
+              bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
+              shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
+              border-accent-600 border-[3px] flex flex-col group w-full h-full flex items-center justify-center">
+
+
+                        <Plus class="w-15 h-15 text-brand-600" />
+                        <p class="text-3xl font-bold text-brand-600">Új recept létrehozása</p>
+
+
+                    </div>
+                    <ReceptjeimGalleryCard v-for="recipe in recipesToShow" :key="recipe.id" :recipe="recipe" />
                 </div>
 
             </div>
@@ -266,16 +277,3 @@ function CloseModal(){
         <LetrehozasModal :open="ModalOpen" @close="CloseModal" />
     </div>
 </template>
-
-<style scoped>
-.dropdown-enter-active,
-.dropdown-leave-active {
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.dropdown-enter-from,
-.dropdown-leave-to {
-    opacity: 0;
-    transform: translateY(-10px);
-}
-</style>

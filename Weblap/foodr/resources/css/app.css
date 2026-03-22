@@ -6,6 +6,7 @@
   --color-brand-100: #f5d2d3;
   --color-brand-200: #ebb3b5;
   --color-brand-300: #e39597;
+  --color-brand-400: #c75a5d;
   --color-brand-500: #b21f24;
   --color-brand-600: #901a1d;
   --color-brand-700: #6e1417;
@@ -334,4 +335,16 @@ button:disabled {
 .modal-fade-leave-to .relative {
   opacity: 0;
   transform: scale(0.95) translateY(8px);
+}
+
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }

@@ -12,10 +12,10 @@ defineProps({
            hover:scale-105
            focus:outline-none focus:ring-4 focus:ring-brand-500/40
            active:scale-95
-           disabled:bg-brand-400 disabled:text-accent-200 
            disabled:cursor-not-allowed 
            disabled:shadow-none
-disabled:hover:scale-100           cursor-pointer">
+disabled:hover:scale-100        cursor-pointer ">
+
         <span v-if="loading"
             class="inline-block h-5 w-5 border-2 border-accent-200 border-t-transparent rounded-full animate-spin"></span>
         <slot v-else />
