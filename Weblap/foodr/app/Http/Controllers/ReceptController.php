@@ -21,7 +21,7 @@ class ReceptController extends Controller
             'receptAdag' => 'required|integer|min:1',
             'receptHozzavalok' => 'required|array',
             'receptLeirasok' => 'required|array',
-            'kep' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'kep' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 
         $felhasznaloId = Auth::id();

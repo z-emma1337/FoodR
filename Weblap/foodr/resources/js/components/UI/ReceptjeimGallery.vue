@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
-import RecipeGalleryCard from './RecipeGalleryCard.vue'
-import RecipeModal from './RecipeModal.vue'
+
 import { X, Filter, Plus } from 'lucide-vue-next'
 import LetrehozasModal from './LetrehozasModal.vue'
+import ReceptjeimGalleryCard from './ReceptjeimGalleryCard.vue'
 
 
 const recipes = ref([])
@@ -269,7 +269,7 @@ function CloseModal() {
 
 
                     </div>
-                    <RecipeGalleryCard v-for="recipe in recipesToShow" :key="recipe.id" :recipe="recipe" />
+                    <ReceptjeimGalleryCard v-for="recipe in recipesToShow" :key="recipe.id" :recipe="recipe" />
                 </div>
 
             </div>
@@ -277,16 +277,3 @@ function CloseModal() {
         <LetrehozasModal :open="ModalOpen" @close="CloseModal" />
     </div>
 </template>
-
-<style scoped>
-.dropdown-enter-active,
-.dropdown-leave-active {
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.dropdown-enter-from,
-.dropdown-leave-to {
-    opacity: 0;
-    transform: translateY(-10px);
-}
-</style>

@@ -18,6 +18,7 @@ class Felhasznalo extends Authenticatable implements MustVerifyEmail
         'jelszo',
         'allergen_id',
         'email_verified_at',
+        'profilkepurl',
     ];
 
     protected $hidden = [

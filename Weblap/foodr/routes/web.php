@@ -38,16 +38,37 @@ Route::get('/felfedezes', function () {
 })->name('felfedezes');
 
 
+Route::match(['get', 'post'], '/felhasznalo', function (Request $request) {
 
-Route::match(['get', 'post'], '/felhasznalo', function () {
+    $user = Auth::user();
 
+    if ($request->isMethod('post')) {
+        $request->validate([
+            'profilkepurl' => 'nullable|string',
+            'profilkepfajl' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+        ]);
+
+        if ($request->hasFile('profilkepfajl')) {
+            $request->file('profilkepfajl')->move(
+                public_path('imgs/FeltoltottProfilkepek'),
+                $user->id . '.' . $request->file('profilkepfajl')->getClientOriginalExtension()
+            );
+            $user->profilkepurl = 'imgs/FeltoltottProfilkepek/' . $user->id . '.' . $request->file('profilkepfajl')->getClientOriginalExtension();
+        }
+
+        if ($request->filled('profilkepurl')) {
+            $user->profilkepurl = $request->profilkepurl;
+        }
+
+        $user->save();
+        return Redirect::back();
+    }
 
     return [
-        'id' => Auth::id()
+        'id' => $user->id,
+        'profilkepurl' => $user->profilkepurl
     ];
-
 });
-
 
 
 Route::match(['get', 'post'], '/recipes', function () {
@@ -188,5 +209,12 @@ Route::delete('/fiok-torles', function () {
     return redirect()->route('home');
 })->middleware('auth')->name('fiok.torles');
 
+Route::delete('/recept-torles/{id}', function ($id) {
+    $felhasznalo = Auth::user();
+    \App\Models\Recept::where('id', $id)
+        ->where('felhasznalo_id', $felhasznalo->id)
+        ->delete();
 
+    return response()->json(['success' => true], 200);
+});
 require __DIR__ . '/settings.php';

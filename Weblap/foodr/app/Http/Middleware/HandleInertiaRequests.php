@@ -27,6 +27,7 @@ class HandleInertiaRequests extends Middleware
                     'nev' => $user->nev,
                     'email' => $user->email,
                     'email_verified_at' => $user->email_verified_at,
+                    'profilkepurl'=>$user->profilkepurl
                 ] : null,
             ],
             'likedCount' => $likedCount,
