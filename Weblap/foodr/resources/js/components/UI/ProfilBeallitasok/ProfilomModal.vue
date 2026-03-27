@@ -16,6 +16,7 @@ import {
 defineProps({ open: { type: Boolean, required: true } });
 const emit = defineEmits(["close"]);
 const allergenek = ref([]);
+const felhasznaloallergenek = ref([]);
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const likedCount = computed(() => page.props.likedCount ?? 0);
