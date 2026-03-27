@@ -185,6 +185,9 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Receptjeim');
     })->name('receptjeim');
 
+    Route::get('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'show']);
+Route::post('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'felhasznaloallergenhozzaad']);
+
 });
 
 Route::get('/recept-alapanyagok', [App\Http\Controllers\ReceptAlapanyagController::class, 'index']);

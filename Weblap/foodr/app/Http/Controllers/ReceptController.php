@@ -11,9 +11,6 @@ class ReceptController extends Controller
 {
     public function ReceptHozzaadasa(Request $request)
     {
-        if (!Auth::check()) {
-            return response()->json(['message' => 'Bejelentkezés szükséges'], 401);
-        }
 
         $request->validate([
             'receptNev' => 'required|string|max:255',

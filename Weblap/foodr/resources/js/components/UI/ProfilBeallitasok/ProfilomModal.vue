@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
 import {
     X as CloseIcon,
@@ -10,12 +10,13 @@ import {
     ShieldCheck,
     ShieldAlert,
     Pen,
-    Upload
+    Upload,
+    ReceiptPoundSterling
 } from "lucide-vue-next";
 
 defineProps({ open: { type: Boolean, required: true } });
 const emit = defineEmits(["close"]);
-const allergenek = ref([]);
+const allergenek = ref(['nev', 'id']);
 const felhasznaloallergenek = ref([]);
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
@@ -43,17 +44,20 @@ const KepFeltoltes = (FeltoltottKep) => {
 }
 
 const loadAllergens = async () => {
-  try {
-    const res = await fetch('/allergenek')
-    allergenek.value = await res.json()
-  } catch (err) {
-    console.error('Hiba az allergének betöltésekor:', err)
-  }
-}
+    allergenek.value = await (await fetch('/allergenek')).json();
+    felhasznaloallergenek.value = await (await fetch("/allergenek/felhasznalo")).json();
 
-onMounted(()=>{
+    selectedAllergens.value = felhasznaloallergenek.value;
+}
+onMounted(() => {
     loadAllergens();
 })
+
+watch(selectedAllergens, () => {
+    router.post('/allergenek/felhasznalo', {
+        allergen_id: selectedAllergens.value
+    });
+});
 </script>
 
 <template>
@@ -192,12 +196,12 @@ onMounted(()=>{
                                         Mire vagy allergiás? Vagy milyen diétát követsz?
                                     </p>
 
-                                        <label v-for="allergen in allergenek" :key="allergen"
-                                            class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium text-slate-900 font-semibold hover:text-heading rounded">
-                                            <input type="checkbox" v-model="selectedAllergens" :value="allergen"
-                                                class="mr-2 accent-brand-600 w-5 h-5" />
-                                            {{ allergen }}
-                                        </label>
+                                    <label v-for="allergen in allergenek" :key="allergen.id"
+                                        class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium text-slate-900 font-semibold hover:text-heading rounded">
+                                        <input type="checkbox" v-model="selectedAllergens" :value="allergen.id"
+                                            class="mr-2 accent-brand-600 w-5 h-5" />
+                                        {{ allergen.nev }}
+                                    </label>
 
 
                                 </div>
