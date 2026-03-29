@@ -16,7 +16,7 @@ import {
 
 defineProps({ open: { type: Boolean, required: true } });
 const emit = defineEmits(["close"]);
-const allergenek = ref(['nev', 'id']);
+const allergenek = ref(['nev', 'id', 'tipus']);
 const felhasznaloallergenek = ref([]);
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
@@ -25,7 +25,6 @@ const isVerified = computed(() => !!user.value?.email_verified_at);
 const pfpurl = computed(() => user.value?.profilkepurl);
 const ikonpfp = ref(["chef.png", "drumstick.png", "fish.png", "pizza.png", "avatar.png"])
 const isDropUpOpen = ref(false)
-const selectedAllergens = ref([])
 
 
 const toggleDropUp = () => {
@@ -43,21 +42,33 @@ const KepFeltoltes = (FeltoltottKep) => {
     router.post('/felhasznalo', { profilkepfajl: FeltoltottKep.target.files[0] })
 }
 
+const selectedAllergens = ref([]) 
+
 const loadAllergens = async () => {
     allergenek.value = await (await fetch('/allergenek')).json();
     felhasznaloallergenek.value = await (await fetch("/allergenek/felhasznalo")).json();
+    
+    selectedAllergens.value = felhasznaloallergenek.value.map(a => a)
 
-    selectedAllergens.value = felhasznaloallergenek.value;
 }
+
 onMounted(() => {
     loadAllergens();
 })
 
-watch(selectedAllergens, () => {
-    router.post('/allergenek/felhasznalo', {
-        allergen_id: selectedAllergens.value
-    });
-});
+const mentesAllergenek = () => {
+
+  if (selectedAllergens.value.at(-1) === 7 && selectedAllergens.value.includes(6)) {
+    selectedAllergens.value = selectedAllergens.value.filter(a => a !== 6)
+  }
+  else if (selectedAllergens.value.at(-1) === 6 && selectedAllergens.value.includes(7)) {
+    selectedAllergens.value = selectedAllergens.value.filter(a => a !== 7)
+  }
+
+  router.post('/allergenek/felhasznalo', {
+    allergen_id: selectedAllergens.value
+  })
+}
 </script>
 
 <template>
@@ -198,7 +209,7 @@ watch(selectedAllergens, () => {
 
                                     <label v-for="allergen in allergenek" :key="allergen.id"
                                         class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium text-slate-900 font-semibold hover:text-heading rounded">
-                                        <input type="checkbox" v-model="selectedAllergens" :value="allergen.id"
+                                        <input type="checkbox" v-model="selectedAllergens" :value="allergen.id" @change="mentesAllergenek"
                                             class="mr-2 accent-brand-600 w-5 h-5" />
                                         {{ allergen.nev }}
                                     </label>

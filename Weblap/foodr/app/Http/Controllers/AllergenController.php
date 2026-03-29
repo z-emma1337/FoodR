@@ -28,14 +28,16 @@ class AllergenController extends Controller
     {
 
         FelhasznaloAllergenek::where('felhasznalo_id', Auth::id())->delete();
-
-        foreach ($request->allergen_id as $id) {
-            FelhasznaloAllergenek::firstOrCreate([
-                'felhasznalo_id' => Auth::id(),
-                'allergen_id' => $id
-            ]);
+        if ($request->allergen_id != null) {
+            foreach ($request->allergen_id as $id) {
+                FelhasznaloAllergenek::firstOrCreate([
+                    'felhasznalo_id' => Auth::id(),
+                    'allergen_id' => $id
+                ]);
+            }
         }
-        
+
+
 
     }
 }
