@@ -35,6 +35,7 @@ const loadAllergens = async () => {
   try {
     const res = await fetch('/allergenek')
     allergenek.value = await res.json()
+    allergenek.value = allergenek.value.map(a => a.nev)
   } catch (err) {
     console.error(err)
   }

@@ -16,7 +16,7 @@ import {
 
 defineProps({ open: { type: Boolean, required: true } });
 const emit = defineEmits(["close"]);
-const allergenek = ref(['nev', 'id', 'tipus']);
+const allergenek = ref(['nev', 'id']);
 const felhasznaloallergenek = ref([]);
 const page = usePage();
 const user = computed(() => page.props.auth?.user);

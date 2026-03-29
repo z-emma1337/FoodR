@@ -8,7 +8,7 @@ const recipes = ref([])
 const selectedRecipe = ref(null)
 const isModalVisible = ref(false)
 const searchInput = ref('')
-const allergenek = ref([])
+const allergenek = ref(['nev', 'id']);
 const selectedAllergens = ref([])
 
 const loadRecipes = async () => {
@@ -45,6 +45,7 @@ const loadAllergens = async () => {
   try {
     const res = await fetch('/allergenek')
     allergenek.value = await res.json()
+    allergenek.value = allergenek.value.map(a => a.nev)
   } catch (err) {
     console.error('Hiba az allergének betöltésekor:', err)
   }

@@ -32,7 +32,6 @@ class RegisterController extends Controller
             'nev' => $validated['nev'],
             'email' => $validated['email'],
             'jelszo' => Hash::make($validated['jelszo']),
-            'allergen_id' => $validated['allergen_id']
         ]);
 
         $user->sendEmailVerificationNotification();

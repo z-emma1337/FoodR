@@ -146,7 +146,7 @@ onMounted(async () => {
 
     if (allergen_id.value.includes(6)) {
 
-      recipes.value = recipes.value.filter(r => r.allergen_id.includes(6))
+      recipes.value = recipes.value.filter(r => !r.allergen_id.includes(6))
 
 
       recipes.value = recipes.value.filter(r =>
@@ -156,7 +156,7 @@ onMounted(async () => {
 
     else if (allergen_id.value.includes(7)) {
 
-      recipes.value = recipes.value.filter(r => r.allergen_id.includes(7))
+      recipes.value = recipes.value.filter(r => !r.allergen_id.includes(7))
 
       recipes.value = recipes.value.filter(r =>
         !allergen_id.value.some(x => x != 7 && r.allergen_id.includes(x)))
