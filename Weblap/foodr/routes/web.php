@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\KommentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -71,62 +72,7 @@ Route::match(['get', 'post'], '/felhasznalo', function (Request $request) {
 });
 
 
-Route::match(['get', 'post'], '/recipes', function () {
-    if (request()->isMethod('post')) {
-        $recipeId = request()->input('recipe_id');
-        if ($recipeId && Auth::check()) {
-            \App\Models\Recept::findOrFail($recipeId)
-                ->interakciok()
-                ->where('felhasznalo_id', Auth::id())
-                ->update(['liked' => 0]);
-        }
-        return response()->json(['success' => true]);
-    }
-    return \App\Models\Recept::with([
-        'receptAlapanyagok.alapanyag.allergenek',
-        'interakciok',
-    ])
-        ->get()
-        ->map(function ($recept) {
-            $osszesAllergen = $recept->receptAlapanyagok
-                ->pluck('alapanyag.allergenek')
-                ->flatten()
-                ->unique('id');
-            $allergenek = $osszesAllergen
-                ->whereNotIn('id', [6, 7])
-                ->pluck('nev')
-                ->values();
-            $nemVegetarianus = $osszesAllergen->where('id', 6)->isNotEmpty();
-            $nemVegan = $osszesAllergen->where('id', 7)->isNotEmpty();
-            $dietTags = [];
-            if (!$nemVegetarianus)
-                $dietTags[] = 'Vegetáriánus';
-            if (!$nemVegan && !$nemVegetarianus)
-                $dietTags[] = 'Vegán';
-            $hozzavalok = $recept->receptAlapanyagok->map(fn($ra) => [
-                'nev' => $ra->alapanyag->nev,
-                'adag' => $ra->adag ?? 'ízlés szerint'
-            ]);
-            $felhasznaloId = Auth::id() ?? 0;
-            $liked = $recept->interakciok
-                ->where('felhasznalo_id', $felhasznaloId)
-                ->first()
-                ->liked ?? 0;
-            return [
-                'id' => $recept->id,
-                'nev' => $recept->nev,
-                'leiras' => $recept->leiras,
-                'ido' => $recept->ido,
-                'adag' => $recept->adag,
-                'kep_url' => $recept->kep_url,
-                'allergenek' => array_merge($allergenek->toArray(), $dietTags),
-                'allergen_id' => $osszesAllergen->pluck('id')->values(),
-                'hozzavalok' => $hozzavalok,
-                'liked' => $liked,
-                'felhasznalo_id' => $recept->felhasznalo_id
-            ];
-        });
-});
+Route::match(['get', 'post'], '/recipes', ReceptController::class . '@index')->name('recipes');
 Route::get('/check-username', function (Request $request) {
     $username = strtolower($request->query('username'));
     $available = !Felhasznalo::whereRaw('LOWER(nev) = ?', [$username])->exists();
@@ -208,4 +154,7 @@ Route::delete('/recept-torles/{id}', function ($id) {
 
     return response()->json(['success' => true], 200);
 });
+
+Route::post('/komment', [KommentController::class, 'komment']);
+Route::get('/kommentek/{recept_id}', [KommentController::class, 'getKommentek']);
 require __DIR__ . '/settings.php';

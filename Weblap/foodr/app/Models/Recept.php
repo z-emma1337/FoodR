@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\kommentek;
 use Illuminate\Database\Eloquent\Model;
 
 class Recept extends Model
@@ -36,5 +36,10 @@ class Recept extends Model
     {
         return $this->belongsToMany(Alapanyag::class, 'recept_alapanyag', 'recept_id', 'alapanyag_id')
             ->withPivot('adag');
+    }
+
+    public function kommentek()
+    {
+        return $this->hasMany(kommentek::class, 'recept_id');
     }
 }

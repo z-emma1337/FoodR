@@ -43,8 +43,7 @@ const formatTime = (minutes) => {
 
 const getAllergenColor = (allergen) => {
   const colors = {
-    'Vegán': 'bg-green-500/30 border-green-400/50 text-green-100',
-    'Vegetáriánus': 'bg-lime-500/30 border-lime-400/50 text-lime-100',
+    'Hús': 'bg-red-500/30 border-red-400/50 text-green-100',
     'Glutén': 'bg-amber-500/30 border-amber-400/50 text-amber-100',
     'Tojás': 'bg-yellow-500/30 border-yellow-400/50 text-yellow-100',
     'Tej': 'bg-blue-500/30 border-blue-400/50 text-blue-100',

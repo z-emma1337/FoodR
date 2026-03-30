@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { Clock, Users, ShoppingBasket, Trash2 } from 'lucide-vue-next'
+import { Clock, Users, ShoppingBasket, Trash2, Heart, MessageCircleMore } from 'lucide-vue-next'
 import { router, usePage } from '@inertiajs/vue3'
 import RecipeModal from './RecipeModal.vue'
 
@@ -21,8 +21,7 @@ const formatTime = (minutes) => {
 
 const getAllergenColor = (allergen) => {
   const colors = {
-    'Vegán': 'bg-green-500/30 border-green-400/50 text-green-100',
-    'Vegetáriánus': 'bg-lime-500/30 border-lime-400/50 text-lime-100',
+    'Hús': 'bg-red-500/30 border-red-400/50 text-green-100',
     'Glutén': 'bg-amber-500/30 border-amber-400/50 text-amber-100',
     'Tojás': 'bg-yellow-500/30 border-yellow-400/50 text-yellow-100',
     'Tej': 'bg-blue-500/30 border-blue-400/50 text-blue-100',
@@ -93,10 +92,24 @@ function CloseRecipeModal(){
       </div>
 
 
-      <div class="absolute bottom-0 left-0 right-0 p-3 z-10">
-        <h3 class="text-base sm:text-lg font-bold text-white drop-shadow-lg line-clamp-2">
+      <div class="absolute bottom-0 left-0 right-0 z-10 p-4 flex items-end justify-between gap-3
+            bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+
+        <h3 class="text-base sm:text-lg font-bold text-white drop-shadow-lg line-clamp-2 leading-snug flex-1">
           {{ recipe.nev }}
         </h3>
+
+        <span class="flex items-center gap-1 rounded-full
+               text-white text-sm font-semibold shadow-lg">
+          <Heart class="w-6 h-6 text-brand-600 fill-brand-400" />
+          {{ recipe.likedb }}
+        </span>
+                <span class="flex items-center gap-1 rounded-full
+               text-white text-sm font-semibold shadow-lg">
+          <MessageCircleMore class="w-6 h-6 text-slate-600 fill-white" />
+          {{ recipe.likedb }}
+        </span>
+
       </div>
     </div>
 

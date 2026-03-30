@@ -58,13 +58,6 @@ onMounted(() => {
 
 const mentesAllergenek = () => {
 
-  if (selectedAllergens.value.at(-1) === 7 && selectedAllergens.value.includes(6)) {
-    selectedAllergens.value = selectedAllergens.value.filter(a => a !== 6)
-  }
-  else if (selectedAllergens.value.at(-1) === 6 && selectedAllergens.value.includes(7)) {
-    selectedAllergens.value = selectedAllergens.value.filter(a => a !== 7)
-  }
-
   router.post('/allergenek/felhasznalo', {
     allergen_id: selectedAllergens.value
   })
@@ -204,7 +197,7 @@ const mentesAllergenek = () => {
 
                                 <div class="min-w-0">
                                     <p class="text-xs text-slate-500 font-medium">
-                                        Mire vagy allergiás? Vagy milyen diétát követsz?
+                                        Mire vagy allergiás?
                                     </p>
 
                                     <label v-for="allergen in allergenek" :key="allergen.id"

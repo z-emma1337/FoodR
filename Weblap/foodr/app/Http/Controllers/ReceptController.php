@@ -15,6 +15,7 @@ class ReceptController extends Controller
         return Recept::with([
             'receptAlapanyagok.alapanyag.allergenek',
             'interakciok',
+            'kommentek'
         ])
             ->get()
             ->map(function ($recept) {
@@ -24,22 +25,13 @@ class ReceptController extends Controller
                     ->unique('id');
 
                 $allergenek = $osszesAllergen
-                    ->whereNotIn('id', [6, 7])
                     ->pluck('nev')
                     ->values();
 
-                $nemVegetarianus = $osszesAllergen->where('id', 6)->isNotEmpty();
-                $nemVegan = $osszesAllergen->where('id', 7)->isNotEmpty();
-
-                $dietTags = [];
-                if (!$nemVegetarianus)
-                    $dietTags[] = 'Vegetáriánus';
-                if (!$nemVegan && !$nemVegetarianus)
-                    $dietTags[] = 'Vegán';
 
                 $hozzavalok = $recept->receptAlapanyagok->map(fn($ra) => [
                     'nev' => $ra->alapanyag->nev,
-                    'adag' => $ra->adag ?? 'ízlés szerint',
+                    'adag' => $ra->adag,
                 ]);
 
                 $felhasznaloId = Auth::id() ?? 0;
@@ -55,11 +47,13 @@ class ReceptController extends Controller
                     'ido' => $recept->ido,
                     'adag' => $recept->adag,
                     'kep_url' => $recept->kep_url,
-                    'allergenek' => array_merge($allergenek->toArray(), $dietTags),
-                    'allergen_id' => $osszesAllergen->whereNotIn('id', [6, 7])->pluck('id')->values(),
+                    'allergenek' => $osszesAllergen->pluck('nev')->values(),
+                    'allergen_id' => $osszesAllergen->pluck('id')->values(),
                     'hozzavalok' => $hozzavalok,
                     'liked' => $liked,
                     'felhasznalo_id' => $recept->felhasznalo_id,
+                    'likedb' => $recept->interakciok->where('liked', 1)->count(),
+                    'kommentdb' => $recept->kommentek->count(),
                 ];
             });
     }

@@ -258,7 +258,7 @@ function CloseModal() {
 
 
                 <div class="grid xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
-                    <div @click="OpenRecipeModal" class="rounded-2xl overflow-hidden cursor-pointer
+                    <div @click="OpenRecipeModal" v-if="recipesToShow.length!=0" class="rounded-2xl overflow-hidden cursor-pointer
               bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
               shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
               border-accent-600 border-[3px] flex flex-col group w-full h-full flex items-center justify-center">

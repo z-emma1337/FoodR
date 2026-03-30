@@ -1,6 +1,6 @@
 <script setup>
-import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check } from 'lucide-vue-next'
-import { computed, ref, watch } from 'vue'
+import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check, Send } from 'lucide-vue-next'
+import { computed, onMounted, ref, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
@@ -15,13 +15,14 @@ const isLiked = ref(props.recipe?.liked ?? false)
 const isCheckingLiked = ref(false)
 const page = usePage()
 const adagInput = ref(1);
-
+const kommentek = ref(['felhasznalo_id','felhasznalo_nev', 'recept_id', 'szoveg', 'created_at'])
 
 
 watch(() => props.recipe, (newRecipe) => {
   if (newRecipe) {
     isLiked.value = newRecipe.liked ?? false
     adagInput.value = newRecipe.adag
+    
   }
 }, { immediate: true })
 
@@ -58,8 +59,7 @@ const formatTime = (minutes) => {
 
 const getAllergenColor = (allergen) => {
   const colors = {
-    'Vegán': 'bg-green-500 text-white',
-    'Vegetáriánus': 'bg-lime-500 text-white',
+    'Hús': 'bg-red-500 text-white',
     'Glutén': 'bg-amber-500 text-white',
     'Tojás': 'bg-yellow-500 text-white',
     'Tej': 'bg-blue-500 text-white',
@@ -113,6 +113,32 @@ const handleRemoveFromFavorites = async () => {
   })
 }
 
+async function getKommentek() {
+  const res = await fetch(`/kommentek/${props.recipe.id}`);
+  const kommentek = await res.json();
+  console.log(kommentek);
+  return kommentek;
+}
+onMounted(() => {
+  getKommentek();
+})
+
+const kommentInput = ref('')
+function Komment() {
+
+  router.post('/komment', { recept_id: props.recipe.id, szoveg: kommentInput.value }, {
+    preserveScroll: true,
+    preserveState: true,
+    onSuccess: () => {
+      kommentInput.value = ''
+      emit('newComment')
+    },
+    onError: (errors) => {
+      console.error(errors)
+    }
+  })
+}
+
 
 
 </script>
@@ -154,14 +180,15 @@ const handleRemoveFromFavorites = async () => {
 
 
                 <div class="relative flex items-center w-20 rounded-base">
-                  <button type="button" id="" @click="adagInput>1 ? adagInput-- : null"
+                  <button type="button" id="" @click="adagInput > 1 ? adagInput-- : null"
                     class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
                     -
                   </button>
-                  <input type="number" id="" v-model.number="adagInput" data-input-counter aria-describedby="helper-text-explanation"
+                  <input type="number" id="" v-model.number="adagInput" data-input-counter
+                    aria-describedby="helper-text-explanation"
                     class="border-x-0 h-10 placeholder:text-heading text-center w-full bg-neutral-secondary-medium border-default-medium py-2.5 placeholder:text-body"
                     required />
-                  <button type="button" id="" @click="adagInput<100 ? adagInput++ : null"
+                  <button type="button" id="" @click="adagInput < 100 ? adagInput++ : null"
                     class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
                     +
                   </button>
@@ -194,7 +221,7 @@ const handleRemoveFromFavorites = async () => {
                   <div class="w-2.5 h-2.5 mt-2 bg-brand-600 rounded-full flex-shrink-0"></div>
 
                   <span class="leading-relaxed">
-                    {{ hozzavalok.nev }} <span>{{ Math.round(hozzavalok.adag/recipe.adag)*adagInput }}g</span>
+                    {{ hozzavalok.nev }} <span>{{ Math.round(hozzavalok.adag / recipe.adag) * adagInput }}g</span>
                   </span>
                 </div>
               </div>
@@ -219,8 +246,30 @@ const handleRemoveFromFavorites = async () => {
               </div>
             </div>
 
+            <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Kommentek ({{ recipe.kommentdb }})</h4>
+            <div class="flex justify-items-center gap-1">
+              <input v-model="kommentInput" class="w-full bg-accent-200 text-brand-700 placeholder:text-brand-700 text-sm
+           border-4 border-accent-600 rounded-3xl py-2.5 px-4
+           focus:outline-none focus:ring-2 focus:ring-accent-400
+           focus:border-transparent transition-all shadow-md" placeholder="Komment írása..." />
+              <button @click="Komment()"
+                class="p-3 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
+                <Send class="w-6 h-6" />
+              </button>
+            </div>
 
-
+            <div v-for="komment in kommentek" :key="komment.id" class="flex items-start gap-3 mt-4">
+              <div class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold">
+                {{ komment.felhasznalo_nev }}
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-sm text-brand-700">{{ komment.felhasznalo_nev }}</span>
+                  <span class="text-xs text-slate-500">{{ new Date(komment.created_at).toLocaleString() }}</span>
+                </div>
+                <p class="text-slate-700 mt-2">{{ komment.komment }}</p>
+              </div>
+            </div>
 
 
           </div>

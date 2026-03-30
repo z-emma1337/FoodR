@@ -142,31 +142,10 @@ onMounted(async () => {
     const response = await fetch('/recipes')
     const data = await response.json()
 
-    recipes.value = shuffleArray(data).filter(r => r.liked === 0)
+    recipes.value = shuffleArray(data).filter(r => r.liked === 0 && !allergen_id.value.some(x => r.allergen_id.includes(x)))
 
-    if (allergen_id.value.includes(6)) {
-
-      recipes.value = recipes.value.filter(r => !r.allergen_id.includes(6))
-
-
-      recipes.value = recipes.value.filter(r =>
-        !allergen_id.value.some(x => x != 6 && r.allergen_id.includes(x)))
-    }
-
-
-    else if (allergen_id.value.includes(7)) {
-
-      recipes.value = recipes.value.filter(r => !r.allergen_id.includes(7))
-
-      recipes.value = recipes.value.filter(r =>
-        !allergen_id.value.some(x => x != 7 && r.allergen_id.includes(x)))
-    }
-
-
-    else {
-      recipes.value = recipes.value.filter(r =>
-        !allergen_id.value.some(x => r.allergen_id.includes(x)))
-    }
+    
+    
 
   } catch (error) {
     console.error('Hiba a receptek betöltésekor:', error)
