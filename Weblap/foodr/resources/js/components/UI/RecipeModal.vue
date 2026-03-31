@@ -15,16 +15,18 @@ const isLiked = ref(props.recipe?.liked ?? false)
 const isCheckingLiked = ref(false)
 const page = usePage()
 const adagInput = ref(1);
-const kommentek = ref(['felhasznalo_id','felhasznalo_nev', 'recept_id', 'szoveg', 'created_at'])
+const kommentek = ref([])
 
 
-watch(() => props.recipe, (newRecipe) => {
-  if (newRecipe) {
-    isLiked.value = newRecipe.liked ?? false
-    adagInput.value = newRecipe.adag
-    
+watch(() => props.open, (isOpen) => {
+  if (isOpen && props.recipe?.id) {
+    isLiked.value = props.recipe.liked ?? false
+    adagInput.value = props.recipe.adag
+    getKommentek()
+  } else {
+    kommentek.value = [] // bezáráskor törölje
   }
-}, { immediate: true })
+})
 
 const checkIfLiked = async () => {
   if (!props.recipe) return
@@ -114,14 +116,11 @@ const handleRemoveFromFavorites = async () => {
 }
 
 async function getKommentek() {
-  const res = await fetch(`/kommentek/${props.recipe.id}`);
-  const kommentek = await res.json();
-  console.log(kommentek);
-  return kommentek;
+  if (!props.recipe?.id) return
+  const res = await fetch(`/kommentek/${props.recipe.id}`)
+  kommentek.value = await res.json()
+  console.log(props.recipe.id)
 }
-onMounted(() => {
-  getKommentek();
-})
 
 const kommentInput = ref('')
 function Komment() {
@@ -131,6 +130,7 @@ function Komment() {
     preserveState: true,
     onSuccess: () => {
       kommentInput.value = ''
+      getKommentek()
       emit('newComment')
     },
     onError: (errors) => {
@@ -246,7 +246,7 @@ function Komment() {
               </div>
             </div>
 
-            <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Kommentek ({{ recipe.kommentdb }})</h4>
+            <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Kommentek ({{ kommentek.length }})</h4>
             <div class="flex justify-items-center gap-1">
               <input v-model="kommentInput" class="w-full bg-accent-200 text-brand-700 placeholder:text-brand-700 text-sm
            border-4 border-accent-600 rounded-3xl py-2.5 px-4
@@ -258,16 +258,16 @@ function Komment() {
               </button>
             </div>
 
-            <div v-for="komment in kommentek" :key="komment.id" class="flex items-start gap-3 mt-4">
+            <div v-for="komment in kommentek.sort((a, b) => b.created_at - a.created_at)" :key="komment.id" class="flex items-start gap-3 mt-4">
               <div class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold">
-                {{ komment.felhasznalo_nev }}
+                <img :src="komment.pfpurl" class="w-10 h-10 rounded-full object-cover" />
               </div>
               <div>
                 <div class="flex items-center gap-2">
                   <span class="font-semibold text-sm text-brand-700">{{ komment.felhasznalo_nev }}</span>
-                  <span class="text-xs text-slate-500">{{ new Date(komment.created_at).toLocaleString() }}</span>
+                  <span class="text-xs text-slate-500">{{ new Date(komment.created_at).toLocaleString("hu-HU") }}</span>
                 </div>
-                <p class="text-slate-700 mt-2">{{ komment.komment }}</p>
+                <p class="text-slate-700">{{ komment.komment }}</p>
               </div>
             </div>
 

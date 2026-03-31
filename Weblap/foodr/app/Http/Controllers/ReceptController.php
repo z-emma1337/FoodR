@@ -15,7 +15,6 @@ class ReceptController extends Controller
         return Recept::with([
             'receptAlapanyagok.alapanyag.allergenek',
             'interakciok',
-            'kommentek'
         ])
             ->get()
             ->map(function ($recept) {
@@ -53,7 +52,6 @@ class ReceptController extends Controller
                     'liked' => $liked,
                     'felhasznalo_id' => $recept->felhasznalo_id,
                     'likedb' => $recept->interakciok->where('liked', 1)->count(),
-                    'kommentdb' => $recept->kommentek->count(),
                 ];
             });
     }

@@ -11,6 +11,7 @@ class kommentek extends Model
     protected $fillable = [
         'felhasznalo_id',
         'felhasznalo_nev',
+        'pfpurl',
         'recept_id',
         'komment',
     ];

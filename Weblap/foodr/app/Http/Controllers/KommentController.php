@@ -17,11 +17,12 @@ class KommentController extends Controller
         Kommentek::create([
             'felhasznalo_id' => Auth::id(),
                 'felhasznalo_nev' => Auth::user()->nev,
+                'pfpurl' => Auth::user()->profilkepurl,
             'recept_id' => $request->recept_id,
             'komment' => $request->szoveg,
         ]);
 
-        return response()->json(['success' => true]);
+return redirect()->back();
     }
 
     public function getKommentek($recept_id)
