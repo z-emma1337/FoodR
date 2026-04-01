@@ -1,5 +1,5 @@
 <script setup>
-import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check, Send } from 'lucide-vue-next'
+import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check, Send, Trash, Trash2 } from 'lucide-vue-next'
 import { computed, onMounted, ref, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 
@@ -16,6 +16,7 @@ const isCheckingLiked = ref(false)
 const page = usePage()
 const adagInput = ref(1);
 const kommentek = ref([])
+const felhasznalo = ref(null)
 
 
 watch(() => props.open, (isOpen) => {
@@ -23,6 +24,7 @@ watch(() => props.open, (isOpen) => {
     isLiked.value = props.recipe.liked ?? false
     adagInput.value = props.recipe.adag
     getKommentek()
+    GetUserId()
   } else {
     kommentek.value = [] // bezáráskor törölje
   }
@@ -125,6 +127,7 @@ async function getKommentek() {
 const kommentInput = ref('')
 function Komment() {
 
+  if(kommentInput.value.trim() === '') return
   router.post('/komment', { recept_id: props.recipe.id, szoveg: kommentInput.value }, {
     preserveScroll: true,
     preserveState: true,
@@ -139,7 +142,22 @@ function Komment() {
   })
 }
 
+const GetUserId = async () => {
+        const res = await fetch('/felhasznalo')
+        felhasznalo.value = await res.json()
+        console.log("Az id:" + felhasznaloid.value.id)
 
+}
+
+const deleteKomment = (komment) => {
+  router.post(`/komment/delete/${komment.id}`, {}, {
+    preserveScroll: true,
+    preserveState: true,
+    onSuccess: () => {
+      getKommentek()
+    },
+  })
+}
 
 </script>
 
@@ -246,9 +264,10 @@ function Komment() {
               </div>
             </div>
 
-            <h4 class="text-lg font-semibold mb-3 text-brand-700 pt-4">Kommentek ({{ kommentek.length }})</h4>
+            <h4 v-if="kommentek.length>0" class="text-lg font-semibold mb-3 text-brand-700 pt-4">Kommentek ({{ kommentek.length }})</h4>
+                        <h4 v-if="kommentek.length==0" class="text-lg font-semibold mb-3 text-brand-700 pt-4">Még nem kommenteltek, legyél te az első!</h4>
             <div class="flex justify-items-center gap-1">
-              <input v-model="kommentInput" class="w-full bg-accent-200 text-brand-700 placeholder:text-brand-700 text-sm
+              <input v-model="kommentInput" @keyup.enter="Komment()" class="w-full bg-accent-200 text-brand-700 placeholder:text-brand-700 text-sm
            border-4 border-accent-600 rounded-3xl py-2.5 px-4
            focus:outline-none focus:ring-2 focus:ring-accent-400
            focus:border-transparent transition-all shadow-md" placeholder="Komment írása..." />
@@ -258,7 +277,8 @@ function Komment() {
               </button>
             </div>
 
-            <div v-for="komment in kommentek.sort((a, b) => b.created_at - a.created_at)" :key="komment.id" class="flex items-start gap-3 mt-4">
+            <div v-for="komment in kommentek.sort((a, b) => b.created_at - a.created_at)" :key="komment.id"
+              class="flex items-end gap-3 mt-2">
               <div class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold">
                 <img :src="komment.pfpurl" class="w-10 h-10 rounded-full object-cover" />
               </div>
@@ -268,7 +288,12 @@ function Komment() {
                   <span class="text-xs text-slate-500">{{ new Date(komment.created_at).toLocaleString("hu-HU") }}</span>
                 </div>
                 <p class="text-slate-700">{{ komment.komment }}</p>
+
               </div>
+              <button v-if="felhasznalo.id === komment.felhasznalo_id" @click="deleteKomment(komment)"
+                class="ml-auto p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
+                <Trash2 class="w-5 h-5" />
+              </button>
             </div>
 
 

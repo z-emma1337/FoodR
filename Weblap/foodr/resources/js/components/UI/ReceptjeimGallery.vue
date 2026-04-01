@@ -26,13 +26,11 @@ const loadRecipes = async () => {
 }
 
 const GetUserId = async () => {
-    try {
+
         const res = await fetch('/felhasznalo')
         felhasznaloid.value = await res.json()
         console.log("Az id:" + felhasznaloid.value.id)
-    } catch (err) {
-        console.error(err)
-    }
+
 }
 
 

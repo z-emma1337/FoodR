@@ -29,8 +29,6 @@ class InterakcioController extends Controller
             [
 
                 'liked' => 1,
-                'mentett' => 0,
-                'vote' => 0
             ]
         );
 

@@ -95,7 +95,7 @@ Route::post('/logout', function () {
     return redirect()->route('home');
 })->name('logout');
 Route::post('/receptLetrehozas', [ReceptController::class, 'ReceptHozzaadasa'])->middleware('auth');
-
+Route::post('/komment/delete/{id}', [KommentController::class, 'deleteKomment'])->middleware('auth');
 Route::post('/interakcio/like', [InterakcioController::class, 'likeRecept'])->middleware('auth');
 Route::post('/interakcio/dislike', [InterakcioController::class, 'dislikeRecept'])->middleware('auth');
 Route::post('/interakcio/unlike', [InterakcioController::class, 'unlikeRecept'])->middleware('auth');

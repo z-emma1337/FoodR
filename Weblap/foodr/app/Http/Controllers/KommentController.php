@@ -30,4 +30,17 @@ return redirect()->back();
         $kommentek = Kommentek::where('recept_id', $recept_id)->get();
         return response()->json($kommentek);
     }
+
+    public function deleteKomment($id)
+    {
+        $komment = Kommentek::findOrFail($id);
+
+        if ($komment->felhasznalo_id !== Auth::id()) {
+            return response()->json(['error' => 'Nincs jogosultságod törölni ezt a kommentet.'], 403);
+        }
+
+        $komment->delete();
+
+        return redirect()->back();
+    }
 }
