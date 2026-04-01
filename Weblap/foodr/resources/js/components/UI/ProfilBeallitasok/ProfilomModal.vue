@@ -16,7 +16,7 @@ import {
 
 defineProps({ open: { type: Boolean, required: true } });
 const emit = defineEmits(["close"]);
-const allergenek = ref(['nev', 'id']);
+const allergenek = ref([]);
 const felhasznaloallergenek = ref([]);
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
@@ -57,9 +57,12 @@ onMounted(() => {
 })
 
 const mentesAllergenek = () => {
-
   router.post('/allergenek/felhasznalo', {
     allergen_id: selectedAllergens.value
+  }, {
+    onSuccess: () => {
+      window.dispatchEvent(new CustomEvent('allergenek-frissitve'))
+    }
   })
 }
 </script>

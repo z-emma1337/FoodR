@@ -107,7 +107,7 @@ function CloseRecipeModal(){
                 <span class="flex items-center gap-1 rounded-full
                text-white text-sm font-semibold shadow-lg">
           <MessageCircleMore class="w-6 h-6 text-slate-600 fill-white" />
-          {{ recipe.likedb }}
+          {{ recipe.kommentdb }}
         </span>
 
       </div>

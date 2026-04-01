@@ -36,8 +36,5 @@ class AllergenController extends Controller
                 ]);
             }
         }
-
-
-
     }
 }

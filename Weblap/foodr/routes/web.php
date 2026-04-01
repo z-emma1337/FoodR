@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Models\Felhasznalo;
+use App\Models\Kommentek;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
@@ -59,6 +60,8 @@ Route::match(['get', 'post'], '/felhasznalo', function (Request $request) {
 
         if ($request->filled('profilkepurl')) {
             $user->profilkepurl = $request->profilkepurl;
+            Kommentek::where('felhasznalo_id', $user->id)
+                ->update(['profilkepurl' => $user->profilkepurl]);
         }
 
         $user->save();
@@ -119,11 +122,12 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Receptjeim');
     })->name('receptjeim');
 
-    Route::get('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'show']);
-Route::post('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'felhasznaloallergenhozzaad']);
+
+
 
 });
-
+Route::get('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'show'])->middleware('auth');
+Route::post('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'felhasznaloallergenhozzaad'])->middleware('auth');
 Route::get('/recept-alapanyagok', [App\Http\Controllers\ReceptAlapanyagController::class, 'index']);
 Route::get('/allergenek', [App\Http\Controllers\AllergenController::class, 'index']);
 

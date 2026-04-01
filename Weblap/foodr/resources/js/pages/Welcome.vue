@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from 'vue'
+import { ref, onMounted, computed, onUnmounted, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 import { Heart, X, ChefHat } from 'lucide-vue-next'
 import AppLayout from '@/layouts/AppLayout.vue'
@@ -135,21 +135,22 @@ const shuffleArray = (array) => {
   return shuffled
 }
 
+const receptekBetoltes = async () => {
+  allergen_id.value = await (await fetch("/allergenek/felhasznalo")).json()
+  const response = await fetch('/recipes')
+  const data = await response.json()
+  recipes.value = shuffleArray(data).filter(
+    r => r.liked === 0 && !allergen_id.value.some(x => r.allergen_id.includes(x))
+  )
+  currentIndex.value = 0
+  shouldShowCurrentCard.value = true
+  isAnimating.value = false
+}
+
 onMounted(async () => {
-  try {
-    allergen_id.value = await (await fetch("/allergenek/felhasznalo")).json()
+  await receptekBetoltes()
 
-    const response = await fetch('/recipes')
-    const data = await response.json()
-
-    recipes.value = shuffleArray(data).filter(r => r.liked === 0 && !allergen_id.value.some(x => r.allergen_id.includes(x)))
-
-    
-    
-
-  } catch (error) {
-    console.error('Hiba a receptek betöltésekor:', error)
-  }
+  window.addEventListener('allergenek-frissitve', receptekBetoltes)
 
   document.addEventListener('mousemove', handleDragMove)
   document.addEventListener('mouseup', handleDragEnd)
@@ -157,6 +158,7 @@ onMounted(async () => {
   document.addEventListener('touchend', handleDragEnd)
 })
 onUnmounted(() => {
+    window.removeEventListener('allergenek-frissitve', receptekBetoltes)
   document.removeEventListener('mousemove', handleDragMove)
   document.removeEventListener('mouseup', handleDragEnd)
   document.removeEventListener('touchmove', handleDragMove)
@@ -214,6 +216,7 @@ const nextCard = () => {
     isAnimating.value = false
   }, 0)
 }
+
 </script>
 
 <template>
