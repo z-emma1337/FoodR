@@ -27,9 +27,9 @@ const loadRecipes = async () => {
 
 const GetUserId = async () => {
 
-        const res = await fetch('/felhasznalo')
-        felhasznaloid.value = await res.json()
-        console.log("Az id:" + felhasznaloid.value.id)
+    const res = await fetch('/felhasznalo')
+    felhasznaloid.value = await res.json()
+    console.log("Az id:" + felhasznaloid.value.id)
 
 }
 
@@ -180,11 +180,11 @@ function CloseModal() {
             class="rounded-3xl overflow-hidden border-4 border-accent-600 bg-gradient-to-br from-brand-800 via-brand-600 to-accent-700 animate-gradient backdrop-blur-sm shadow-2xl w-full h-full mx-12">
 
             <!-- Belső konténer -->
-            <div
-                class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] overflow-y-auto scroll-smooth p-3 foodr-scrollbar ">
+            <div :class="recipesToShow.length > 0 ? 'overflow-y-auto' : 'overflow-hidden'"
+                class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] scroll-smooth p-3 foodr-scrollbar">
 
                 <div v-if="recipesToShow.length == 0"
-                    class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
+                    class=" relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
                     <div class="text-center space-y-4 animate-fade-in">
                         <button @click="OpenRecipeModal"
                             class="w-24 h-24 mx-auto rounded-full border-6 border-accent-600 bg-accent-300 flex items-center justify-center">
@@ -256,7 +256,7 @@ function CloseModal() {
 
 
                 <div class="grid xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
-                    <div @click="OpenRecipeModal" v-if="recipesToShow.length!=0" class="rounded-2xl overflow-hidden cursor-pointer
+                    <div @click="OpenRecipeModal" v-if="recipesToShow.length != 0" class="rounded-2xl overflow-hidden cursor-pointer
               bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
               shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
               border-accent-600 border-[3px] flex flex-col group w-full h-full flex items-center justify-center">

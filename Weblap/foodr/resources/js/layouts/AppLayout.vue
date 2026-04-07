@@ -10,7 +10,7 @@ import {
   Settings,
   HelpCircle,
   Menu,
-  X as CloseIcon,
+  X,
   PencilLine
 } from 'lucide-vue-next'
 import { ref, computed, watch } from 'vue'
@@ -117,7 +117,7 @@ watch(() => page.url, (currentPath) => {
         <button @click="toggleMobileMenu"
           class="p-2 rounded-3xl bg-accent-400/50 hover:bg-accent-400 border-accent-600 border-2 transition">
           <Menu v-if="!isMobileMenuOpen" class="w-6 h-6 text-slate-900" />
-          <CloseIcon v-else class="w-6 h-6 text-slate-900" />
+          <X v-else class="w-6 h-6 text-slate-900" />
         </button>
       </div>
     </header>
@@ -139,7 +139,7 @@ watch(() => page.url, (currentPath) => {
 
             <button @click="closeMobileMenu"
               class="absolute top-3 right-3 w-10 h-10 rounded-full transition-all flex items-center justify-center z-10">
-              <CloseIcon class="w-6 h-6 text-brand-600" :stroke-width="3" />
+              <X class="w-6 h-6 text-brand-600" :stroke-width="3" />
             </button>
 
             <div
@@ -240,8 +240,7 @@ watch(() => page.url, (currentPath) => {
               <div v-if="user" class="space-y-4 text-center py-2">
                 <div class="flex justify-center">
                   <div class="w-20 h-20 rounded-full overflow-hidden shadow-md">
-                    <img :src=user.profilkepurl alt="Profilkép"
-                      class="w-full h-full object-cover scale-[1.2]" />
+                    <img :src=user.profilkepurl alt="Profilkép" class="w-full h-full object-cover scale-[1.2]" />
                   </div>
                 </div>
 

@@ -4,19 +4,25 @@ import { computed, ref, watch, onMounted } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
+    recipe: Object,
     visible: Boolean,
     open: { type: Boolean, required: true }
 })
 
 const emit = defineEmits(['close'])
-const receptNev = ref('');
-const receptIdo = ref();
-const receptAdag = ref();
-const receptHozzavalok = ref([{ nev: '', adag: null }]);
-const receptLeirasok = ref([{ leiras: '' }])
+const receptNev = ref(props.recipe.nev);
+const receptIdo = ref(props.recipe.ido);
+const receptAdag = ref(props.recipe.adag);
+const receptHozzavalok = ref(props.recipe.hozzavalok.map(h => ({ ...h, adag: Number(h.adag) })));
+const receptLeirasok = ref(
+    props.recipe.leiras
+        .split(/\d+\.\s/)
+        .filter(l => l.trim().length > 0)
+        .map(l => ({ leiras: l.trim() }))
+);
 const letrehozhato = ref(false);
 const Kep = ref(null);
-const kepPreview = ref(null);
+const kepPreview = ref(props.recipe.kep_url);
 
 
 
@@ -59,7 +65,11 @@ const Letrehozas = () => {
         formData.append(`receptLeirasok[${i}]`, l.leiras)
     })
 
-    formData.append('kep', Kep.value)
+    if (Kep.value) {
+        formData.append('kep', Kep.value)
+    } else {
+        formData.append('kep_url', props.recipe.kep_url) // meglévő url megtartása
+    }
 
     router.post('/receptLetrehozas', formData, {
         forceFormData: true,
@@ -75,15 +85,15 @@ const Letrehozas = () => {
 }
 
 watch([receptNev, receptIdo, receptAdag, receptHozzavalok, receptLeirasok, Kep], () => {
-    if (Kep.value == null || receptNev.value.length <= 1 || receptIdo.value <= 0 || receptAdag.value <= 0 || receptHozzavalok.value.some(h => h.nev.length <= 1 || h.adag <= 0) || receptLeirasok.value.some(l => l.leiras.length <= 1)) {
+    const kepOk = kepPreview.value !== null; // meglévő kép is elfogadható
+    if (!kepOk || receptNev.value.length <= 1 || receptIdo.value <= 0 || receptAdag.value <= 0 ||
+        receptHozzavalok.value.some(h => h.nev.length <= 1 || h.adag <= 0) ||
+        receptLeirasok.value.some(l => l.leiras.length <= 1)) {
         letrehozhato.value = false;
+    } else {
+        letrehozhato.value = true;
     }
-    else {
-        letrehozhato.value = true
-    }
-},
-    { deep: true }
-)
+}, { deep: true, immediate: true })
 
 const KepFeltoltes = (FeltoltottKep) => {
     Kep.value = FeltoltottKep.target.files[0]
@@ -103,7 +113,7 @@ const KepFeltoltes = (FeltoltottKep) => {
 
                     <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
                         <h2 class="text-2xl font-bold text-slate-900">
-                            Recept létrehozása
+                            Recept szerkesztése
                         </h2>
                         <button @click="emit('close')"
                             class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200">
@@ -225,11 +235,11 @@ const KepFeltoltes = (FeltoltottKep) => {
                             <div class="flex items-center justify-center w-full">
                                 <label for="dropzone-file"
                                     :style="kepPreview ? { backgroundImage: `url(${kepPreview})` } : {}"
-                                    :class="Kep == null ? 'border-red-500 shadow-red-400 shadow-lg' : 'border-accent-600'"
+                                    :class="kepPreview == null ? 'border-red-500 shadow-red-400 shadow-lg' : 'border-accent-600'"
                                     class="group relative flex flex-col items-center justify-center w-full h-64 border-3 rounded-3xl bg-accent-400/60 shadow-md bg-cover bg-center bg-no-repeat overflow-hidden">
 
 
-                                    <div v-if="Kep == null"
+                                    <div v-if="kepPreview == null"
                                         class="flex flex-col items-center justify-center text-body pt-5 pb-6">
                                         <Upload class="w-10 h-10" />
                                         <p class="mb-2 text-md">
@@ -239,7 +249,7 @@ const KepFeltoltes = (FeltoltottKep) => {
                                     </div>
 
 
-                                    <div v-if="Kep"
+                                    <div v-if="kepPreview"
                                         class="absolute inset-0 flex items-center  justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200">
                                         <Pen class="w-15 h-15 text-accent-300" />
                                     </div>
@@ -257,7 +267,7 @@ const KepFeltoltes = (FeltoltottKep) => {
                         <button @click="Letrehozas()" :disabled="!letrehozhato"
                             class="w-full p-2 py-4 rounded-full bg-brand-700 hover:bg-brand-800 text-accent-200 font-bold text-lg shadow-md
                         transition-all hover:scale-[1.1] flex items-center justify-center gap-2 disabled:opacity-50 disabled:transition-none disabled:hover:scale-100 disabled:hover:bg-brand-700">
-                            Létrehozás
+                            Mentés
                         </button>
                     </div>
 

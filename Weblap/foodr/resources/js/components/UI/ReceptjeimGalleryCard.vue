@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
-import { Clock, Users, ShoppingBasket, Trash2, Heart, MessageCircleMore } from 'lucide-vue-next'
+import { Clock, Users, ShoppingBasket, Trash2, Heart, MessageCircleMore, Pencil } from 'lucide-vue-next'
 import { router, usePage } from '@inertiajs/vue3'
 import RecipeModal from './RecipeModal.vue'
+import SzerkesztModal from './SzerkesztModal.vue'
 
 const props = defineProps({
     recipe: Object
@@ -34,23 +35,32 @@ const getAllergenColor = (allergen) => {
 
 
 const recipeModalOpen = ref(false)
+const SzerkesztModalOpen = ref(false)
 function OpenRecipeModal() {
     recipeModalOpen.value = true;
+}
+function OpenSzerkesztModal() {
+    SzerkesztModalOpen.value = true;
 }
 
 function CloseRecipeModal() {
     recipeModalOpen.value = false;
 }
+function CloseSzerkesztModal() {
+    SzerkesztModalOpen.value = false;
+}
 function ReceptTorlese(id) {
     axios.delete(`/recept-torles/${id}`)
         .then(() => {
-            receptek.value = receptek.value.filter(r => r.id !== id);
+            window.location.reload()
         })
     resolve()
 }
 </script>
 <template>
     <RecipeModal :open="recipeModalOpen" :recipe="recipe" @close="CloseRecipeModal" />
+    <SzerkesztModal :open="SzerkesztModalOpen" :recipe="recipe" @close="CloseSzerkesztModal" />
+
     <div class="rounded-2xl overflow-hidden 
            bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
            shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
@@ -125,7 +135,10 @@ function ReceptTorlese(id) {
                     class="flex-1 py-2.5 sm:py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
                     Részletek
                 </button>
-
+                <button @click.stop="OpenSzerkesztModal"
+                    class="delete-btn w-13 h-13 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
+                    <Pencil class=" w-7 h-7" />
+                </button>
 
                 <button @click.stop="ReceptTorlese(recipe.id)"
                     class="delete-btn w-13 h-13 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center hover:bg-red-600">

@@ -142,6 +142,9 @@ const receptekBetoltes = async () => {
   recipes.value = shuffleArray(data).filter(
     r => r.liked === 0 && !allergen_id.value.some(x => r.allergen_id.includes(x))
   )
+  if (!allergen_id.value) {
+    recipes.value = shuffleArray(data)
+  }
   currentIndex.value = 0
   shouldShowCurrentCard.value = true
   isAnimating.value = false
