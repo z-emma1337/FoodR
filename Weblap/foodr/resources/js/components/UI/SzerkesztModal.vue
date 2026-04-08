@@ -48,7 +48,7 @@ const torolLeiras = (index) => {
     receptLeirasok.value.splice(index, 1)
 }
 
-const Letrehozas = () => {
+const Szerkesztes = () => {
 
     const formData = new FormData()
 
@@ -71,7 +71,7 @@ const Letrehozas = () => {
         formData.append('kep_url', props.recipe.kep_url) // meglévő url megtartása
     }
 
-    router.post('/receptLetrehozas', formData, {
+    router.post(`/receptSzerkesztese/${props.recipe.id}`, formData, {
         forceFormData: true,
         preserveScroll: false,
         onSuccess: () => {
@@ -264,7 +264,7 @@ const KepFeltoltes = (FeltoltottKep) => {
                     </div>
 
                     <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
-                        <button @click="Letrehozas()" :disabled="!letrehozhato"
+                        <button @click="Szerkesztes()" :disabled="!letrehozhato"
                             class="w-full p-2 py-4 rounded-full bg-brand-700 hover:bg-brand-800 text-accent-200 font-bold text-lg shadow-md
                         transition-all hover:scale-[1.1] flex items-center justify-center gap-2 disabled:opacity-50 disabled:transition-none disabled:hover:scale-100 disabled:hover:bg-brand-700">
                             Mentés

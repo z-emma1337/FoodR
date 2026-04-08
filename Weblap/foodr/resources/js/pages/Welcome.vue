@@ -136,15 +136,22 @@ const shuffleArray = (array) => {
 }
 
 const receptekBetoltes = async () => {
-  allergen_id.value = await (await fetch("/allergenek/felhasznalo")).json()
+  try {
+    allergen_id.value = await (await fetch("/allergenek/felhasznalo")).json()
+  } catch {
+    allergen_id.value = []
+  }
   const response = await fetch('/recipes')
   const data = await response.json()
-  recipes.value = shuffleArray(data).filter(
-    r => r.liked === 0 && !allergen_id.value.some(x => r.allergen_id.includes(x))
-  )
-  if (!allergen_id.value) {
+  if (allergen_id.value.length === 0) {
     recipes.value = shuffleArray(data)
+  } else {
+    recipes.value = shuffleArray(data).filter(
+      r => r.liked === 0 && !allergen_id.value.some(x => r.allergen_id.includes(x))
+    )
   }
+
+
   currentIndex.value = 0
   shouldShowCurrentCard.value = true
   isAnimating.value = false
@@ -161,7 +168,7 @@ onMounted(async () => {
   document.addEventListener('touchend', handleDragEnd)
 })
 onUnmounted(() => {
-    window.removeEventListener('allergenek-frissitve', receptekBetoltes)
+  window.removeEventListener('allergenek-frissitve', receptekBetoltes)
   document.removeEventListener('mousemove', handleDragMove)
   document.removeEventListener('mouseup', handleDragEnd)
   document.removeEventListener('touchmove', handleDragMove)
@@ -243,10 +250,11 @@ const nextCard = () => {
       </div>
 
       <div v-else class=" h-full flex flex-col items-center justify-center">
-        <div class="flex flex-col items-center gap-1 w-full max-w-md px-4">
+        <div class="flex flex-col items-center gap-2 w-full max-w-md">
 
           <!-- Kártya konténer -->
-          <div class="relative w-full aspect-[3/4]" @mousedown="handleDragStart" @touchstart="handleDragStart">
+          <div class="relative w-[65vh] max-w-[80vw] aspect-[3/4]" @mousedown="handleDragStart"
+            @touchstart="handleDragStart">
             <!-- háttér kártya -->
             <RecipeCard v-if="nextRecipe" :recipe="nextRecipe" :is-background="true" :next-card-scale="nextCardScale"
               :next-card-opacity="nextCardOpacity" class="absolute inset-0" />

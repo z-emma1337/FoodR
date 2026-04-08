@@ -1,5 +1,5 @@
 <script setup>
-import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check, Send, Trash, Trash2 } from 'lucide-vue-next'
+import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check, Send, Trash, Trash2, Pencil } from 'lucide-vue-next'
 import { computed, onMounted, ref, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 
@@ -299,7 +299,7 @@ const deleteKomment = (komment) => {
 
           </div>
 
-          <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
+          <div v-if="recipe.id==felhasznalo_id" class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
             <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
                  text-accent-400 font-bold shadow-md
                  transition-all hover:scale-[1.1]
@@ -316,7 +316,22 @@ const deleteKomment = (komment) => {
               <HeartCrack :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
             </button>
           </div>
-
+          <div v-else class="flex items-center justify-between px-8 pt-8 pb-4 gap-10 shrink-0">
+            <button class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
+                 text-accent-400 font-bold shadow-md
+                 transition-all hover:scale-[1.1]
+                 flex items-center justify-center gap-2
+                 disabled:opacity-50 disabled:cursor-not-allowed">
+              <Pencil :stroke-width="2" class="w-13 h-13 text-accent-300 pt-0.5 transition-all" />
+            </button>
+            <button class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
+                 text-accent-400 font-bold shadow-md
+                 transition-all hover:scale-[1.1]
+                 flex items-center justify-center gap-2
+                 disabled:opacity-50 disabled:cursor-not-allowed">
+              <Trash2 :stroke-width="2" class="trash-icon w-13 h-13 text-accent-300 pt-0.5 transition-all" />
+            </button>
+          </div>
         </div>
 
       </div>

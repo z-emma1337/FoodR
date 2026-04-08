@@ -15,7 +15,8 @@ class ReceptController extends Controller
     {
         return Recept::with([
             'receptAlapanyagok.alapanyag.allergenek',
-            'interakciok','kommentek'
+            'interakciok',
+            'kommentek'
         ])
             ->get()
             ->map(function ($recept) {
@@ -115,6 +116,47 @@ class ReceptController extends Controller
             $recept->alapanyagok()->syncWithoutDetaching([
                 $alapanyag->id => ['adag' => $hozzavalo['adag']]
             ]);
+        }
+
+        return redirect()->back();
+    }
+
+    public function ReceptSzerkesztese(Request $request, $id)
+    {
+        $request->validate([
+            'receptNev' => 'required|string|max:255',
+            'receptIdo' => 'required|integer|min:1',
+            'receptAdag' => 'required|integer|min:1',
+            'receptHozzavalok' => 'required|array',
+            'receptLeirasok' => 'required|array',
+            'kep' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+        ]);
+
+        $leiras = '';
+        foreach ($request->receptLeirasok as $i => $l) {
+            $leiras .= ($i + 1) . ". " . $l . " ";
+        }
+
+        $recept = Recept::findOrFail($id);
+        $recept->update([
+            'nev' => $request->receptNev,
+            'leiras' => $leiras,
+            'ido' => $request->receptIdo,
+            'adag' => $request->receptAdag,
+        ]);
+
+        if ($request->hasFile('kep')) {
+            $kep = $request->file('kep');
+            $kiterj = $kep->getClientOriginalExtension();
+            $kepnev = $recept->id . '.' . $kiterj;
+            $kep->move(public_path('imgs/Receptek'), $kepnev);
+            $recept->update(['kep_url' => '/imgs/Receptek/' . $kepnev]);
+        }
+
+        $recept->alapanyagok()->detach();
+        foreach ($request->receptHozzavalok as $hozzavalo) {
+            $alapanyag = Alapanyag::firstOrCreate(['nev' => $hozzavalo['nev']]);
+            $recept->alapanyagok()->attach($alapanyag->id, ['adag' => $hozzavalo['adag']]);
         }
 
         return redirect()->back();

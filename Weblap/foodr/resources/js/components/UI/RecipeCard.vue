@@ -56,7 +56,7 @@ const getAllergenColor = (allergen) => {
 
 const swipeAnimacio = ref(false);
 
-let elrejtesTimer = null;   
+let elrejtesTimer = null;
 let ismetlesTimer = null;
 
 const animacioInditas = () => {
@@ -78,7 +78,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  clearTimeout(elrejtesTimer);       
+  clearTimeout(elrejtesTimer);
   clearInterval(ismetlesTimer);
 });
 
@@ -108,11 +108,9 @@ onUnmounted(() => {
   }" @mousedown.prevent="!isBackground && $emit('dragstart', $event)"
     @touchstart.prevent="!isBackground && $emit('dragstart', $event)">
 
-<img 
-  v-if="!isBackground && !isDragging && swipeAnimacio" 
-  class="Swipe absolute bottom-20 left-1/2 -translate-x-1/2 z-10 pointer-events-none select-none" 
-  src="/imgs/swipe.png" alt=""
-/>
+    <img v-if="!isBackground && !isDragging && swipeAnimacio"
+      class="Swipe absolute bottom-20 left-1/2 -translate-x-1/2 z-10 pointer-events-none select-none"
+      src="/imgs/swipe.png" alt="" />
 
 
     <div class="relative w-full h-full rounded-3xl overflow-hidden 
