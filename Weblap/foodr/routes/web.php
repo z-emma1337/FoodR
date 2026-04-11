@@ -3,6 +3,7 @@
 use App\Http\Controllers\KommentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Models\Felhasznalo;
@@ -123,9 +124,6 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Receptjeim');
     })->name('receptjeim');
 
-
-
-
 });
 Route::get('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'show'])->middleware('auth');
 Route::post('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'felhasznaloallergenhozzaad'])->middleware('auth');
@@ -144,11 +142,18 @@ Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $requ
 
 Route::delete('/fiok-torles', function () {
     $felhasznalo = Auth::user();
-    \App\Models\Recept::where('felhasznalo_id', $felhasznalo->id)->delete();
+    $id = $felhasznalo->id;
+
+    \App\Models\Recept::where('felhasznalo_id', $id)->delete();
+
+    DB::table('sessions')->where('user_id', $id)->delete();
+
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
+
     $felhasznalo->delete();
+
     return redirect()->route('home');
 })->middleware('auth')->name('fiok.torles');
 
