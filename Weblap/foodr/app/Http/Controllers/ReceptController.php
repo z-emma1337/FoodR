@@ -161,4 +161,13 @@ class ReceptController extends Controller
 
         return redirect()->back();
     }
+
+    public function getOsszesAlapanyag()
+    {
+        $alapanyagok = Alapanyag::all()->map(function ($alapanyag) {
+            return [ $alapanyag->nev ];
+        });
+
+        return response()->json($alapanyagok);
+    }
 }

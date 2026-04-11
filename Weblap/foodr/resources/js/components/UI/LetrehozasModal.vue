@@ -17,8 +17,20 @@ const receptLeirasok = ref([{ leiras: '' }])
 const letrehozhato = ref(false);
 const Kep = ref(null);
 const kepPreview = ref(null);
+const hozzavalok = ref([]);
 
-
+const getOsszesHozzavalo = async () => {
+    try {
+        const res = await fetch('/osszes-alapanyag')
+        const data = await res.json()
+        hozzavalok.value = data.map(h => h[0])
+    } catch (err) {
+        console.error(err)
+    }
+}
+onMounted(() => {
+    getOsszesHozzavalo()
+})
 
 const addHozzavalo = () => {
     if (receptHozzavalok.value.at(-1).nev && receptHozzavalok.value.at(-1).adag) {
@@ -90,6 +102,15 @@ const KepFeltoltes = (FeltoltottKep) => {
     kepPreview.value = URL.createObjectURL(Kep.value)
 }
 
+const activeHozzavaloIndex = ref(null)
+const hozzavaloKeres = ref('')
+
+const szurtHozzavalok = computed(() => {
+    const input = hozzavaloKeres.value.toLowerCase()
+    if (!input) return hozzavalok.value.slice(0, 8)
+    return hozzavalok.value.filter(h => h.toLowerCase().includes(input)).slice(0, 8)
+})
+
 </script>
 
 <template>
@@ -160,10 +181,43 @@ const KepFeltoltes = (FeltoltottKep) => {
                         <div class="relative flex flex-col w-full mb-5 rounded-base items-center">
                             <div v-for="(hozzavalo, index) in receptHozzavalok" :key="index"
                                 class="flex items-center mb-3 space-x-2">
-                                <input v-model="hozzavalo.nev" type="text" required placeholder="Spagetti tészta"
-                                    :class="hozzavalo.nev.length <= 1 ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
-                                    class="h-10 pl-5 bg-accent-400/60 border-3 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-80 rounded-3xl mx-1 py-2.5" />
-                                <input v-model.number="hozzavalo.adag" required type="number" placeholder="500" value=""
+
+                                <!-- Dropdown trigger -->
+                                <div class="relative w-60">
+                                    <button type="button"
+                                        @click="activeHozzavaloIndex = activeHozzavaloIndex === index ? null : index"
+                                        :class="hozzavalo.nev.length <= 1 ? 'border-red-500' : 'border-accent-600'"
+                                        class="h-10 w-full pl-4 pr-8 bg-accent-400/60 border-3 rounded-3xl
+               text-left text-sm text-brand-700 flex items-center justify-between
+               focus:outline-none shadow-md">
+                                        <span :class="!hozzavalo.nev ? 'text-brand-500/60' : 'text-brand-700'">
+                                            {{ hozzavalo.nev || 'Válassz hozzávalót...' }}
+                                        </span>
+                                    </button>
+
+                                    <!-- Dropdown panel -->
+                                    <div v-if="activeHozzavaloIndex === index" class="absolute z-50 top-full left-0 mt-1 w-full bg-accent-200
+               border-3 border-accent-600 rounded-2xl shadow-xl overflow-hidden">
+                                        <div class="p-2 sticky top-0 bg-accent-200">
+                                            <input v-model="hozzavaloKeres" type="text" placeholder="Keresés..." class="w-full px-3 py-1.5 text-sm bg-accent-400/60 border-2 border-accent-600
+                   rounded-xl text-brand-700 placeholder:text-brand-500/60
+                   focus:outline-none focus:ring-2 focus:ring-accent-400" />
+                                        </div>
+                                        <div class="max-h-40 overflow-y-auto foodr-scrollbar pb-1 px-1">
+                                            <button v-for="h in szurtHozzavalok" :key="h" type="button"
+                                                @mousedown.prevent="hozzavalo.nev = h; activeHozzavaloIndex = null; hozzavaloKeres = ''"
+                                                :class="hozzavalo.nev === h ? 'bg-brand-700 text-accent-200' : 'text-brand-700 hover:bg-brand-700 hover:text-accent-200'"
+                                                class="w-full text-left px-4 py-2 text-sm rounded-xl transition-colors">
+                                                {{ h }}
+                                            </button>
+                                            <p v-if="szurtHozzavalok.length === 0"
+                                                class="text-center text-sm text-brand-500 py-2">
+                                                Nincs ilyen hozzávaló
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div> <input v-model.number="hozzavalo.adag" required type="number" placeholder="500"
+                                    value=""
                                     :class="hozzavalo.adag <= 0 ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
                                     class="h-10 bg-accent-400/60 border-3 text-center focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-15 rounded-3xl mx-1 py-2.5" />
                                 <label>g</label>

@@ -131,6 +131,7 @@ Route::get('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::
 Route::post('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'felhasznaloallergenhozzaad'])->middleware('auth');
 Route::get('/recept-alapanyagok', [App\Http\Controllers\ReceptAlapanyagController::class, 'index']);
 Route::get('/allergenek', [App\Http\Controllers\AllergenController::class, 'index']);
+Route::get('/osszes-alapanyag', [ReceptController::class, 'getOsszesAlapanyag']);
 
 Route::get('/email/verify', function () {
     return Inertia::render('VerifyEmail');
