@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
+import axios from "axios";
 import {
     X as CloseIcon,
     User,
@@ -26,7 +27,6 @@ const pfpurl = computed(() => user.value?.profilkepurl);
 const ikonpfp = ref(["chef.png", "drumstick.png", "fish.png", "pizza.png", "avatar.png"])
 const isDropUpOpen = ref(false)
 
-
 const toggleDropUp = () => {
     isDropUpOpen.value = !isDropUpOpen.value
 }
@@ -34,22 +34,26 @@ const closeDropUp = () => {
     isDropUpOpen.value = false
 }
 
-const UpdatePfp = (url) => {
-    router.post('/felhasznalo', { profilkepurl: `imgs/Profilkepek/${url}` })
+const UpdatePfp = async (url) => {
+    await axios.post('/felhasznalo', { profilkepurl: `imgs/Profilkepek/${url}` })
+    router.reload({ only: ['auth'] })
 }
 
-const KepFeltoltes = (FeltoltottKep) => {
-    router.post('/felhasznalo', { profilkepfajl: FeltoltottKep.target.files[0] })
+const KepFeltoltes = async (FeltoltottKep) => {
+    const formData = new FormData()
+    formData.append('profilkepfajl', FeltoltottKep.target.files[0])
+    await axios.post('/felhasznalo', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    router.reload({ only: ['auth'] })
 }
 
-const selectedAllergens = ref([]) 
+const selectedAllergens = ref([])
 
 const loadAllergens = async () => {
     allergenek.value = await (await fetch('/allergenek')).json();
     felhasznaloallergenek.value = await (await fetch("/allergenek/felhasznalo")).json();
-    
     selectedAllergens.value = felhasznaloallergenek.value.map(a => a)
-
 }
 
 onMounted(() => {
@@ -57,13 +61,13 @@ onMounted(() => {
 })
 
 const mentesAllergenek = () => {
-  router.post('/allergenek/felhasznalo', {
-    allergen_id: selectedAllergens.value
-  }, {
-    onSuccess: () => {
-      window.dispatchEvent(new CustomEvent('allergenek-frissitve'))
-    }
-  })
+    router.post('/allergenek/felhasznalo', {
+        allergen_id: selectedAllergens.value
+    }, {
+        onSuccess: () => {
+            window.dispatchEvent(new CustomEvent('allergenek-frissitve'))
+        }
+    })
 }
 </script>
 
@@ -89,7 +93,7 @@ const mentesAllergenek = () => {
                                     class="z-10 absolute bg-accent-300 cursor-pointer rounded-3xl border-2 border-accent-400 top-10 shadow-lg p-2 flex flex-wrap">
                                     <div v-for="url in ikonpfp" :key="url"
                                         class="w-12 h-12 rounded-full overflow-hidden shadow-md m-1">
-                                        <button @click=UpdatePfp(url)>
+                                        <button @click="UpdatePfp(url)">
                                             <img :src="`/imgs/Profilkepek/${url}`" alt="Profilkép"
                                                 class="w-full h-full object-cover scale-[1.2]" />
                                         </button>
@@ -205,18 +209,13 @@ const mentesAllergenek = () => {
 
                                     <label v-for="allergen in allergenek" :key="allergen.id"
                                         class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium text-slate-900 font-semibold hover:text-heading rounded">
-                                        <input type="checkbox" v-model="selectedAllergens" :value="allergen.id" @change="mentesAllergenek"
-                                            class="mr-2 accent-brand-600 w-5 h-5" />
+                                        <input type="checkbox" v-model="selectedAllergens" :value="allergen.id"
+                                            @change="mentesAllergenek" class="mr-2 accent-brand-600 w-5 h-5" />
                                         {{ allergen.nev }}
                                     </label>
-
-
                                 </div>
                             </div>
-
-
                         </div>
-
 
                         <button @click="() => { closeDropUp(); emit('close'); }"
                             class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md">
