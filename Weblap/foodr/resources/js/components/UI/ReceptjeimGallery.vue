@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 
-import { X, Filter, Plus } from 'lucide-vue-next'
+import { X, Filter, Plus, ArrowDownUp } from 'lucide-vue-next'
 import LetrehozasModal from './LetrehozasModal.vue'
 import ReceptjeimGalleryCard from './ReceptjeimGalleryCard.vue'
 
@@ -10,7 +10,7 @@ const recipes = ref([])
 const selectedRecipe = ref(null)
 const isModalVisible = ref(false)
 const searchInput = ref('')
-const allergenek = ref([])
+const allergenek = ref(['nev', 'id']);
 const selectedAllergens = ref([])
 const felhasznaloid = ref([])
 
@@ -44,12 +44,13 @@ onMounted(() => {
 })
 
 const loadAllergens = async () => {
-    try {
-        const res = await fetch('/allergenek')
-        allergenek.value = await res.json()
-    } catch (err) {
-        console.error(err)
-    }
+  try {
+    const res = await fetch('/allergenek')
+    allergenek.value = await res.json()
+    allergenek.value = allergenek.value.map(a => a.nev)
+  } catch (err) {
+    console.error('Hiba az allergének betöltésekor:', err)
+  }
 }
 
 const searchedRecipes = computed(() => {
@@ -107,10 +108,20 @@ const filteredRecipes = computed(() => {
 })
 
 
+const rendezesiSzempontok = ['Név (A-Z)', 'Idő (növekvő)', 'Idő (csökkenő)', 'Hozzávalók (növekvő)', 'Hozzávalók (csökkenő)', 'Kedvencek', 'Kommentek']
+const selectedRendezes = ref('Név (A-Z)')
+
 const isDropdownOpen = ref(false)
+const isRendezesDropdownOpen = ref(false)
+
+const toggleRendezesDropdown = () => {
+    isRendezesDropdownOpen.value = !isRendezesDropdownOpen.value
+    if (isDropdownOpen.value) isDropdownOpen.value = false
+}
 
 const toggleDropdown = () => {
     isDropdownOpen.value = !isDropdownOpen.value
+    if (isRendezesDropdownOpen.value) isRendezesDropdownOpen.value = false
 }
 
 const inputHozzavalok = ref(0)
@@ -126,12 +137,19 @@ watch(allergenek, (ujLista) => {
 })
 
 const recipesToShow = computed(() => {
-
-    if (searchInput.value.trim() !== '') {
-        return searchedRecipes.value
-    }
-
-    return filteredRecipes.value
+    let result = searchInput.value.trim() !== '' ? searchedRecipes.value : filteredRecipes.value
+    return [...result].sort((a, b) => {
+        switch (selectedRendezes.value) {
+            case 'Név (A-Z)': return a.nev.localeCompare(b.nev)
+            case 'Idő (növekvő)': return a.ido - b.ido
+            case 'Idő (csökkenő)': return b.ido - a.ido
+            case 'Hozzávalók (növekvő)': return a.hozzavalok.length - b.hozzavalok.length
+            case 'Hozzávalók (csökkenő)': return b.hozzavalok.length - a.hozzavalok.length
+            case 'Kedvencek': return b.likedb - a.likedb
+            case 'Kommentek': return b.kommentdb - a.kommentdb
+            default: return 0
+        }
+    })
 })
 
 const reset = () => {
@@ -141,17 +159,22 @@ const reset = () => {
     selectedAllergens.value = [...allergenek.value]
 }
 
-const filterButtonRef = ref(null)
-const dropdownMenuRef = ref(null)
 
 onMounted(() => {
     const handleClickOutside = (event) => {
         if (isDropdownOpen.value &&
-            dropdownMenuRef.value &&
             filterButtonRef.value &&
-            !dropdownMenuRef.value.contains(event.target) &&
-            !filterButtonRef.value.contains(event.target)) {
+            filterDropdownRef.value &&
+            !filterButtonRef.value.contains(event.target) &&
+            !filterDropdownRef.value.contains(event.target)) {
             isDropdownOpen.value = false
+        }
+        if (isRendezesDropdownOpen.value &&
+            rendezesButtonRef.value &&
+            rendezesDropdownRef.value &&
+            !rendezesButtonRef.value.contains(event.target) &&
+            !rendezesDropdownRef.value.contains(event.target)) {
+            isRendezesDropdownOpen.value = false
         }
     }
     document.addEventListener('click', handleClickOutside)
@@ -160,7 +183,6 @@ onMounted(() => {
         document.removeEventListener('click', handleClickOutside)
     })
 })
-
 const ModalOpen = ref(false)
 function OpenRecipeModal() {
     ModalOpen.value = true;
@@ -210,7 +232,7 @@ function CloseModal() {
                     </button>
 
                     <transition name="dropdown">
-                        <div ref="dropdownMenuRef" v-show="isDropdownOpen"
+                        <div ref="filterDropdownRef" v-show="isDropdownOpen"
                             class="z-10 absolute bg-accent-200 w-44 rounded-3xl border-4 border-accent-600 top-full left-0 mt-2 shadow-lg">
                             <ul class="p-2 text-sm text-body font-medium text-brand-700 text-center">
                                 <li>
@@ -247,9 +269,32 @@ function CloseModal() {
                         </div>
                     </transition>
 
-                    <button v-if="searchInput" @click="searchInput = ''" class="absolute right-3 top-1/2 -translate-y-1/2
+                              <transition name="dropdown">
+            <div ref="rendezesDropdownRef" v-show="isRendezesDropdownOpen"
+              class="z-10 absolute bg-accent-200 w-44 rounded-3xl border-4 border-accent-600 top-full right-0 mt-2 shadow-lg">
+              <ul class="p-2 text-sm font-medium text-brand-700 text-center">
+                <li class="mb-1 font-bold text-base ">Rendezés</li>
+                <li v-for="szempont in rendezesiSzempontok" :key="szempont">
+                  <button @click="selectedRendezes = szempont; isRendezesDropdownOpen = false"
+                    class="w-full px-3 py-2 rounded-2xl transition-colors" :class="selectedRendezes === szempont
+                      ? 'bg-brand-700 text-accent-200'
+                      : 'hover:bg-brand-100'">
+                    {{ szempont }}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </transition>
+
+                    <button v-if="searchInput" @click="searchInput = ''" class="absolute right-12 top-1/2 -translate-y-1/2
            text-brand-700 hover:text-brand-800 transition-colors">
                         <X class="w-5 h-5" stroke-width="3" />
+                    </button>
+                    <button ref="rendezesButtonRef" @click="toggleRendezesDropdown" class="absolute right-3 top-1/2 -translate-y-1/2
+         bg-accent-200 rounded-full p-1.5
+         text-brand-700 hover:text-brand-800 transition-all transform
+         hover:scale-110">
+                        <ArrowDownUp class="w-5 h-5" stroke-width="3" />
                     </button>
                 </div>
 

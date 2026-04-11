@@ -7,7 +7,6 @@ import { X, Filter, ChefHat, ArrowDownUp } from 'lucide-vue-next'
 
 const recipes = ref([])
 const selectedRecipe = ref(null)
-const isModalVisible = ref(false)
 const searchInput = ref('')
 const allergenek = ref([])
 const selectedAllergens = ref([])
@@ -142,15 +141,24 @@ const reset = () => {
 
 const filterButtonRef = ref(null)
 const rendezesButtonRef = ref(null)
+const filterDropdownRef = ref(null)
+const rendezesDropdownRef = ref(null)
 
 onMounted(() => {
   const handleClickOutside = (event) => {
     if (isDropdownOpen.value &&
-      rendezesButtonRef.value &&
       filterButtonRef.value &&
-      !rendezesButtonRef.value.contains(event.target) &&
-      !filterButtonRef.value.contains(event.target)) {
+      filterDropdownRef.value &&
+      !filterButtonRef.value.contains(event.target) &&
+      !filterDropdownRef.value.contains(event.target)) {
       isDropdownOpen.value = false
+    }
+    if (isRendezesDropdownOpen.value &&
+      rendezesButtonRef.value &&
+      rendezesDropdownRef.value &&
+      !rendezesButtonRef.value.contains(event.target) &&
+      !rendezesDropdownRef.value.contains(event.target)) {
+      isRendezesDropdownOpen.value = false
     }
   }
   document.addEventListener('click', handleClickOutside)
@@ -172,7 +180,7 @@ onMounted(() => {
       <!-- Belső konténer -->
       <div class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] overflow-y-auto scroll-smooth p-3 foodr-scrollbar ">
 
-        <div v-if="recipesToShow.length == 0"
+        <div v-if="recipesToShow.length == 0 && !searchInput"
           class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
           <div class="text-center space-y-4 animate-fade-in">
             <div class="w-24 h-24 mx-auto rounded-full bg-accent-400/30 flex items-center justify-center">
@@ -235,7 +243,7 @@ onMounted(() => {
           </transition>
 
           <transition name="dropdown">
-            <div v-show="isRendezesDropdownOpen"
+            <div  ref="rendezesDropdownRef" v-show="isRendezesDropdownOpen"
               class="z-10 absolute bg-accent-200 w-44 rounded-3xl border-4 border-accent-600 top-full right-0 mt-2 shadow-lg">
               <ul class="p-2 text-sm font-medium text-brand-700 text-center">
                 <li class="mb-1 font-bold text-base ">Rendezés</li>
@@ -251,7 +259,7 @@ onMounted(() => {
             </div>
           </transition>
 
-          <button v-if="searchInput" @click="searchInput = ''" class="absolute right-3 top-1/2 -translate-y-1/2
+          <button v-if="searchInput" @click="searchInput = ''" class="absolute right-12 top-1/2 -translate-y-1/2
            text-brand-700 hover:text-brand-800 transition-colors">
             <X class="w-5 h-5" stroke-width="3" />
           </button>
