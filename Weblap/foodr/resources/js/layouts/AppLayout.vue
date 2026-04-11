@@ -39,7 +39,7 @@ const openLoginModal = () => {
 const modalMap = {
   'Profilom': { open: () => { profilomOpen.value = true }, requiresAuth: true },
   'Beállítások': { open: () => { beallitasokOpen.value = true }, requiresAuth: true },
-  'Súgó': { open: () => { sugoOpen.value = true }, requiresAuth: true },
+  'Súgó': { open: () => { sugoOpen.value = true }, requiresAuth: false },
 }
 
 const LeftnavItems = ref([
