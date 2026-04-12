@@ -2,6 +2,7 @@
 import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check, Send, Trash, Trash2, Pencil } from 'lucide-vue-next'
 import { computed, onMounted, ref, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
+import SzerkesztModal from './SzerkesztModal.vue'
 
 const props = defineProps({
   recipe: Object,
@@ -17,7 +18,7 @@ const page = usePage()
 const adagInput = ref(1);
 const kommentek = ref([])
 const felhasznalo = ref(null)
-
+const szerkesztes = ref(false)
 
 watch(() => props.open, (isOpen) => {
   if (isOpen && props.recipe?.id) {
@@ -121,13 +122,12 @@ async function getKommentek() {
   if (!props.recipe?.id) return
   const res = await fetch(`/kommentek/${props.recipe.id}`)
   kommentek.value = await res.json()
-  console.log(props.recipe.id)
 }
 
 const kommentInput = ref('')
 function Komment() {
 
-  if(kommentInput.value.trim() === '') return
+  if (kommentInput.value.trim() === '') return
   router.post('/komment', { recept_id: props.recipe.id, szoveg: kommentInput.value }, {
     preserveScroll: true,
     preserveState: true,
@@ -143,9 +143,8 @@ function Komment() {
 }
 
 const GetUserId = async () => {
-        const res = await fetch('/felhasznalo')
-        felhasznalo.value = await res.json()
-        console.log("Az id:" + felhasznaloid.value.id)
+  const res = await fetch('/felhasznalo')
+  felhasznalo.value = await res.json()
 
 }
 
@@ -159,6 +158,14 @@ const deleteKomment = (komment) => {
   })
 }
 
+function ReceptTorlese(id) {
+    axios.delete(`/recept-torles/${id}`)
+        .then(() => {
+            window.location.reload()
+        })
+    resolve()
+}
+
 </script>
 
 <template>
@@ -166,7 +173,7 @@ const deleteKomment = (komment) => {
     <div v-if="props.open"
       class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       @click.self="emit('close')">
-      <div
+      <div v-if="!szerkesztes"
         class="relative w-full max-w-lg rounded-3xl shadow-2xl border-accent-600 border-6 overflow-hidden foodr-scrollbar">
         <div class="bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 flex flex-col max-h-[85vh]">
 
@@ -199,7 +206,7 @@ const deleteKomment = (komment) => {
 
                 <div class="relative flex items-center w-20 rounded-base">
                   <button type="button" id="" @click="adagInput > 1 ? adagInput-- : null"
-                    class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
+                    class="text-body button-brand w-10 rounded-full font-bold flex items-center justify-center pb-0.5">
                     -
                   </button>
                   <input type="number" id="" v-model.number="adagInput" data-input-counter
@@ -207,7 +214,7 @@ const deleteKomment = (komment) => {
                     class="border-x-0 h-10 placeholder:text-heading text-center w-full bg-neutral-secondary-medium border-default-medium py-2.5 placeholder:text-body"
                     required />
                   <button type="button" id="" @click="adagInput < 100 ? adagInput++ : null"
-                    class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
+                    class="text-body button-brand w-10 rounded-full font-bold flex items-center justify-center pb-0.5">
                     +
                   </button>
                 </div>
@@ -264,15 +271,18 @@ const deleteKomment = (komment) => {
               </div>
             </div>
 
-            <h4 v-if="kommentek.length>0" class="text-lg font-semibold mb-3 text-brand-700 pt-4">Kommentek ({{ kommentek.length }})</h4>
-                        <h4 v-if="kommentek.length==0" class="text-lg font-semibold mb-3 text-brand-700 pt-4">Még nem kommenteltek, legyél te az első!</h4>
+            <h4 v-if="kommentek.length > 0" class="text-lg font-semibold mb-3 text-brand-700 pt-4">Kommentek ({{
+              kommentek.length }})</h4>
+            <h4 v-if="kommentek.length == 0" class="text-lg font-semibold mb-3 text-brand-700 pt-4">Még nem
+              kommenteltek,
+              legyél te az első!</h4>
             <div class="flex justify-items-center gap-1">
               <input v-model="kommentInput" @keyup.enter="Komment()" class="w-full bg-accent-200 text-brand-700 placeholder:text-brand-700 text-sm
            border-4 border-accent-600 rounded-3xl py-2.5 px-4
            focus:outline-none focus:ring-2 focus:ring-accent-400
            focus:border-transparent transition-all shadow-md" placeholder="Komment írása..." />
               <button @click="Komment()"
-                class="p-3 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
+                class="p-3 rounded-full button-brand shadow-md transition-all duration-200 flex items-center justify-center">
                 <Send class="w-6 h-6" />
               </button>
             </div>
@@ -291,7 +301,7 @@ const deleteKomment = (komment) => {
 
               </div>
               <button v-if="felhasznalo.id === komment.felhasznalo_id" @click="deleteKomment(komment)"
-                class="ml-auto p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
+                class="ml-auto p-2 rounded-full button-brand shadow-md flex items-center justify-center">
                 <Trash2 class="w-5 h-5" />
               </button>
             </div>
@@ -299,42 +309,46 @@ const deleteKomment = (komment) => {
 
           </div>
 
-          <div v-if="recipe.id==felhasznalo_id" class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
-            <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
-                 text-accent-400 font-bold shadow-md
-                 transition-all hover:scale-[1.1]
-                 flex items-center justify-center gap-2
-                 disabled:opacity-50 disabled:cursor-not-allowed">
-              <Heart :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
+          <div v-if="props.recipe.felhasznalo_id == felhasznalo?.id"
+            class="flex items-center justify-between px-8 pt-8 pb-4 gap-8">
+            <button @click="szerkesztes = true" class="w-full p-2 rounded-full  font-bold shadow-md
+                  button-brand
+                 flex items-center justify-center gap-2">
+              <Pencil :stroke-width="2" class="w-13 h-13 text-accent-300 pt-0.5 transition-all" />
             </button>
-
-            <button v-else @click="handleRemoveFromFavorites" class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
-                 text-accent-400 font-bold shadow-md
-                 transition-all hover:scale-[1.1]
+            <button @click="ReceptTorlese(props.recipe.id)" class="w-full p-2 rounded-full  font-bold shadow-md
+                 button-brand
                  flex items-center justify-center gap-2
-                 disabled:opacity-50 disabled:cursor-not-allowed">
-              <HeartCrack :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
+                 ">
+              <Trash2 :stroke-width="2" class="trash-icon w-13 h-13 text-accent-300 pt-0.5 transition-all" />
             </button>
           </div>
           <div v-else class="flex items-center justify-between px-8 pt-8 pb-4 gap-10 shrink-0">
-            <button class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
-                 text-accent-400 font-bold shadow-md
-                 transition-all hover:scale-[1.1]
+            <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="w-full p-2 rounded-full  font-bold shadow-md
+                 transition-all
                  flex items-center justify-center gap-2
-                 disabled:opacity-50 disabled:cursor-not-allowed">
-              <Pencil :stroke-width="2" class="w-13 h-13 text-accent-300 pt-0.5 transition-all" />
+                 button-brand">
+              <Heart :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
             </button>
-            <button class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
-                 text-accent-400 font-bold shadow-md
-                 transition-all hover:scale-[1.1]
+
+            <button v-else @click="handleRemoveFromFavorites" class="w-full p-2 rounded-full button-brand font-bold shadow-md
+                  hover:scale-[1.1]
                  flex items-center justify-center gap-2
-                 disabled:opacity-50 disabled:cursor-not-allowed">
-              <Trash2 :stroke-width="2" class="trash-icon w-13 h-13 text-accent-300 pt-0.5 transition-all" />
+                 ">
+              <HeartCrack :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
             </button>
           </div>
         </div>
 
       </div>
+
+      <div v-if="szerkesztes">
+    <SzerkesztModal :open="szerkesztes=true" :recipe="props.recipe" :blur="false"  @close="szerkesztes = false" />
+      </div>
+
+
+
+
 
     </div>
 

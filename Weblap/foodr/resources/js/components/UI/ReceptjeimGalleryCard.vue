@@ -132,16 +132,16 @@ function ReceptTorlese(id) {
             <div class="flex gap-2 mt-auto">
 
                 <button @click.stop="OpenRecipeModal"
-                    class="flex-1 py-2.5 sm:py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
+                    class="flex-1 py-2.5 sm:py-3 rounded-3xl button-brand flex items-center justify-center gap-2">
                     Részletek
                 </button>
                 <button @click.stop="OpenSzerkesztModal"
-                    class="delete-btn w-13 h-13 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center">
+                    class="delete-btn w-13 h-13 p-2 rounded-full button-brand flex items-center justify-center">
                     <Pencil class=" w-7 h-7" />
                 </button>
 
                 <button @click.stop="ReceptTorlese(recipe.id)"
-                    class="delete-btn w-13 h-13 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center hover:bg-red-600">
+                    class="delete-btn w-13 h-13 p-2 rounded-full button-brand flex items-center justify-center hover:bg-red-600">
                     <Trash2 class="trash-icon w-7 h-7" />
                 </button>
             </div>

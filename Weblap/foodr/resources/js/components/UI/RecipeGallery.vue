@@ -71,7 +71,7 @@ const filteredRecipes = computed(() => {
   const result = []
   for (const recipe of recipes.value) {
 
-    if (recipe.allergenek.some(a =>!selectedAllergens.value.includes(a))) {
+    if (recipe.allergenek.some(a => !selectedAllergens.value.includes(a))) {
       continue
     }
 
@@ -233,8 +233,7 @@ onMounted(() => {
                   </label>
                 </li>
                 <li>
-                  <button @click="reset()"
-                    class="w-full mt-3 bg-brand-700 text-accent-200 py-2 rounded-3xl hover:bg-brand-800 transition-colors">
+                  <button @click="reset()" class="w-full mt-3 py-2 rounded-3xl button-brand">
                     Alaphelyzet
                   </button>
                 </li>
@@ -243,7 +242,7 @@ onMounted(() => {
           </transition>
 
           <transition name="dropdown">
-            <div  ref="rendezesDropdownRef" v-show="isRendezesDropdownOpen"
+            <div ref="rendezesDropdownRef" v-show="isRendezesDropdownOpen"
               class="z-10 absolute bg-accent-200 w-44 rounded-3xl border-4 border-accent-600 top-full right-0 mt-2 shadow-lg">
               <ul class="p-2 text-sm font-medium text-brand-700 text-center">
                 <li class="mb-1 font-bold text-base ">Rendezés</li>
@@ -251,7 +250,7 @@ onMounted(() => {
                   <button @click="selectedRendezes = szempont; isRendezesDropdownOpen = false"
                     class="w-full px-3 py-2 rounded-2xl transition-colors" :class="selectedRendezes === szempont
                       ? 'bg-brand-700 text-accent-200'
-                      : 'hover:bg-brand-100'">
+                      : 'hover:bg-accent-300'">
                     {{ szempont }}
                   </button>
                 </li>

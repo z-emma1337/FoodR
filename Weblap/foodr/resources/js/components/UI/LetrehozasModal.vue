@@ -145,7 +145,7 @@ const szurtHozzavalok = computed(() => {
                         <label class="block">Hány perc elkészíteni ezt a receptet?</label>
                         <div class="relative flex items-center w-full rounded-base mb-5">
                             <button type="button" @click="receptIdo = receptIdo - 1"
-                                class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
+                                class="text-body w-10 button-brand rounded-full font-bold flex items-center justify-center pb-0.5">
                                 -
                             </button>
                             <input type="number" placeholder="40" v-model.number="receptIdo" min="1" max="400"
@@ -153,7 +153,7 @@ const szurtHozzavalok = computed(() => {
                                 class="h-10 bg-accent-400/60 border-3 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-15 rounded-3xl mx-2 text-center py-2.5"
                                 required />
                             <button type="button" @click="receptIdo++"
-                                class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
+                                class="text-body button-brand w-10 rounded-full font-bold flex items-center justify-center pb-0.5">
                                 +
                             </button>
                             <label class="pl-2">perc</label>
@@ -162,7 +162,7 @@ const szurtHozzavalok = computed(() => {
                         <label class="block">Hány adag készül el az ételből?</label>
                         <div class="relative flex items-center w-full mb-5 rounded-base">
                             <button type="button" @click="receptAdag = receptAdag - 1"
-                                class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
+                                class="text-body button-brand w-10 rounded-full font-bold flex items-center justify-center pb-0.5">
                                 -
                             </button>
                             <input type="number" placeholder="4" v-model.number="receptAdag" min="1" max="100"
@@ -170,7 +170,7 @@ const szurtHozzavalok = computed(() => {
                                 class="h-10 bg-accent-400/60 border-3 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-15 rounded-3xl mx-2 text-center py-2.5"
                                 required />
                             <button type="button" @click="receptAdag++"
-                                class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
+                                class="text-body button-brand w-10 rounded-full font-bold flex items-center justify-center pb-0.5">
                                 +
                             </button>
                             <label class="pl-2">adag</label>
@@ -178,19 +178,19 @@ const szurtHozzavalok = computed(() => {
 
 
                         <label class="block">Hozzávalók hozzáadása</label>
-                        <div class="relative flex flex-col w-full mb-5 rounded-base items-center">
+                        <div class="relative flex flex-col w-full mb-5 rounded-base">
                             <div v-for="(hozzavalo, index) in receptHozzavalok" :key="index"
                                 class="flex items-center mb-3 space-x-2">
 
                                 <!-- Dropdown trigger -->
-                                <div class="relative w-60">
+                                <div class="relative w-full">
                                     <button type="button"
                                         @click="activeHozzavaloIndex = activeHozzavaloIndex === index ? null : index"
                                         :class="hozzavalo.nev.length <= 1 ? 'border-red-500' : 'border-accent-600'"
                                         class="h-10 w-full pl-4 pr-8 bg-accent-400/60 border-3 rounded-3xl
-               text-left text-sm text-brand-700 flex items-center justify-between
+               text-left text-brand-700 flex items-center justify-between
                focus:outline-none shadow-md">
-                                        <span :class="!hozzavalo.nev ? 'text-brand-500/60' : 'text-brand-700'">
+                                        <span :class="!hozzavalo.nev ? 'text-slate-700/50' : 'text-brand-700'">
                                             {{ hozzavalo.nev || 'Válassz hozzávalót...' }}
                                         </span>
                                     </button>
@@ -200,7 +200,7 @@ const szurtHozzavalok = computed(() => {
                border-3 border-accent-600 rounded-2xl shadow-xl overflow-hidden">
                                         <div class="p-2 sticky top-0 bg-accent-200">
                                             <input v-model="hozzavaloKeres" type="text" placeholder="Keresés..." class="w-full px-3 py-1.5 text-sm bg-accent-400/60 border-2 border-accent-600
-                   rounded-xl text-brand-700 placeholder:text-brand-500/60
+                   rounded-xl text-brand-700
                    focus:outline-none focus:ring-2 focus:ring-accent-400" />
                                         </div>
                                         <div class="max-h-40 overflow-y-auto foodr-scrollbar pb-1 px-1">
@@ -223,17 +223,17 @@ const szurtHozzavalok = computed(() => {
                                 <label>g</label>
                                 <button v-if="index > 0" @click="torolHozzavalo(index)"
                                     class="delete-btn w-10 h-10 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center hover:bg-red-600">
-                                    <Trash2 class="trash-icon w-5 h-5" />
+                                    <Trash2 class="trash-icon w-6 h-6" />
                                 </button>
                                 <button v-else @click="hozzavalo.adag = null, hozzavalo.nev = ''"
                                     class="delete-btn w-10 h-10 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center hover:bg-red-600">
-                                    <Trash2 class="trash-icon w-5 h-5" />
+                                    <Trash2 class="trash-icon w-6 h-6" />
                                 </button>
                             </div>
                             <div class="w-full">
                                 <button @click="addHozzavalo()"
-                                    class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-800 text-accent-200 font-bold shadow-md 
-                            transition-all hover:scale-[1.1] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                                    class="w-full p-2 rounded-full font-bold shadow-md 
+                             flex items-center justify-center button-brand">
                                     + Hozzávaló
                                 </button>
                             </div>
@@ -252,17 +252,17 @@ const szurtHozzavalok = computed(() => {
                                     class="h-10 pl-5 bg-accent-400/60 border-3 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-full rounded-3xl mx-1 py-2.5" />
                                 <button v-if="index > 0" @click="torolLeiras(index)"
                                     class="delete-btn w-10 h-10 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center hover:bg-red-600">
-                                    <Trash2 class="trash-icon w-5 h-5" />
+                                    <Trash2 class="trash-icon w-6 h-6" />
                                 </button>
                                 <button v-else @click="leiras.leiras = ''"
                                     class="delete-btn w-10 h-10 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center hover:bg-red-600">
-                                    <Trash2 class="trash-icon w-5 h-5" />
+                                    <Trash2 class="trash-icon w-6 h-6" />
                                 </button>
                             </div>
                             <div class="w-full">
                                 <button @click="addLeiras()"
-                                    class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-800 text-accent-200 font-bold shadow-md 
-                            transition-all hover:scale-[1.1] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                                    class="w-full p-2 rounded-full font-bold shadow-md 
+                             flex items-center justify-center button-brand">
                                     + Lépés
                                 </button>
                             </div>
@@ -309,8 +309,8 @@ const szurtHozzavalok = computed(() => {
 
                     <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
                         <button @click="Letrehozas()" :disabled="!letrehozhato"
-                            class="w-full p-2 py-4 rounded-full bg-brand-700 hover:bg-brand-800 text-accent-200 font-bold text-lg shadow-md
-                        transition-all hover:scale-[1.1] flex items-center justify-center gap-2 disabled:opacity-50 disabled:transition-none disabled:hover:scale-100 disabled:hover:bg-brand-700">
+                            class="w-full p-2 py-4 rounded-full font-bold text-lg shadow-md
+                         flex items-center justify-center gap-2 button-brand disabled:opacity-50 disabled:transition-none disabled:hover:scale-100 disabled:hover:bg-brand-700">
                             Létrehozás
                         </button>
                     </div>

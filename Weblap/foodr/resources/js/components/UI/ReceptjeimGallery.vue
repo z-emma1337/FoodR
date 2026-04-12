@@ -44,13 +44,13 @@ onMounted(() => {
 })
 
 const loadAllergens = async () => {
-  try {
-    const res = await fetch('/allergenek')
-    allergenek.value = await res.json()
-    allergenek.value = allergenek.value.map(a => a.nev)
-  } catch (err) {
-    console.error('Hiba az allergének betöltésekor:', err)
-  }
+    try {
+        const res = await fetch('/allergenek')
+        allergenek.value = await res.json()
+        allergenek.value = allergenek.value.map(a => a.nev)
+    } catch (err) {
+        console.error('Hiba az allergének betöltésekor:', err)
+    }
 }
 
 const searchedRecipes = computed(() => {
@@ -205,7 +205,7 @@ function CloseModal() {
             <div :class="recipesToShow.length > 0 ? 'overflow-y-auto' : 'overflow-hidden'"
                 class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] scroll-smooth p-3 foodr-scrollbar">
 
-                <div v-if="recipesToShow.length == 0"
+                <div v-if="recipesToShow.length == 0 && !searchInput"
                     class=" relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
                     <div class="text-center space-y-4 animate-fade-in">
                         <button @click="OpenRecipeModal"
@@ -260,8 +260,7 @@ function CloseModal() {
                                     </label>
                                 </li>
                                 <li>
-                                    <button @click="reset()"
-                                        class="w-full mt-3 bg-brand-700 text-accent-200 py-2 rounded-3xl hover:bg-brand-800 transition-colors">
+                                    <button @click="reset()" class="w-full mt-3 py-2 rounded-3xl button-brand">
                                         Alaphelyzet
                                     </button>
                                 </li>
@@ -269,22 +268,22 @@ function CloseModal() {
                         </div>
                     </transition>
 
-                              <transition name="dropdown">
-            <div ref="rendezesDropdownRef" v-show="isRendezesDropdownOpen"
-              class="z-10 absolute bg-accent-200 w-44 rounded-3xl border-4 border-accent-600 top-full right-0 mt-2 shadow-lg">
-              <ul class="p-2 text-sm font-medium text-brand-700 text-center">
-                <li class="mb-1 font-bold text-base ">Rendezés</li>
-                <li v-for="szempont in rendezesiSzempontok" :key="szempont">
-                  <button @click="selectedRendezes = szempont; isRendezesDropdownOpen = false"
-                    class="w-full px-3 py-2 rounded-2xl transition-colors" :class="selectedRendezes === szempont
-                      ? 'bg-brand-700 text-accent-200'
-                      : 'hover:bg-brand-100'">
-                    {{ szempont }}
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </transition>
+                    <transition name="dropdown">
+                        <div ref="rendezesDropdownRef" v-show="isRendezesDropdownOpen"
+                            class="z-10 absolute bg-accent-200 w-44 rounded-3xl border-4 border-accent-600 top-full right-0 mt-2 shadow-lg">
+                            <ul class="p-2 text-sm font-medium text-brand-700 text-center">
+                                <li class="mb-1 font-bold text-base ">Rendezés</li>
+                                <li v-for="szempont in rendezesiSzempontok" :key="szempont">
+                                    <button @click="selectedRendezes = szempont; isRendezesDropdownOpen = false"
+                                        class="w-full px-3 py-2 rounded-2xl transition-colors" :class="selectedRendezes === szempont
+                                            ? 'bg-brand-700 text-accent-200'
+                                            : 'hover:bg-accent-300'">
+                                        {{ szempont }}
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </transition>
 
                     <button v-if="searchInput" @click="searchInput = ''" class="absolute right-12 top-1/2 -translate-y-1/2
            text-brand-700 hover:text-brand-800 transition-colors">

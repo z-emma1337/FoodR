@@ -253,8 +253,7 @@ onMounted(() => {
                   </label>
                 </li>
                 <li>
-                  <button @click="reset()"
-                    class="w-full mt-3 bg-brand-700 text-accent-200 py-2 rounded-3xl hover:bg-brand-800 transition-colors">
+                  <button @click="reset()" class="w-full mt-3 py-2 rounded-3xl button-brand">
                     Alaphelyzet
                   </button>
                 </li>
@@ -271,7 +270,7 @@ onMounted(() => {
                   <button @click="selectedRendezes = szempont; isRendezesDropdownOpen = false"
                     class="w-full px-3 py-2 rounded-2xl transition-colors" :class="selectedRendezes === szempont
                       ? 'bg-brand-700 text-accent-200'
-                      : 'hover:bg-brand-100'">
+                      : 'hover:bg-accent-300'">
                     {{ szempont }}
                   </button>
                 </li>
