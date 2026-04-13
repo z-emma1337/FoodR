@@ -280,7 +280,7 @@ const szurtHozzavalok = computed(() => {
                                 <label for="dropzone-file"
                                     :style="kepPreview ? { backgroundImage: `url(${kepPreview})` } : {}"
                                     :class="Kep == null ? 'border-red-500 shadow-red-400 shadow-lg' : 'border-accent-600'"
-                                    class="group relative flex flex-col items-center justify-center w-full h-64 border-3 rounded-3xl bg-accent-400/60 shadow-md bg-cover bg-center bg-no-repeat overflow-hidden">
+                                    class="cursor-pointer group relative flex flex-col items-center justify-center w-full h-64 border-3 rounded-3xl bg-accent-400/60 shadow-md bg-cover bg-center bg-no-repeat overflow-hidden">
 
 
                                     <div v-if="Kep == null"

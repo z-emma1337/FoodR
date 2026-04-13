@@ -133,7 +133,7 @@ function CloseRecipeModal(){
       <div class="flex gap-2 mt-auto">
 
         <button @click.stop="OpenRecipeModal"
-          class="flex-1 py-2.5 sm:py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
+          class="flex-1 py-2.5 sm:py-3 rounded-3xl button-brand hover:!scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
           Részletek
         </button>
 

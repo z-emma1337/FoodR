@@ -274,12 +274,12 @@ const szurtHozzavalok = computed(() => {
                         </div>
  
                         <label class="block">Fénykép feltöltése</label>
-                        <div class="relative flex flex-col w-full mb-5 rounded-base items-center">
-                            <div class="flex items-center justify-center w-full">
+                        <div class="relative flex flex-col w-full mb-5 rounded-base items-center ">
+                            <div class="flex items-center justify-center w-full ">
                                 <label for="dropzone-file"
                                     :style="kepPreview ? { backgroundImage: `url(${kepPreview})` } : {}"
                                     :class="kepPreview == null ? 'border-red-500 shadow-red-400 shadow-lg' : 'border-accent-600'"
-                                    class="group relative flex flex-col items-center justify-center w-full h-64 border-3 rounded-3xl bg-accent-400/60 shadow-md bg-cover bg-center bg-no-repeat overflow-hidden">
+                                    class="cursor-pointer group relative flex flex-col items-center justify-center w-full h-64 border-3 rounded-3xl bg-accent-400/60 shadow-md bg-cover bg-center bg-no-repeat overflow-hidden">
  
                                     <div v-if="kepPreview == null"
                                         class="flex flex-col items-center justify-center text-body pt-5 pb-6">

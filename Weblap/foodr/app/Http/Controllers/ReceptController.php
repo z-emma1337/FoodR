@@ -53,6 +53,8 @@ class ReceptController extends Controller
                     'hozzavalok' => $hozzavalok,
                     'liked' => $liked,
                     'felhasznalo_id' => $recept->felhasznalo_id,
+                    'felhasznalo_nev' => $recept->felhasznalo->nev,
+                    'felhasznalo_pfpurl' => $recept->felhasznalo->profilkepurl,
                     'likedb' => $recept->interakciok->where('liked', 1)->count(),
                     'kommentdb' => $recept->kommentek->count(),
                 ];

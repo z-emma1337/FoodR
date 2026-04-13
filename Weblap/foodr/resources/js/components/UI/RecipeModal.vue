@@ -145,7 +145,7 @@ function Komment() {
 const GetUserId = async () => {
   const res = await fetch('/felhasznalo')
   felhasznalo.value = await res.json()
-
+  console.log(props.recipe)
 }
 
 const deleteKomment = (komment) => {
@@ -159,11 +159,11 @@ const deleteKomment = (komment) => {
 }
 
 function ReceptTorlese(id) {
-    axios.delete(`/recept-torles/${id}`)
-        .then(() => {
-            window.location.reload()
-        })
-    resolve()
+  axios.delete(`/recept-torles/${id}`)
+    .then(() => {
+      window.location.reload()
+    })
+  resolve()
 }
 
 </script>
@@ -181,6 +181,7 @@ function ReceptTorlese(id) {
             <h2 class="text-2xl font-bold text-slate-900">
               {{ recipe.nev }}
             </h2>
+
             <button @click="emit('close')"
               class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200">
               <CloseIcon class="w-10 h-10 text-brand-600" :stroke-width="3" />
@@ -218,8 +219,12 @@ function ReceptTorlese(id) {
                     +
                   </button>
                 </div>
+                <div class="flex items-center gap-1 p-2 rounded-xl">
 
+                  <img :src="props.recipe.felhasznalo_pfpurl" class="w-12 h-12 rounded-full object-cover shadow-md" />
 
+                  <span class="font-semibold text-sm text-brand-700">{{ props.recipe.felhasznalo_nev }} receptje</span>
+                </div>
 
               </div>
             </div>
@@ -343,7 +348,7 @@ function ReceptTorlese(id) {
       </div>
 
       <div v-if="szerkesztes">
-    <SzerkesztModal :open="szerkesztes=true" :recipe="props.recipe" :blur="false"  @close="szerkesztes = false" />
+        <SzerkesztModal :open="szerkesztes = true" :recipe="props.recipe" :blur="false" @close="szerkesztes = false" />
       </div>
 
 
