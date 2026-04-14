@@ -294,9 +294,7 @@ function ReceptTorlese(id) {
 
             <div v-for="komment in kommentek.sort((a, b) => b.created_at - a.created_at)" :key="komment.id"
               class="flex items-end gap-3 mt-2">
-              <div class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white font-bold">
-                <img :src="komment.pfpurl" class="w-10 h-10 rounded-full object-cover" />
-              </div>
+              <img :src="komment.pfpurl" class="w-10 h-10 rounded-full object-cover shadow-md" />
               <div>
                 <div class="flex items-center gap-2">
                   <span class="font-semibold text-sm text-brand-700">{{ komment.felhasznalo_nev }}</span>
