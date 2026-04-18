@@ -178,10 +178,10 @@ onMounted(() => {
       class="rounded-3xl overflow-hidden border-4 border-accent-600 bg-gradient-to-br from-brand-800 via-brand-600 to-accent-700 animate-gradient backdrop-blur-sm shadow-2xl w-full h-full mx-12">
 
       <!-- Belső konténer -->
-      <div class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] overflow-y-auto scroll-smooth p-3 foodr-scrollbar ">
+      <div class="h-full overflow-y-auto scroll-smooth p-3 foodr-scrollbar">
 
         <div v-if="recipesToShow.length == 0 && !searchInput"
-          class="relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
+          class="relative h-full flex flex-col items-center justify-center gap-8 py-8">
           <div class="text-center space-y-4 animate-fade-in">
             <div class="w-24 h-24 mx-auto rounded-full bg-accent-400/30 flex items-center justify-center">
               <ChefHat class="w-12 h-12 text-accent-600" />

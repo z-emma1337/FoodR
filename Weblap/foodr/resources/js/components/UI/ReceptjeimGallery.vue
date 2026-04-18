@@ -203,10 +203,10 @@ function CloseModal() {
 
             <!-- Belső konténer -->
             <div :class="recipesToShow.length > 0 ? 'overflow-y-auto' : 'overflow-hidden'"
-                class="h-[calc(100vh-4rem)] max-sm:h-[calc(100vh-2rem)] scroll-smooth p-3 foodr-scrollbar">
+                class="h-full scroll-smooth p-3 foodr-scrollbar">
 
                 <div v-if="recipesToShow.length == 0 && !searchInput"
-                    class=" relative h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
+                    class="relative h-full flex flex-col items-center justify-center gap-8 py-8">
                     <div class="text-center space-y-4 animate-fade-in">
                         <button @click="OpenRecipeModal"
                             class="w-24 h-24 mx-auto rounded-full border-6 border-accent-600 bg-accent-300 flex items-center justify-center">

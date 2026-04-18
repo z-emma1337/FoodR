@@ -7,7 +7,7 @@ import { Head } from '@inertiajs/vue3'
 <template>
       <Head title="FeedR" />
   <AppLayout>
-    <div class="w-full py-4 sm:py-6">
+    <div class="w-full h-full py-4 sm:py-6">
       <RecipeGallery />
       
     </div>

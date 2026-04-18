@@ -7,7 +7,7 @@ import { Head } from '@inertiajs/vue3'
 <template>
         <Head title="CreatR" />
   <AppLayout>
-    <div class="w-full py-4 sm:py-6 scrollable-none">
+    <div class="w-full h-full py-4 sm:py-6">
       <ReceptjeimGallery />
       
     </div>
