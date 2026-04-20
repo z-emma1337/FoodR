@@ -169,6 +169,7 @@ function ReceptTorlese(id) {
 </script>
 
 <template>
+  <Teleport to="body">
   <Transition name="modal-fade">
     <div v-if="props.open"
       class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
@@ -357,4 +358,5 @@ function ReceptTorlese(id) {
 
 
   </Transition>
+  </Teleport>
 </template>

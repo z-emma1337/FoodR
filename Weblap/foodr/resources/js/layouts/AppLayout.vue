@@ -169,46 +169,68 @@ watch(() => page.url, (currentPath) => {
       </main>
 
       <!-- MOBILE: Bottom navigation bar -->
-      <nav class="lg:hidden shrink-0 p-3">
-        <div
-          class="flex items-center justify-around bg-accent-300/95 backdrop-blur-lg rounded-3xl px-2 py-2 shadow-xl border-accent-600 border-3 gap-x-4">
+      <nav class="lg:hidden shrink-0 px-3 pb-3">
+        <div class="relative flex items-center justify-around bg-accent-300/95 backdrop-blur-lg rounded-3xl px-2 py-1 shadow-xl border-accent-600 border-3">
 
+          <!-- FavoR -->
           <button @click="handleLeftNav(LeftnavItems[1])"
             class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all"
             :class="LeftnavItems[1].active ? 'bg-accent-500/40' : 'active:bg-accent-400/30'">
             <div class="relative transition-transform duration-200"
               :class="LeftnavItems[1].active ? 'scale-125' : 'scale-100'">
-              <Heart class="w-6 h-6 transition-colors"
+              <Heart class="w-7 h-7 transition-colors"
                 :class="LeftnavItems[1].active ? 'text-brand-600 fill-brand-500' : 'text-slate-700'" />
               <span v-if="user && likedCount > 0"
                 class="absolute -top-2 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-brand-600 text-accent-200 text-[10px] font-bold flex items-center justify-center leading-none">
                 {{ likedCount }}
               </span>
             </div>
-            <span class="text-[10px] font-semibold tracking-wide"
+            <span class="text-sm font-semibold tracking-wide"
               :class="LeftnavItems[1].active ? 'text-brand-600' : 'text-slate-600'">FavoR</span>
           </button>
 
-          <button @click="handleLeftNav(LeftnavItems[0])"
-            class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all"
-            :class="LeftnavItems[0].active ? 'bg-accent-500/40' : 'active:bg-accent-400/30'">
-            <div class="transition-transform duration-200" :class="LeftnavItems[0].active ? 'scale-125' : 'scale-100'">
-              <Home class="w-6 h-6 transition-colors"
-                :class="LeftnavItems[0].active ? 'text-brand-600' : 'text-slate-700'" />
-            </div>
-            <span class="text-[10px] font-semibold tracking-wide"
-              :class="LeftnavItems[0].active ? 'text-brand-600' : 'text-slate-600'">SwipeR</span>
-          </button>
-
+          <!-- FeedR -->
           <button @click="handleLeftNav(LeftnavItems[2])"
             class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all"
             :class="LeftnavItems[2].active ? 'bg-accent-500/40' : 'active:bg-accent-400/30'">
             <div class="transition-transform duration-200" :class="LeftnavItems[2].active ? 'scale-125' : 'scale-100'">
-              <Search class="w-6 h-6 transition-colors"
+              <Search class="w-7 h-7 transition-colors"
                 :class="LeftnavItems[2].active ? 'text-brand-600' : 'text-slate-700'" />
             </div>
-            <span class="text-[10px] font-semibold tracking-wide"
+            <span class="text-sm font-semibold tracking-wide"
               :class="LeftnavItems[2].active ? 'text-brand-600' : 'text-slate-600'">FeedR</span>
+          </button>
+
+          <!-- SwipeR — raised center button -->
+          <div class="flex-1 flex justify-center">
+            <button @click="handleLeftNav(LeftnavItems[0])"
+              class="relative -top-6 w-20 h-20 rounded-full shadow-xl border-accent-600 border-6 transition-all active:scale-95
+                     bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 flex flex-col items-center justify-center gap-0.5"
+              :class="LeftnavItems[0].active ? 'ring-2 ring-brand-600 ring-offset-2 ring-offset-transparent' : ''">
+              <Home class="w-8 h-8 transition-colors"
+                :class="LeftnavItems[0].active ? 'text-brand-600' : 'text-slate-700'" />
+              <span class="text-xs font-bold tracking-wide"
+                :class="LeftnavItems[0].active ? 'text-brand-600' : 'text-slate-600'">SwipeR</span>
+            </button>
+          </div>
+
+          <!-- CreatR -->
+          <button @click="handleLeftNav(LeftnavItems[3])"
+            class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all"
+            :class="LeftnavItems[3].active ? 'bg-accent-500/40' : 'active:bg-accent-400/30'">
+            <div class="transition-transform duration-200" :class="LeftnavItems[3].active ? 'scale-125' : 'scale-100'">
+              <PencilLine class="w-7 h-7 transition-colors"
+                :class="LeftnavItems[3].active ? 'text-brand-600' : 'text-slate-700'" />
+            </div>
+            <span class="text-sm font-semibold tracking-wide"
+              :class="LeftnavItems[3].active ? 'text-brand-600' : 'text-slate-600'">CreatR</span>
+          </button>
+
+          <!-- Fiók -->
+          <button @click="handleRightNav(RightnavItems[0])"
+            class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all active:bg-accent-400/30">
+            <User class="w-7 h-7 text-slate-700" />
+            <span class="text-sm font-semibold tracking-wide text-slate-600">Fiók</span>
           </button>
 
         </div>
