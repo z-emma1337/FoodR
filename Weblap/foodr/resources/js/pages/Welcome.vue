@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted, computed, onUnmounted, watch } from 'vue'
+import { ref, onMounted, computed, onUnmounted, watch, nextTick } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
-import { Heart, X, ChefHat } from 'lucide-vue-next'
+import { Heart, X, ChefHat, Info } from 'lucide-vue-next'
 import AppLayout from '@/layouts/AppLayout.vue'
 import RecipeCard from '@/components/UI/RecipeCard.vue'
+import RecipeModal from '@/components/UI/RecipeModal.vue'
 import { useLoginModal } from '@/composables/useLoginModal'
 import { Head } from '@inertiajs/vue3'
 
@@ -21,6 +22,7 @@ const allergen_id = ref([]);
 
 const page = usePage()
 const { openLoginModal } = useLoginModal()
+const recipeModalOpen = ref(false)
 
 const currentRecipe = computed(() => recipes.value[currentIndex.value])
 const nextRecipe = computed(() => recipes.value[currentIndex.value + 1])
@@ -162,10 +164,10 @@ onMounted(async () => {
 
   window.addEventListener('allergenek-frissitve', receptekBetoltes)
 
-  document.addEventListener('mousemove', handleDragMove)
-  document.addEventListener('mouseup', handleDragEnd)
+  document.addEventListener('mousemove', handleDragMove, { passive: true })
+  document.addEventListener('mouseup', handleDragEnd, { passive: true })
   document.addEventListener('touchmove', handleDragMove, { passive: true })
-  document.addEventListener('touchend', handleDragEnd)
+  document.addEventListener('touchend', handleDragEnd, { passive: true })
 })
 onUnmounted(() => {
   window.removeEventListener('allergenek-frissitve', receptekBetoltes)
@@ -217,14 +219,18 @@ const handleDragEnd = () => {
 
 const nextCard = () => {
   currentIndex.value++
-  setTimeout(() => {
+  nextTick(() => {
     dragOffset.value = { x: 0, y: 0 }
     rotation.value = 0
     nextCardScale.value = 0.95
     nextCardOpacity.value = 0.5
     shouldShowCurrentCard.value = true
     isAnimating.value = false
-  }, 0)
+    if (recipes.value[currentIndex.value + 1]) {
+      const img = new Image()
+      img.src = recipes.value[currentIndex.value + 1].kep_url
+    }
+  })
 }
 
 </script>
@@ -266,15 +272,29 @@ const nextCard = () => {
 
           <!-- Gombok – picit belelógnak a kártyába -->
           <div class="flex items-center gap-5 z-20">
-            <button @click="swipeLeftClick" :disabled="isAnimating" class="group relative w-16 h-16 rounded-full
-                     bg-gradient-to-br from-red-500 to-red-600
+            <div class="w-20 flex justify-center">
+              <button @click="swipeLeftClick" :disabled="isAnimating" class="group relative w-16 h-16 rounded-full
+                       bg-gradient-to-br from-red-500 to-red-600
+                       shadow-xl hover:shadow-2xl
+                       transform hover:scale-110 active:scale-95
+                       transition-all duration-200
+                       disabled:opacity-50 disabled:cursor-not-allowed
+                       flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full bg-red-400/50 blur-xl group-hover:blur-2xl transition-all" />
+                <X class="relative w-8 h-8 text-white" />
+              </button>
+            </div>
+
+            <button @click="recipeModalOpen = true" :disabled="!currentRecipe" class="group relative w-14 h-14 rounded-full
+                     bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
+                     border-4 border-accent-600
                      shadow-xl hover:shadow-2xl
                      transform hover:scale-110 active:scale-95
                      transition-all duration-200
                      disabled:opacity-50 disabled:cursor-not-allowed
                      flex items-center justify-center">
-              <div class="absolute inset-0 rounded-full bg-red-400/50 blur-xl group-hover:blur-2xl transition-all" />
-              <X class="relative w-8 h-8 text-white" />
+              <div class="absolute inset-0 rounded-full bg-accent-400/30 blur-xl group-hover:blur-2xl transition-all" />
+              <Info class="relative w-7 h-7 text-brand-700" />
             </button>
 
             <button @click="swipeRightClick" :disabled="isAnimating" class="group relative w-20 h-20 rounded-full
@@ -288,6 +308,8 @@ const nextCard = () => {
               <Heart class="relative w-10 h-10 text-white fill-white" />
             </button>
           </div>
+
+          <RecipeModal :open="recipeModalOpen" :recipe="currentRecipe" @close="recipeModalOpen = false" />
 
         </div>
       </div>

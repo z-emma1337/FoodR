@@ -122,8 +122,8 @@ function CloseRecipeModal() {
 
     <div @click="OpenRecipeModal"
       class="cursor-pointer relative w-full aspect-[4/3] sm:aspect-[3/4] flex-shrink-0 overflow-hidden">
-      <img :src="recipe.kep_url" :alt="recipe.nev" class="absolute inset-0 w-full h-full object-cover 
-                  transition-transform duration-500 ease-out 
+      <img :src="recipe.kep_url" :alt="recipe.nev" loading="lazy" class="absolute inset-0 w-full h-full object-cover
+                  transition-transform duration-500 ease-out will-change-transform
                   group-hover:scale-110 origin-center" />
       <div
         class="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-transparent to-slate-900/70 transition-opacity duration-300 group-hover:opacity-80" />

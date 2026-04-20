@@ -21,9 +21,32 @@ const loadRecipes = async () => {
 }
 
 
+const minHozzavalok = computed(() => recipes.value.length ? Math.min(...recipes.value.map(r => r.hozzavalok.length)) : 2)
+const maxHozzavalok = computed(() => recipes.value.length ? Math.max(...recipes.value.map(r => r.hozzavalok.length)) : 10)
+const minIdo = computed(() => recipes.value.length ? Math.min(...recipes.value.map(r => r.ido)) : 2)
+const maxIdo = computed(() => recipes.value.length ? Math.max(...recipes.value.map(r => r.ido)) : 10)
+
 onMounted(() => {
   loadRecipes()
   loadAllergens()
+  const handleClickOutside = (event) => {
+    if (isDropdownOpen.value &&
+      filterButtonRef.value &&
+      filterDropdownRef.value &&
+      !filterButtonRef.value.contains(event.target) &&
+      !filterDropdownRef.value.contains(event.target)) {
+      isDropdownOpen.value = false
+    }
+    if (isRendezesDropdownOpen.value &&
+      rendezesButtonRef.value &&
+      rendezesDropdownRef.value &&
+      !rendezesButtonRef.value.contains(event.target) &&
+      !rendezesDropdownRef.value.contains(event.target)) {
+      isRendezesDropdownOpen.value = false
+    }
+  }
+  document.addEventListener('click', handleClickOutside)
+  onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 })
 
 const openModal = (recipe) => {
@@ -31,14 +54,14 @@ const openModal = (recipe) => {
   isModalVisible.value = true
 }
 
-const handleAddToFavorites = async (recipe) => {
-  console.log('Recept hozzáadva a kedvencekhez:', recipe.nev)
-  await loadRecipes()
+const handleAddToFavorites = (recipe) => {
+  const idx = recipes.value.findIndex(r => r.id === recipe.id)
+  if (idx >= 0) recipes.value[idx].liked = 1
 }
 
-const handleRemoveFromFavorites = async (recipe) => {
-  console.log('Recept eltávolítva a kedvencekből:', recipe.nev)
-  await loadRecipes()
+const handleRemoveFromFavorites = (recipe) => {
+  const idx = recipes.value.findIndex(r => r.id === recipe.id)
+  if (idx >= 0) recipes.value[idx].liked = 0
 }
 
 const loadAllergens = async () => {
@@ -52,55 +75,36 @@ const loadAllergens = async () => {
 }
 
 const searchedRecipes = computed(() => {
-  const result = []
   const input = searchInput.value.trim().toLowerCase()
-  if (!input) {
-    return recipes.value
-  }
+  if (!input) return recipes.value.filter(r => r.liked == 1)
+  const seen = new Set()
+  const result = []
   for (const recipe of recipes.value) {
-    if (recipe.liked == 1) {
-
-
-
-      if (recipe.nev.toLowerCase().includes(input) && !result.includes(recipe)) {
-        result.push(recipe)
-      }
-      if (recipe.leiras.toLowerCase().includes(input) && !result.includes(recipe)) {
-        result.push(recipe)
-      }
-      if (recipe.hozzavalok.some(hozzavalo => hozzavalo.nev.toLowerCase().includes(input)) && !result.includes(recipe)) {
-        result.push(recipe)
-      }
-      if (recipe.allergenek.some(allergen => allergen.toLowerCase().includes(input)) && !result.includes(recipe)) {
-        result.push(recipe)
-      }
+    if (recipe.liked != 1 || seen.has(recipe.id)) continue
+    if (
+      recipe.nev.toLowerCase().includes(input) ||
+      recipe.leiras.toLowerCase().includes(input) ||
+      recipe.hozzavalok.some(h => h.nev.toLowerCase().includes(input)) ||
+      recipe.allergenek.some(a => a.toLowerCase().includes(input))
+    ) {
+      seen.add(recipe.id)
+      result.push(recipe)
     }
   }
-
-
   return result
 })
 
+const selectedAllergenSet = computed(() => new Set(selectedAllergens.value))
+
 const filteredRecipes = computed(() => {
+  const allergenSet = selectedAllergenSet.value
   const result = []
   for (const recipe of recipes.value) {
-
-    if (recipe.liked == 1) {
-
-
-      if (recipe.allergenek.some(a => !selectedAllergens.value.includes(a))) {
-        continue
-      }
-
-      if (recipe.hozzavalok.length > inputHozzavalok.value) {
-        continue
-      }
-      if (recipe.ido > inputIdo.value) {
-        continue
-      }
-
-      result.push(recipe)
-    }
+    if (recipe.liked != 1) continue
+    if (recipe.allergenek.some(a => !allergenSet.has(a))) continue
+    if (recipe.hozzavalok.length > inputHozzavalok.value) continue
+    if (recipe.ido > inputIdo.value) continue
+    result.push(recipe)
   }
   return result
 })
@@ -163,29 +167,6 @@ const rendezesButtonRef = ref(null)
 const filterDropdownRef = ref(null)
 const rendezesDropdownRef = ref(null)
 
-onMounted(() => {
-  const handleClickOutside = (event) => {
-    if (isDropdownOpen.value &&
-      filterButtonRef.value &&
-      filterDropdownRef.value &&
-      !filterButtonRef.value.contains(event.target) &&
-      !filterDropdownRef.value.contains(event.target)) {
-      isDropdownOpen.value = false
-    }
-    if (isRendezesDropdownOpen.value &&
-      rendezesButtonRef.value &&
-      rendezesDropdownRef.value &&
-      !rendezesButtonRef.value.contains(event.target) &&
-      !rendezesDropdownRef.value.contains(event.target)) {
-      isRendezesDropdownOpen.value = false
-    }
-  }
-  document.addEventListener('click', handleClickOutside)
-
-  onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutside)
-  })
-})
 
 </script>
 
@@ -232,16 +213,14 @@ onMounted(() => {
                   <h5>Hozzávalók</h5>
                   <h4>{{ inputHozzavalok }}</h4>
                   <input v-model.number="inputHozzavalok" type="range"
-                    :min="recipes.length ? Math.min(...recipes.map(r => r.hozzavalok.length)) : 2"
-                    :max="recipes.length ? Math.max(...recipes.map(r => r.hozzavalok.length)) : 10" step="1"
+                    :min="minHozzavalok" :max="maxHozzavalok" step="1"
                     class="w-full mt-1 rounded border border-brand-300 accent-brand-600" />
                 </li>
                 <li>
                   <h5>Idő</h5>
                   <h4>{{ inputIdo }} perc</h4>
                   <input v-model.number="inputIdo" type="range"
-                    :min="recipes.length ? Math.min(...recipes.map(r => r.ido)) : 2"
-                    :max="recipes.length ? Math.max(...recipes.map(r => r.ido)) : 10" step="1"
+                    :min="minIdo" :max="maxIdo" step="1"
                     class="w-full mt-1 rounded border border-brand-300 accent-brand-600" />
                 </li>
                 <li v-for="allergen in allergenek" :key="allergen">
@@ -292,7 +271,7 @@ onMounted(() => {
 
 
         <div class="grid xs:grid-cols-2  sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-4">
-          <KedvencGalleryCard v-for="recipe in recipesToShow.filter(r => r.liked === 1)" :key="recipe.id"
+          <KedvencGalleryCard v-for="recipe in recipesToShow" :key="recipe.id"
             :recipe="recipe" @open-modal="openModal" @removed="recipes = recipes.filter(r => r.id !== $event)" />
         </div>
 

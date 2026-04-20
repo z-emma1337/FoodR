@@ -25,9 +25,32 @@ const loadRecipes = async () => {
 
 
 
+const minHozzavalok = computed(() => recipes.value.length ? Math.min(...recipes.value.map(r => r.hozzavalok.length)) : 2)
+const maxHozzavalok = computed(() => recipes.value.length ? Math.max(...recipes.value.map(r => r.hozzavalok.length)) : 10)
+const minIdo = computed(() => recipes.value.length ? Math.min(...recipes.value.map(r => r.ido)) : 2)
+const maxIdo = computed(() => recipes.value.length ? Math.max(...recipes.value.map(r => r.ido)) : 10)
+
 onMounted(() => {
   loadRecipes()
   loadAllergens()
+  const handleClickOutside = (event) => {
+    if (isDropdownOpen.value &&
+      filterButtonRef.value &&
+      filterDropdownRef.value &&
+      !filterButtonRef.value.contains(event.target) &&
+      !filterDropdownRef.value.contains(event.target)) {
+      isDropdownOpen.value = false
+    }
+    if (isRendezesDropdownOpen.value &&
+      rendezesButtonRef.value &&
+      rendezesDropdownRef.value &&
+      !rendezesButtonRef.value.contains(event.target) &&
+      !rendezesDropdownRef.value.contains(event.target)) {
+      isRendezesDropdownOpen.value = false
+    }
+  }
+  document.addEventListener('click', handleClickOutside)
+  onBeforeUnmount(() => document.removeEventListener('click', handleClickOutside))
 })
 
 const loadAllergens = async () => {
@@ -41,50 +64,36 @@ const loadAllergens = async () => {
 }
 
 const searchedRecipes = computed(() => {
-  const result = []
   const input = searchInput.value.trim().toLowerCase()
-  if (!input) {
-    return recipes.value
-  }
+  if (!input) return recipes.value
+  const seen = new Set()
+  const result = []
   for (const recipe of recipes.value) {
-
-    if (recipe.nev.toLowerCase().includes(input) && !result.includes(recipe)) {
+    if (seen.has(recipe.id)) continue
+    if (
+      recipe.nev.toLowerCase().includes(input) ||
+      recipe.leiras.toLowerCase().includes(input) ||
+      recipe.hozzavalok.some(h => h.nev.toLowerCase().includes(input)) ||
+      recipe.allergenek.some(a => a.toLowerCase().includes(input))
+    ) {
+      seen.add(recipe.id)
       result.push(recipe)
     }
-    if (recipe.leiras.toLowerCase().includes(input) && !result.includes(recipe)) {
-      result.push(recipe)
-    }
-    if (recipe.hozzavalok.some(hozzavalo => hozzavalo.nev.toLowerCase().includes(input)) && !result.includes(recipe)) {
-      result.push(recipe)
-    }
-    if (recipe.allergenek.some(allergen => allergen.toLowerCase().includes(input)) && !result.includes(recipe)) {
-      result.push(recipe)
-    }
-
   }
-
-
   return result
 })
 
+const selectedAllergenSet = computed(() => new Set(selectedAllergens.value))
+
 const filteredRecipes = computed(() => {
+  const allergenSet = selectedAllergenSet.value
   const result = []
   for (const recipe of recipes.value) {
-
-    if (recipe.allergenek.some(a => !selectedAllergens.value.includes(a))) {
-      continue
-    }
-
-    if (recipe.hozzavalok.length > inputHozzavalok.value) {
-      continue
-    }
-    if (recipe.ido > inputIdo.value) {
-      continue
-    }
-
+    if (recipe.allergenek.some(a => !allergenSet.has(a))) continue
+    if (recipe.hozzavalok.length > inputHozzavalok.value) continue
+    if (recipe.ido > inputIdo.value) continue
     result.push(recipe)
   }
-
   return result
 })
 
@@ -144,29 +153,6 @@ const rendezesButtonRef = ref(null)
 const filterDropdownRef = ref(null)
 const rendezesDropdownRef = ref(null)
 
-onMounted(() => {
-  const handleClickOutside = (event) => {
-    if (isDropdownOpen.value &&
-      filterButtonRef.value &&
-      filterDropdownRef.value &&
-      !filterButtonRef.value.contains(event.target) &&
-      !filterDropdownRef.value.contains(event.target)) {
-      isDropdownOpen.value = false
-    }
-    if (isRendezesDropdownOpen.value &&
-      rendezesButtonRef.value &&
-      rendezesDropdownRef.value &&
-      !rendezesButtonRef.value.contains(event.target) &&
-      !rendezesDropdownRef.value.contains(event.target)) {
-      isRendezesDropdownOpen.value = false
-    }
-  }
-  document.addEventListener('click', handleClickOutside)
-
-  onBeforeUnmount(() => {
-    document.removeEventListener('click', handleClickOutside)
-  })
-})
 
 </script>
 
@@ -212,16 +198,14 @@ onMounted(() => {
                   <h5>Hozzávalók</h5>
                   <h4>{{ inputHozzavalok }}</h4>
                   <input v-model.number="inputHozzavalok" type="range"
-                    :min="recipes.length ? Math.min(...recipes.map(r => r.hozzavalok.length)) : 2"
-                    :max="recipes.length ? Math.max(...recipes.map(r => r.hozzavalok.length)) : 10" step="1"
+                    :min="minHozzavalok" :max="maxHozzavalok" step="1"
                     class="w-full mt-1 rounded border border-brand-300 accent-brand-600" />
                 </li>
                 <li>
                   <h5>Idő</h5>
                   <h4>{{ inputIdo }} perc</h4>
                   <input v-model.number="inputIdo" type="range"
-                    :min="recipes.length ? Math.min(...recipes.map(r => r.ido)) : 2"
-                    :max="recipes.length ? Math.max(...recipes.map(r => r.ido)) : 10" step="1"
+                    :min="minIdo" :max="maxIdo" step="1"
                     class="w-full mt-1 rounded border border-brand-300 accent-brand-600" />
                 </li>
                 <li v-for="allergen in allergenek" :key="allergen">
