@@ -35,8 +35,17 @@ const flipTo = (face) => {
     }, 350)
 }
 
+const successToast = ref(false)
+let toastTimeout = null
+
 const openRegisztracio = () => flipTo('register')
 const closeRegisztracio = () => flipTo('login')
+const onRegistered = () => {
+    flipTo('login')
+    if (toastTimeout) clearTimeout(toastTimeout)
+    successToast.value = true
+    toastTimeout = setTimeout(() => { successToast.value = false }, 4000)
+}
 
 const authInput = ref('')
 const password = ref('')
@@ -155,10 +164,29 @@ onUnmounted(() => {
                 <div v-if="visibleFace === 'register'"
                     class="w-full rounded-3xl shadow-2xl border-accent-600 border-6 overflow-hidden">
                     <RegisztracioModal :open="visibleFace === 'register'" @close="closeRegisztracio"
-                        @switch-to-login="closeRegisztracio" />
+                        @switch-to-login="closeRegisztracio" @registered="onRegistered" />
                 </div>
 
             </div>
+
+            <Transition name="toast-slide">
+                <div v-if="successToast"
+                    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] px-6 py-3 rounded-3xl shadow-lg bg-gradient-to-r from-accent-300 to-accent-200 border border-accent-500 text-slate-900 text-sm font-medium text-center whitespace-nowrap">
+                    Sikeres regisztráció! Erősítsd meg az e-mail címed.
+                </div>
+            </Transition>
         </div>
     </Transition>
 </template>
+
+<style scoped>
+.toast-slide-enter-active,
+.toast-slide-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.toast-slide-enter-from,
+.toast-slide-leave-to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+}
+</style>

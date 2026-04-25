@@ -40,6 +40,6 @@ class RegisterController extends Controller
             \Illuminate\Support\Facades\Log::error('Email verification send failed: ' . $e->getMessage());
         }
 
-        return redirect()->route('bejelentkezes')->with('success', 'Sikeres regisztráció! Erősítsd meg az e-mail címed.');
+        return back();
     }
 }
