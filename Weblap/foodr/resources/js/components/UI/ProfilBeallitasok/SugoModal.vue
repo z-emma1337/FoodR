@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { X as CloseIcon, HelpCircle, ChevronDown, ChevronUp, Heart, Search, User, Mail } from 'lucide-vue-next'
+import { X, HelpCircle, ChevronDown, ChevronUp, Heart, Search, User, Mail } from 'lucide-vue-next'
 
 defineProps({ open: { type: Boolean, required: true } })
 const emit = defineEmits(['close'])
@@ -50,7 +50,7 @@ const toggleFaq = (i) => {
                         <h2 class="text-2xl font-bold text-slate-900">Súgó</h2>
                         <button @click="emit('close')"
                             class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-accent-500/30 transition-all duration-200">
-                            <CloseIcon class="w-6 h-6 text-brand-600" :stroke-width="3" />
+                            <X  class="w-6 h-6 text-brand-600" :stroke-width="3" />
                         </button>
                     </div>
 

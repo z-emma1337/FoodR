@@ -4,19 +4,26 @@ import { computed, ref, watch, onMounted } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
+    recipe: Object,
     visible: Boolean,
-    open: { type: Boolean, required: true }
+    open: { type: Boolean, required: true },
+    blur: { type: Boolean, default: true }
 })
 
 const emit = defineEmits(['close'])
-const receptNev = ref('');
-const receptIdo = ref();
-const receptAdag = ref();
-const receptHozzavalok = ref([{ nev: '', adag: null }]);
-const receptLeirasok = ref([{ leiras: '' }])
+const receptNev = ref(props.recipe.nev);
+const receptIdo = ref(props.recipe.ido);
+const receptAdag = ref(props.recipe.adag);
+const receptHozzavalok = ref(props.recipe.hozzavalok.map(h => ({ ...h, adag: Number(h.adag) })));
+const receptLeirasok = ref(
+    props.recipe.leiras
+        .split(/\d+\.\s/)
+        .filter(l => l.trim().length > 0)
+        .map(l => ({ leiras: l.trim() }))
+);
 const letrehozhato = ref(false);
 const Kep = ref(null);
-const kepPreview = ref(null);
+const kepPreview = ref(props.recipe.kep_url);
 const hozzavalok = ref([]);
 
 const getOsszesHozzavalo = async () => {
@@ -36,7 +43,6 @@ const addHozzavalo = () => {
     if (receptHozzavalok.value.at(-1).nev && receptHozzavalok.value.at(-1).adag) {
         receptHozzavalok.value.push({ nev: '', adag: null })
     }
-
 }
 
 const torolHozzavalo = (index) => {
@@ -47,15 +53,13 @@ const addLeiras = () => {
     if (receptLeirasok.value.at(-1).leiras) {
         receptLeirasok.value.push({ leiras: '' })
     }
-
 }
 
 const torolLeiras = (index) => {
     receptLeirasok.value.splice(index, 1)
 }
 
-const Letrehozas = () => {
-
+const Szerkesztes = () => {
     const formData = new FormData()
 
     formData.append('receptNev', receptNev.value)
@@ -71,9 +75,13 @@ const Letrehozas = () => {
         formData.append(`receptLeirasok[${i}]`, l.leiras)
     })
 
-    formData.append('kep', Kep.value)
+    if (Kep.value) {
+        formData.append('kep', Kep.value)
+    } else {
+        formData.append('kep_url', props.recipe.kep_url)
+    }
 
-    router.post('/receptLetrehozas', formData, {
+    router.post(`/receptSzerkesztese/${props.recipe.id}`, formData, {
         forceFormData: true,
         preserveScroll: false,
         onSuccess: () => {
@@ -87,15 +95,15 @@ const Letrehozas = () => {
 }
 
 watch([receptNev, receptIdo, receptAdag, receptHozzavalok, receptLeirasok, Kep], () => {
-    if (Kep.value == null || receptNev.value.length <= 1 || receptIdo.value <= 0 || receptAdag.value <= 0 || receptHozzavalok.value.some(h => h.nev.length <= 1 || h.adag <= 0) || receptLeirasok.value.some(l => l.leiras.length <= 1)) {
+    const kepOk = kepPreview.value !== null;
+    if (!kepOk || receptNev.value.length <= 1 || receptIdo.value <= 0 || receptAdag.value <= 0 ||
+        receptHozzavalok.value.some(h => h.nev.length <= 1 || h.adag <= 0) ||
+        receptLeirasok.value.some(l => l.leiras.length <= 1)) {
         letrehozhato.value = false;
+    } else {
+        letrehozhato.value = true;
     }
-    else {
-        letrehozhato.value = true
-    }
-},
-    { deep: true }
-)
+}, { deep: true, immediate: true })
 
 const KepFeltoltes = (FeltoltottKep) => {
     Kep.value = FeltoltottKep.target.files[0]
@@ -115,16 +123,15 @@ const szurtHozzavalok = computed(() => {
 
 <template>
     <Transition name="modal-fade">
-        <div v-if="props.open"
-            class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-            @click.self="emit('close')">
+        <div v-if="props.open" :class="props.blur ? 'bg-black/60 backdrop-blur-sm' : ''"
+            class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click.self="emit('close')">
             <div
                 class="relative w-full max-w-lg rounded-3xl shadow-2xl border-accent-600 border-6 overflow-hidden foodr-scrollbar">
                 <div class="bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 flex flex-col max-h-[85vh]">
 
                     <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
                         <h2 class="text-2xl font-bold text-slate-900">
-                            Recept létrehozása
+                            Recept szerkesztése
                         </h2>
                         <button @click="emit('close')"
                             class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200">
@@ -136,12 +143,11 @@ const szurtHozzavalok = computed(() => {
 
                         <label class="block">Recept elnevezése</label>
                         <div class="relative flex items-center w-full mb-5 rounded-base">
-
                             <input v-model="receptNev" type="text"
                                 :class="receptNev.length <= 1 ? 'border-red-500 shadow-red-400 shadow-lg' : 'border-accent-600'"
                                 class="h-10 pl-5 bg-accent-400/60 border-3 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-full rounded-3xl mx-2 py-2.5" />
-
                         </div>
+
                         <label class="block">Hány perc elkészíteni ezt a receptet?</label>
                         <div class="relative flex items-center w-full rounded-base mb-5">
                             <button type="button" @click="receptIdo = receptIdo - 1"
@@ -176,7 +182,6 @@ const szurtHozzavalok = computed(() => {
                             <label class="pl-2">adag</label>
                         </div>
 
-
                         <label class="block">Hozzávalók hozzáadása</label>
                         <div class="relative flex flex-col w-full mb-5 rounded-base">
                             <div v-for="(hozzavalo, index) in receptHozzavalok" :key="index"
@@ -188,8 +193,8 @@ const szurtHozzavalok = computed(() => {
                                         @click="activeHozzavaloIndex = activeHozzavaloIndex === index ? null : index"
                                         :class="hozzavalo.nev.length <= 1 ? 'border-red-500' : 'border-accent-600'"
                                         class="h-10 w-full pl-4 pr-8 bg-accent-400/60 border-3 rounded-3xl
-               text-left text-brand-700 flex items-center justify-between
-               focus:outline-none shadow-md">
+                                               text-left text-brand-700 flex items-center justify-between
+                                               focus:outline-none shadow-md">
                                         <span :class="!hozzavalo.nev ? 'text-slate-700/50' : 'text-brand-700'">
                                             {{ hozzavalo.nev || 'Válassz hozzávalót...' }}
                                         </span>
@@ -197,11 +202,11 @@ const szurtHozzavalok = computed(() => {
 
                                     <!-- Dropdown panel -->
                                     <div v-if="activeHozzavaloIndex === index" class="absolute z-50 top-full left-0 mt-1 w-full bg-accent-200
-               border-3 border-accent-600 rounded-2xl shadow-xl overflow-hidden">
+                                               border-3 border-accent-600 rounded-2xl shadow-xl overflow-hidden">
                                         <div class="p-2 sticky top-0 bg-accent-200">
                                             <input v-model="hozzavaloKeres" type="text" placeholder="Keresés..." class="w-full px-3 py-1.5 text-sm bg-accent-400/60 border-2 border-accent-600
-                   rounded-xl text-brand-700
-                   focus:outline-none focus:ring-2 focus:ring-accent-400" />
+                                                   rounded-xl text-brand-700
+                                                   focus:outline-none focus:ring-2 focus:ring-accent-400" />
                                         </div>
                                         <div class="max-h-40 overflow-y-auto foodr-scrollbar pb-1 px-1">
                                             <button v-for="h in szurtHozzavalok" :key="h" type="button"
@@ -216,8 +221,9 @@ const szurtHozzavalok = computed(() => {
                                             </p>
                                         </div>
                                     </div>
-                                </div> <input v-model.number="hozzavalo.adag" required type="number" placeholder="500"
-                                    value=""
+                                </div>
+
+                                <input v-model.number="hozzavalo.adag" required type="number" placeholder="500" value=""
                                     :class="hozzavalo.adag <= 0 ? 'border-red-500 shadow-red-400 shadow-md' : 'border-accent-600'"
                                     class="h-10 bg-accent-400/60 border-3 text-center focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-all shadow-md w-15 rounded-3xl mx-1 py-2.5" />
                                 <label>g</label>
@@ -231,15 +237,12 @@ const szurtHozzavalok = computed(() => {
                                 </button>
                             </div>
                             <div class="w-full">
-                                <button @click="addHozzavalo()"
-                                    class="w-full p-2 rounded-full font-bold shadow-md 
-                             flex items-center justify-center button-brand">
+                                <button @click="addHozzavalo()" class="w-full p-2 rounded-full font-bold shadow-md
+                                           flex items-center justify-center button-brand">
                                     + Hozzávaló
                                 </button>
                             </div>
-
                         </div>
-
 
                         <label class="block">Leírás hozzáadása lépésenként</label>
                         <div class="relative flex flex-col w-full mb-5 rounded-base items-center">
@@ -260,30 +263,22 @@ const szurtHozzavalok = computed(() => {
                                 </button>
                             </div>
                             <div class="w-full">
-                                <button @click="addLeiras()"
-                                    class="w-full p-2 rounded-full font-bold shadow-md 
-                             flex items-center justify-center button-brand">
+                                <button @click="addLeiras()" class="w-full p-2 rounded-full font-bold shadow-md
+                                           flex items-center justify-center button-brand">
                                     + Lépés
                                 </button>
                             </div>
-
-
-
-
                         </div>
 
-
                         <label class="block">Fénykép feltöltése</label>
-                        <div class="relative flex flex-col w-full mb-5 rounded-base items-center">
-
-                            <div class="flex items-center justify-center w-full">
+                        <div class="relative flex flex-col w-full mb-5 rounded-base items-center ">
+                            <div class="flex items-center justify-center w-full ">
                                 <label for="dropzone-file"
                                     :style="kepPreview ? { backgroundImage: `url(${kepPreview})` } : {}"
-                                    :class="Kep == null ? 'border-red-500 shadow-red-400 shadow-lg' : 'border-accent-600'"
+                                    :class="kepPreview == null ? 'border-red-500 shadow-red-400 shadow-lg' : 'border-accent-600'"
                                     class="cursor-pointer group relative flex flex-col items-center justify-center w-full h-64 border-3 rounded-3xl bg-accent-400/60 shadow-md bg-cover bg-center bg-no-repeat overflow-hidden">
 
-
-                                    <div v-if="Kep == null"
+                                    <div v-if="kepPreview == null"
                                         class="flex flex-col items-center justify-center text-body pt-5 pb-6">
                                         <Upload class="w-10 h-10" />
                                         <p class="mb-2 text-md">
@@ -292,26 +287,24 @@ const szurtHozzavalok = computed(() => {
                                         </p>
                                     </div>
 
-
-                                    <div v-if="Kep"
-                                        class="absolute inset-0 flex items-center  justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                                    <div v-if="kepPreview"
+                                        class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200">
                                         <Pen class="w-15 h-15 text-accent-300" />
                                     </div>
 
                                     <input id="dropzone-file" type="file" accept="image/jpeg,image/png,image/webp"
                                         @change="KepFeltoltes" class="hidden" />
-
                                 </label>
                             </div>
-
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
-                        <button @click="Letrehozas()" :disabled="!letrehozhato"
+                        <button @click="Szerkesztes()" :disabled="!letrehozhato"
                             class="w-full p-2 py-4 rounded-full font-bold text-lg shadow-md
-                         flex items-center justify-center gap-2 button-brand disabled:opacity-50 disabled:transition-none disabled:hover:scale-100 disabled:hover:bg-brand-700">
-                            Létrehozás
+                                   flex items-center justify-center gap-2 button-brand
+                                   disabled:opacity-50 disabled:transition-none disabled:hover:scale-100 disabled:hover:bg-brand-700">
+                            Mentés
                         </button>
                     </div>
 

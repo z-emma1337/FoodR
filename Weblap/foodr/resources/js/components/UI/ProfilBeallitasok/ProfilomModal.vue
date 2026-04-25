@@ -1,6 +1,7 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
+import axios from "axios";
 import {
     X as CloseIcon,
     User,
@@ -10,12 +11,14 @@ import {
     ShieldCheck,
     ShieldAlert,
     Pen,
-    Upload
+    Upload,
+    ReceiptPoundSterling
 } from "lucide-vue-next";
 
 defineProps({ open: { type: Boolean, required: true } });
 const emit = defineEmits(["close"]);
 const allergenek = ref([]);
+const felhasznaloallergenek = ref([]);
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const likedCount = computed(() => page.props.likedCount ?? 0);
@@ -23,8 +26,6 @@ const isVerified = computed(() => !!user.value?.email_verified_at);
 const pfpurl = computed(() => user.value?.profilkepurl);
 const ikonpfp = ref(["chef.png", "drumstick.png", "fish.png", "pizza.png", "avatar.png"])
 const isDropUpOpen = ref(false)
-const selectedAllergens = ref([])
-
 
 const toggleDropUp = () => {
     isDropUpOpen.value = !isDropUpOpen.value
@@ -33,26 +34,41 @@ const closeDropUp = () => {
     isDropUpOpen.value = false
 }
 
-const UpdatePfp = (url) => {
-    router.post('/felhasznalo', { profilkepurl: `imgs/Profilkepek/${url}` })
+const UpdatePfp = async (url) => {
+    await axios.post('/felhasznalo', { profilkepurl: `imgs/Profilkepek/${url}` })
+    router.reload({ only: ['auth'] })
 }
 
-const KepFeltoltes = (FeltoltottKep) => {
-    router.post('/felhasznalo', { profilkepfajl: FeltoltottKep.target.files[0] })
+const KepFeltoltes = async (FeltoltottKep) => {
+    const formData = new FormData()
+    formData.append('profilkepfajl', FeltoltottKep.target.files[0])
+    await axios.post('/felhasznalo', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    router.reload({ only: ['auth'] })
 }
+
+const selectedAllergens = ref([])
 
 const loadAllergens = async () => {
-  try {
-    const res = await fetch('/allergenek')
-    allergenek.value = await res.json()
-  } catch (err) {
-    console.error('Hiba az allergének betöltésekor:', err)
-  }
+    allergenek.value = await (await fetch('/allergenek')).json();
+    felhasznaloallergenek.value = await (await fetch("/allergenek/felhasznalo")).json();
+    selectedAllergens.value = felhasznaloallergenek.value.map(a => a)
 }
 
-onMounted(()=>{
+onMounted(() => {
     loadAllergens();
 })
+
+const mentesAllergenek = () => {
+    router.post('/allergenek/felhasznalo', {
+        allergen_id: selectedAllergens.value
+    }, {
+        onSuccess: () => {
+            window.dispatchEvent(new CustomEvent('allergenek-frissitve'))
+        }
+    })
+}
 </script>
 
 <template>
@@ -77,7 +93,7 @@ onMounted(()=>{
                                     class="z-10 absolute bg-accent-300 cursor-pointer rounded-3xl border-2 border-accent-400 top-10 shadow-lg p-2 flex flex-wrap">
                                     <div v-for="url in ikonpfp" :key="url"
                                         class="w-12 h-12 rounded-full overflow-hidden shadow-md m-1">
-                                        <button @click=UpdatePfp(url)>
+                                        <button @click="UpdatePfp(url)">
                                             <img :src="`/imgs/Profilkepek/${url}`" alt="Profilkép"
                                                 class="w-full h-full object-cover scale-[1.2]" />
                                         </button>
@@ -188,23 +204,18 @@ onMounted(()=>{
 
                                 <div class="min-w-0">
                                     <p class="text-xs text-slate-500 font-medium">
-                                        Mire vagy allergiás? Vagy milyen diétát követsz?
+                                        Mire vagy allergiás?
                                     </p>
 
-                                        <label v-for="allergen in allergenek" :key="allergen"
-                                            class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium text-slate-900 font-semibold hover:text-heading rounded">
-                                            <input type="checkbox" v-model="selectedAllergens" :value="allergen"
-                                                class="mr-2 accent-brand-600 w-5 h-5" />
-                                            {{ allergen }}
-                                        </label>
-
-
+                                    <label v-for="allergen in allergenek" :key="allergen.id"
+                                        class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium text-slate-900 font-semibold hover:text-heading rounded">
+                                        <input type="checkbox" v-model="selectedAllergens" :value="allergen.id"
+                                            @change="mentesAllergenek" class="mr-2 accent-brand-600 w-5 h-5" />
+                                        {{ allergen.nev }}
+                                    </label>
                                 </div>
                             </div>
-
-
                         </div>
-
 
                         <button @click="() => { closeDropUp(); emit('close'); }"
                             class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md">

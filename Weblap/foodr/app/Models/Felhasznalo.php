@@ -44,4 +44,14 @@ class Felhasznalo extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(\App\Models\Interakcio::class, 'felhasznalo_id');
     }
+
+    public function allergenek()
+{
+    return $this->belongsToMany(
+        Allergen::class,
+        'felhasznalo_allergenek',
+        'felhasznalo_id',
+        'allergen_id'
+    );
+}
 }

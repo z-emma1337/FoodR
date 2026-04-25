@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
-import { Clock, Users, ShoppingBasket, Trash2 } from 'lucide-vue-next'
+import { Clock, Users, ShoppingBasket, Trash2, Heart, MessageCircleMore, Pencil } from 'lucide-vue-next'
 import { router, usePage } from '@inertiajs/vue3'
 import RecipeModal from './RecipeModal.vue'
+import SzerkesztModal from './SzerkesztModal.vue'
 
 const props = defineProps({
     recipe: Object
@@ -22,8 +23,7 @@ const formatTime = (minutes) => {
 
 const getAllergenColor = (allergen) => {
     const colors = {
-        'Vegán': 'bg-green-500/30 border-green-400/50 text-green-100',
-        'Vegetáriánus': 'bg-lime-500/30 border-lime-400/50 text-lime-100',
+        'Hús': 'bg-red-500/30 border-red-400/50 text-green-100',
         'Glutén': 'bg-amber-500/30 border-amber-400/50 text-amber-100',
         'Tojás': 'bg-yellow-500/30 border-yellow-400/50 text-yellow-100',
         'Tej': 'bg-blue-500/30 border-blue-400/50 text-blue-100',
@@ -35,23 +35,32 @@ const getAllergenColor = (allergen) => {
 
 
 const recipeModalOpen = ref(false)
+const SzerkesztModalOpen = ref(false)
 function OpenRecipeModal() {
     recipeModalOpen.value = true;
+}
+function OpenSzerkesztModal() {
+    SzerkesztModalOpen.value = true;
 }
 
 function CloseRecipeModal() {
     recipeModalOpen.value = false;
 }
+function CloseSzerkesztModal() {
+    SzerkesztModalOpen.value = false;
+}
 function ReceptTorlese(id) {
     axios.delete(`/recept-torles/${id}`)
         .then(() => {
-            receptek.value = receptek.value.filter(r => r.id !== id);
+            window.location.reload()
         })
     resolve()
 }
 </script>
 <template>
     <RecipeModal :open="recipeModalOpen" :recipe="recipe" @close="CloseRecipeModal" />
+    <SzerkesztModal :open="SzerkesztModalOpen" :recipe="recipe" @close="CloseSzerkesztModal" />
+
     <div class="rounded-2xl overflow-hidden 
            bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
            shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
@@ -82,11 +91,24 @@ function ReceptTorlese(id) {
                 </span>
             </div>
 
+            <div class="absolute bottom-0 left-0 right-0 z-10 p-4 flex items-end justify-between gap-3
+            bg-gradient-to-t from-black/80 via-black/40 to-transparent">
 
-            <div class="absolute bottom-0 left-0 right-0 p-3 z-10">
-                <h3 class="text-base sm:text-lg font-bold text-white drop-shadow-lg line-clamp-2">
+                <h3 class="text-base sm:text-lg font-bold text-white drop-shadow-lg line-clamp-2 leading-snug flex-1">
                     {{ recipe.nev }}
                 </h3>
+
+                <span class="flex items-center gap-1 rounded-full
+               text-white text-sm font-semibold shadow-lg">
+                    <Heart class="w-6 h-6 text-brand-600 fill-brand-400" />
+                    {{ recipe.likedb }}
+                </span>
+                <span class="flex items-center gap-1 rounded-full
+               text-white text-sm font-semibold shadow-lg">
+                    <MessageCircleMore class="w-6 h-6 text-slate-600 fill-white" />
+                    {{ recipe.likedb }}
+                </span>
+
             </div>
         </div>
 
@@ -110,13 +132,16 @@ function ReceptTorlese(id) {
             <div class="flex gap-2 mt-auto">
 
                 <button @click.stop="OpenRecipeModal"
-                    class="flex-1 py-2.5 sm:py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
+                    class="flex-1 py-2.5 sm:py-3 rounded-3xl button-brand flex items-center justify-center gap-2">
                     Részletek
                 </button>
-
+                <button @click.stop="OpenSzerkesztModal"
+                    class="delete-btn w-13 h-13 p-2 rounded-full button-brand flex items-center justify-center">
+                    <Pencil class=" w-7 h-7" />
+                </button>
 
                 <button @click.stop="ReceptTorlese(recipe.id)"
-                    class="delete-btn w-13 h-13 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center hover:bg-red-600">
+                    class="delete-btn w-13 h-13 p-2 rounded-full button-brand flex items-center justify-center hover:bg-red-600">
                     <Trash2 class="trash-icon w-7 h-7" />
                 </button>
             </div>

@@ -1,7 +1,8 @@
 <script setup>
-import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check } from 'lucide-vue-next'
-import { computed, ref, watch } from 'vue'
+import { Clock, Users, ChefHat, X as CloseIcon, Heart, HeartCrack, Check, Send, Trash, Trash2, Pencil } from 'lucide-vue-next'
+import { computed, onMounted, ref, watch } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
+import SzerkesztModal from './SzerkesztModal.vue'
 
 const props = defineProps({
   recipe: Object,
@@ -15,15 +16,20 @@ const isLiked = ref(props.recipe?.liked ?? false)
 const isCheckingLiked = ref(false)
 const page = usePage()
 const adagInput = ref(1);
+const kommentek = ref([])
+const felhasznalo = ref(null)
+const szerkesztes = ref(false)
 
-
-
-watch(() => props.recipe, (newRecipe) => {
-  if (newRecipe) {
-    isLiked.value = newRecipe.liked ?? false
-    adagInput.value = newRecipe.adag
+watch(() => props.open, (isOpen) => {
+  if (isOpen && props.recipe?.id) {
+    isLiked.value = props.recipe.liked ?? false
+    adagInput.value = props.recipe.adag
+    getKommentek()
+    GetUserId()
+  } else {
+    kommentek.value = [] // bezáráskor törölje
   }
-}, { immediate: true })
+})
 
 const checkIfLiked = async () => {
   if (!props.recipe) return
@@ -58,8 +64,7 @@ const formatTime = (minutes) => {
 
 const getAllergenColor = (allergen) => {
   const colors = {
-    'Vegán': 'bg-green-500 text-white',
-    'Vegetáriánus': 'bg-lime-500 text-white',
+    'Hús': 'bg-red-500 text-white',
     'Glutén': 'bg-amber-500 text-white',
     'Tojás': 'bg-yellow-500 text-white',
     'Tej': 'bg-blue-500 text-white',
@@ -113,16 +118,63 @@ const handleRemoveFromFavorites = async () => {
   })
 }
 
+async function getKommentek() {
+  if (!props.recipe?.id) return
+  const res = await fetch(`/kommentek/${props.recipe.id}`)
+  kommentek.value = await res.json()
+}
 
+const kommentInput = ref('')
+function Komment() {
+
+  if (kommentInput.value.trim() === '') return
+  router.post('/komment', { recept_id: props.recipe.id, szoveg: kommentInput.value }, {
+    preserveScroll: true,
+    preserveState: true,
+    onSuccess: () => {
+      kommentInput.value = ''
+      getKommentek()
+      emit('newComment')
+    },
+    onError: (errors) => {
+      console.error(errors)
+    }
+  })
+}
+
+const GetUserId = async () => {
+  const res = await fetch('/felhasznalo')
+  felhasznalo.value = await res.json()
+  console.log(props.recipe)
+}
+
+const deleteKomment = (komment) => {
+  router.post(`/komment/delete/${komment.id}`, {}, {
+    preserveScroll: true,
+    preserveState: true,
+    onSuccess: () => {
+      getKommentek()
+    },
+  })
+}
+
+function ReceptTorlese(id) {
+  axios.delete(`/recept-torles/${id}`)
+    .then(() => {
+      window.location.reload()
+    })
+  resolve()
+}
 
 </script>
 
 <template>
+  <Teleport to="body">
   <Transition name="modal-fade">
     <div v-if="props.open"
       class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       @click.self="emit('close')">
-      <div
+      <div v-if="!szerkesztes"
         class="relative w-full max-w-lg rounded-3xl shadow-2xl border-accent-600 border-6 overflow-hidden foodr-scrollbar">
         <div class="bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 flex flex-col max-h-[85vh]">
 
@@ -130,6 +182,7 @@ const handleRemoveFromFavorites = async () => {
             <h2 class="text-2xl font-bold text-slate-900">
               {{ recipe.nev }}
             </h2>
+
             <button @click="emit('close')"
               class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200">
               <CloseIcon class="w-10 h-10 text-brand-600" :stroke-width="3" />
@@ -154,20 +207,25 @@ const handleRemoveFromFavorites = async () => {
 
 
                 <div class="relative flex items-center w-20 rounded-base">
-                  <button type="button" id="" @click="adagInput>1 ? adagInput-- : null"
-                    class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
+                  <button type="button" id="" @click="adagInput > 1 ? adagInput-- : null"
+                    class="text-body button-brand w-10 rounded-full font-bold flex items-center justify-center pb-0.5">
                     -
                   </button>
-                  <input type="number" id="" v-model.number="adagInput" data-input-counter aria-describedby="helper-text-explanation"
+                  <input type="number" id="" v-model.number="adagInput" data-input-counter
+                    aria-describedby="helper-text-explanation"
                     class="border-x-0 h-10 placeholder:text-heading text-center w-full bg-neutral-secondary-medium border-default-medium py-2.5 placeholder:text-body"
                     required />
-                  <button type="button" id="" @click="adagInput<100 ? adagInput++ : null"
-                    class="text-body bg-brand-600 w-10 text-accent-200 rounded-full font-bold flex items-center justify-center pb-0.5">
+                  <button type="button" id="" @click="adagInput < 100 ? adagInput++ : null"
+                    class="text-body button-brand w-10 rounded-full font-bold flex items-center justify-center pb-0.5">
                     +
                   </button>
                 </div>
+                <div class="flex items-center gap-1 p-2 rounded-xl">
 
+                  <img :src="props.recipe.felhasznalo_pfpurl" class="w-12 h-12 rounded-full object-cover shadow-md" />
 
+                  <span class="font-semibold text-sm text-brand-700">{{ props.recipe.felhasznalo_nev }} receptje</span>
+                </div>
 
               </div>
             </div>
@@ -194,7 +252,7 @@ const handleRemoveFromFavorites = async () => {
                   <div class="w-2.5 h-2.5 mt-2 bg-brand-600 rounded-full flex-shrink-0"></div>
 
                   <span class="leading-relaxed">
-                    {{ hozzavalok.nev }} <span>{{ Math.round(hozzavalok.adag/recipe.adag)*adagInput }}g</span>
+                    {{ hozzavalok.nev }} <span>{{ Math.round(hozzavalok.adag / recipe.adag) * adagInput }}g</span>
                   </span>
                 </div>
               </div>
@@ -219,36 +277,86 @@ const handleRemoveFromFavorites = async () => {
               </div>
             </div>
 
+            <h4 v-if="kommentek.length > 0" class="text-lg font-semibold mb-3 text-brand-700 pt-4">Kommentek ({{
+              kommentek.length }})</h4>
+            <h4 v-if="kommentek.length == 0" class="text-lg font-semibold mb-3 text-brand-700 pt-4">Még nem
+              kommenteltek,
+              legyél te az első!</h4>
+            <div class="flex justify-items-center gap-1">
+              <input v-model="kommentInput" @keyup.enter="Komment()" class="w-full bg-accent-200 text-brand-700 placeholder:text-brand-700 text-sm
+           border-4 border-accent-600 rounded-3xl py-2.5 px-4
+           focus:outline-none focus:ring-2 focus:ring-accent-400
+           focus:border-transparent transition-all shadow-md" placeholder="Komment írása..." />
+              <button @click="Komment()"
+                class="p-3 rounded-full button-brand shadow-md transition-all duration-200 flex items-center justify-center">
+                <Send class="w-6 h-6" />
+              </button>
+            </div>
 
+            <div v-for="komment in kommentek.sort((a, b) => b.created_at - a.created_at)" :key="komment.id"
+              class="flex items-end gap-3 mt-2">
+              <img :src="komment.pfpurl" class="w-10 h-10 rounded-full object-cover shadow-md" />
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-sm text-brand-700">{{ komment.felhasznalo_nev }}</span>
+                  <span class="text-xs text-slate-500">{{ new Date(komment.created_at).toLocaleString("hu-HU") }}</span>
+                </div>
+                <p class="text-slate-700">{{ komment.komment }}</p>
 
+              </div>
+              <button v-if="felhasznalo.id === komment.felhasznalo_id" @click="deleteKomment(komment)"
+                class="ml-auto p-2 rounded-full button-brand shadow-md flex items-center justify-center">
+                <Trash2 class="w-5 h-5" />
+              </button>
+            </div>
 
 
           </div>
 
-          <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
-            <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
-                 text-accent-400 font-bold shadow-md
-                 transition-all hover:scale-[1.1]
+          <div v-if="props.recipe.felhasznalo_id == felhasznalo?.id"
+            class="flex items-center justify-between px-8 pt-8 pb-4 gap-8">
+            <button @click="szerkesztes = true" class="w-full p-2 rounded-full  font-bold shadow-md
+                  button-brand
+                 flex items-center justify-center gap-2">
+              <Pencil :stroke-width="2" class="w-13 h-13 text-accent-300 pt-0.5 transition-all" />
+            </button>
+            <button @click="ReceptTorlese(props.recipe.id)" class="w-full p-2 rounded-full  font-bold shadow-md
+                 button-brand
                  flex items-center justify-center gap-2
-                 disabled:opacity-50 disabled:cursor-not-allowed">
+                 ">
+              <Trash2 :stroke-width="2" class="trash-icon w-13 h-13 text-accent-300 pt-0.5 transition-all" />
+            </button>
+          </div>
+          <div v-else class="flex items-center justify-between px-8 pt-8 pb-4 gap-10 shrink-0">
+            <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="w-full p-2 rounded-full  font-bold shadow-md
+                 transition-all
+                 flex items-center justify-center gap-2
+                 button-brand">
               <Heart :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
             </button>
 
-            <button v-else @click="handleRemoveFromFavorites" class="w-full p-2 rounded-full bg-brand-700 hover:bg-brand-400/50 
-                 text-accent-400 font-bold shadow-md
-                 transition-all hover:scale-[1.1]
+            <button v-else @click="handleRemoveFromFavorites" class="w-full p-2 rounded-full button-brand font-bold shadow-md
+                  hover:scale-[1.1]
                  flex items-center justify-center gap-2
-                 disabled:opacity-50 disabled:cursor-not-allowed">
+                 ">
               <HeartCrack :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
             </button>
           </div>
-
         </div>
 
       </div>
+
+      <div v-if="szerkesztes">
+        <SzerkesztModal :open="szerkesztes = true" :recipe="props.recipe" :blur="false" @close="szerkesztes = false" />
+      </div>
+
+
+
+
 
     </div>
 
 
   </Transition>
+  </Teleport>
 </template>

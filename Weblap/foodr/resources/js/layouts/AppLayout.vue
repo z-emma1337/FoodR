@@ -10,7 +10,7 @@ import {
   Settings,
   HelpCircle,
   Menu,
-  X as CloseIcon,
+  X,
   PencilLine
 } from 'lucide-vue-next'
 import { ref, computed, watch } from 'vue'
@@ -39,7 +39,7 @@ const openLoginModal = () => {
 const modalMap = {
   'Profilom': { open: () => { profilomOpen.value = true }, requiresAuth: true },
   'Beállítások': { open: () => { beallitasokOpen.value = true }, requiresAuth: true },
-  'Súgó': { open: () => { sugoOpen.value = true }, requiresAuth: true },
+  'Súgó': { open: () => { sugoOpen.value = true }, requiresAuth: false },
 }
 
 const LeftnavItems = ref([
@@ -92,118 +92,43 @@ watch(() => page.url, (currentPath) => {
 </script>
 
 <template>
-  <div
-    class="relative flex min-h-screen bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient overflow-hidden touch-pan-y">
+  <div class="relative flex flex-col h-[100dvh] overflow-hidden
+              lg:flex-row lg:h-screen
+              bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient">
 
-    <div class="pointer-events-none absolute inset-0
+    <!-- Background glow (fixed, purely decorative) -->
+    <div class="pointer-events-none fixed inset-0 z-0
                 bg-gradient-to-br from-accent-500/20 via-transparent to-accent-600/20
                 blur-3xl animate-gradient-slow" />
 
+    <!-- Modals -->
     <BejelentkezesModal :open="loginModalOpen" @close="closeLoginModal" />
     <ProfilomModal :open="profilomOpen" @close="profilomOpen = false" />
     <BeallitasokModal :open="beallitasokOpen" @close="beallitasokOpen = false" />
     <SugoModal :open="sugoOpen" @close="sugoOpen = false" />
 
-    <!-- MOBIL-->
-    <header class="lg:hidden fixed top-0 left-0 right-0 z-30 p-4">
-      <div
-        class="flex items-center justify-between bg-accent-300/90 backdrop-blur-lg rounded-3xl px-4 py-3 shadow-xl border-accent-600 border-3">
-        <button @click="router.visit('/')">
-          <h1 class="text-2xl font-bold">
-            <span class="text-accent-400 text-outline-shadow">Food</span><span
-              class="text-brand-500 text-outline-shadow">R</span>
-          </h1>
-        </button>
-        <button @click="toggleMobileMenu"
-          class="p-2 rounded-3xl bg-accent-400/50 hover:bg-accent-400 border-accent-600 border-2 transition">
-          <Menu v-if="!isMobileMenuOpen" class="w-6 h-6 text-slate-900" />
-          <CloseIcon v-else class="w-6 h-6 text-slate-900" />
-        </button>
-      </div>
-    </header>
-
-
-    <Transition name="menu-fade">
-      <div v-if="isMobileMenuOpen" @click="closeMobileMenu"
-        class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40" />
-    </Transition>
-
-
-    <Transition name="menu-slide">
-      <div v-if="isMobileMenuOpen"
-        class="lg:hidden fixed top-20 right-4 left-4 z-50 max-h-[calc(100vh-6rem)] overflow-y-auto border-accent-600 border-3 rounded-4xl">
-        <div class="rounded-3xl overflow-hidden shadow-2xl">
-          <div
-            class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-4 relative">
-
-
-            <button @click="closeMobileMenu"
-              class="absolute top-3 right-3 w-10 h-10 rounded-full transition-all flex items-center justify-center z-10">
-              <CloseIcon class="w-6 h-6 text-brand-600" :stroke-width="3" />
-            </button>
-
-            <div
-              class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 shadow-lg p-5 backdrop-blur-sm text-center">
-              <div v-if="user" class="space-y-3 py-2">
-                <div class="flex justify-center">
-                  <div class="w-16 h-16 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
-                    <User class="w-8 h-8 text-slate-700" />
-                  </div>
-                </div>
-                <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
-                <p class="text-sm text-slate-700">{{ user.email }}</p>
-              </div>
-              <div v-else class="space-y-3 py-2">
-                <div class="flex justify-center">
-                  <div class="w-16 h-16 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
-                    <User class="w-8 h-8 text-slate-700" />
-                  </div>
-                </div>
-                <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
-                <p class="text-sm text-slate-700 mt-1">Jelentkezz be a funkciók eléréséhez</p>
-                <button @click="openLoginModal"
-                  class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all font-medium shadow-md flex items-center justify-center gap-2">
-                  <LogIn class="w-4 h-4" />
-                  Bejelentkezés
-                </button>
-              </div>
-            </div>
-
-            <nav class="space-y-2 pb-2">
-              <button v-for="item in RightnavItems" :key="item.label" @click="handleRightNav(item)"
-                :class="item.active ? 'bg-accent-500/30' : ''"
-                class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
-                <component :is="item.icon" class="h-5 w-5 mr-3" />
-                {{ item.label }}
-              </button>
-
-              <button v-if="user" @click="logout"
-                class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-red-200/50 text-slate-900">
-                <LogOut class="h-5 w-5 mr-3" />
-                Kijelentkezés
-              </button>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </Transition>
-
-    <!-- ASZTAL-->
-    <aside class="hidden lg:flex flex-col w-1/6 min-w-[250px] h-[calc(100vh-2rem)] fixed top-4 left-4 z-20">
-      <div class="rounded-3xl overflow-hidden shadow-2xl h-full border-accent-600 border-6">
+    <!-- ═══════════════════════════════════════════════
+         DESKTOP — LEFT SIDEBAR
+    ════════════════════════════════════════════════ -->
+    <aside class="hidden lg:flex flex-col shrink-0 w-[280px] h-screen p-4 z-20">
+      <div class="h-full rounded-3xl overflow-hidden shadow-2xl border-accent-600 border-6">
         <div
           class="h-full flex flex-col bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 animate-card-gradient backdrop-blur-xl">
+
           <div class="p-6 pb-4">
-            <h1 class="text-6xl font-bold text-center">
-              <span class="text-accent-400 text-outline-shadow">Food</span><span
-                class="text-brand-500 text-outline-shadow">R</span>
-            </h1>
+            <button @click="router.visit('/')">
+              <h1 class="text-6xl font-bold text-center">
+                <span class="text-accent-400 text-outline-shadow">Food</span><span
+                  class="text-brand-500 text-outline-shadow">R</span>
+              </h1>
+            </button>
           </div>
+
           <nav class="flex-1 px-3 space-y-1 overflow-y-auto">
             <button v-for="item in LeftnavItems" :key="item.label" @click="handleLeftNav(item)"
               :class="item.active ? 'bg-accent-500/30' : ''"
-              class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
-              <component :is="item.icon" class="h-5 w-5 mr-3" />
+              class="w-full flex items-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
+              <component :is="item.icon" class="h-5 w-5 mr-3 shrink-0" />
               <span class="flex flex-1 items-center justify-between gap-2">
                 <span>{{ item.label }}</span>
                 <span v-if="item.label === 'FavoR' && user"
@@ -213,19 +138,120 @@ watch(() => page.url, (currentPath) => {
               </span>
             </button>
           </nav>
+
         </div>
       </div>
     </aside>
 
-    <aside class="hidden lg:flex flex-col w-1/6 min-w-[250px] h-[calc(100vh-2rem)] fixed top-4 right-4 z-20">
-      <div class="rounded-3xl overflow-hidden shadow-2xl h-full border-accent-600 border-6">
+    <div class="flex flex-col flex-1 min-w-0 min-h-0 h-full lg:h-screen z-10">
+
+      <!-- MOBILE: Top header bar -->
+      <header class="lg:hidden shrink-0 p-4">
+        <div
+          class="flex items-center justify-between bg-accent-300/90 backdrop-blur-lg rounded-3xl px-4 py-3 shadow-xl border-accent-600 border-3">
+          <button @click="router.visit('/')">
+            <h1 class="text-2xl font-bold">
+              <span class="text-accent-400 text-outline-shadow">Food</span><span
+                class="text-brand-500 text-outline-shadow">R</span>
+            </h1>
+          </button>
+          <button @click="toggleMobileMenu"
+            class="p-2 rounded-3xl bg-accent-400/50 hover:bg-accent-400 border-accent-600 border-2 transition">
+            <Menu v-if="!isMobileMenuOpen" class="w-6 h-6 text-slate-900" />
+            <X v-else class="w-6 h-6 text-slate-900" />
+          </button>
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <main class="flex-1 min-h-0 overflow-hidden">
+        <slot />
+      </main>
+
+      <!-- MOBILE: Bottom navigation bar -->
+      <nav class="lg:hidden shrink-0 px-3 pb-3">
+        <div class="relative flex items-center justify-around bg-accent-300/95 backdrop-blur-lg rounded-3xl px-2 py-1 shadow-xl border-accent-600 border-3">
+
+          <!-- FavoR -->
+          <button @click="handleLeftNav(LeftnavItems[1])"
+            class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all"
+            :class="LeftnavItems[1].active ? 'bg-accent-500/40' : 'active:bg-accent-400/30'">
+            <div class="relative transition-transform duration-200"
+              :class="LeftnavItems[1].active ? 'scale-125' : 'scale-100'">
+              <Heart class="w-7 h-7 transition-colors"
+                :class="LeftnavItems[1].active ? 'text-brand-600 fill-brand-500' : 'text-slate-700'" />
+              <span v-if="user && likedCount > 0"
+                class="absolute -top-2 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-brand-600 text-accent-200 text-[10px] font-bold flex items-center justify-center leading-none">
+                {{ likedCount }}
+              </span>
+            </div>
+            <span class="text-sm font-semibold tracking-wide"
+              :class="LeftnavItems[1].active ? 'text-brand-600' : 'text-slate-600'">FavoR</span>
+          </button>
+
+          <!-- FeedR -->
+          <button @click="handleLeftNav(LeftnavItems[2])"
+            class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all"
+            :class="LeftnavItems[2].active ? 'bg-accent-500/40' : 'active:bg-accent-400/30'">
+            <div class="transition-transform duration-200" :class="LeftnavItems[2].active ? 'scale-125' : 'scale-100'">
+              <Search class="w-7 h-7 transition-colors"
+                :class="LeftnavItems[2].active ? 'text-brand-600' : 'text-slate-700'" />
+            </div>
+            <span class="text-sm font-semibold tracking-wide"
+              :class="LeftnavItems[2].active ? 'text-brand-600' : 'text-slate-600'">FeedR</span>
+          </button>
+
+          <!-- SwipeR — raised center button -->
+          <div class="flex-1 flex justify-center">
+            <button @click="handleLeftNav(LeftnavItems[0])"
+              class="relative -top-6 w-20 h-20 rounded-full shadow-xl border-accent-600 border-6 transition-all active:scale-95
+                     bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 flex flex-col items-center justify-center gap-0.5"
+              :class="LeftnavItems[0].active ? 'ring-2 ring-brand-600 ring-offset-2 ring-offset-transparent' : ''">
+              <Home class="w-8 h-8 transition-colors"
+                :class="LeftnavItems[0].active ? 'text-brand-600' : 'text-slate-700'" />
+              <span class="text-xs font-bold tracking-wide"
+                :class="LeftnavItems[0].active ? 'text-brand-600' : 'text-slate-600'">SwipeR</span>
+            </button>
+          </div>
+
+          <!-- CreatR -->
+          <button @click="handleLeftNav(LeftnavItems[3])"
+            class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all"
+            :class="LeftnavItems[3].active ? 'bg-accent-500/40' : 'active:bg-accent-400/30'">
+            <div class="transition-transform duration-200" :class="LeftnavItems[3].active ? 'scale-125' : 'scale-100'">
+              <PencilLine class="w-7 h-7 transition-colors"
+                :class="LeftnavItems[3].active ? 'text-brand-600' : 'text-slate-700'" />
+            </div>
+            <span class="text-sm font-semibold tracking-wide"
+              :class="LeftnavItems[3].active ? 'text-brand-600' : 'text-slate-600'">CreatR</span>
+          </button>
+
+          <!-- Fiók -->
+          <button @click="handleRightNav(RightnavItems[0])"
+            class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all active:bg-accent-400/30">
+            <User class="w-7 h-7 text-slate-700" />
+            <span class="text-sm font-semibold tracking-wide text-slate-600">Fiók</span>
+          </button>
+
+        </div>
+      </nav>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         DESKTOP — RIGHT SIDEBAR
+    ════════════════════════════════════════════════ -->
+    <aside class="hidden lg:flex flex-col shrink-0 w-[280px] h-screen p-4 z-20">
+      <div class="h-full rounded-3xl overflow-hidden shadow-2xl border-accent-600 border-6">
         <div
           class="h-full flex flex-col bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 animate-card-gradient backdrop-blur-xl">
+
           <div class="p-6 pb-4">
             <h2 class="text-3xl font-bold text-center">
               <span class="text-brand-500">Fiók Beállítások</span>
             </h2>
           </div>
+
           <nav class="flex-1 px-3 space-y-1">
             <button v-for="item in RightnavItems" :key="item.label" @click="handleRightNav(item)"
               :class="item.active ? 'bg-accent-500/30' : ''"
@@ -234,26 +260,26 @@ watch(() => page.url, (currentPath) => {
               <span class="flex-1 text-left">{{ item.label }}</span>
             </button>
           </nav>
+
           <div class="mt-auto p-4">
             <div
               class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 shadow-lg p-5 backdrop-blur-sm text-center">
+
               <div v-if="user" class="space-y-4 text-center py-2">
                 <div class="flex justify-center">
                   <div class="w-20 h-20 rounded-full overflow-hidden shadow-md">
-                    <img :src=user.profilkepurl alt="Profilkép"
-                      class="w-full h-full object-cover scale-[1.2]" />
+                    <img :src="user.profilkepurl" alt="Profilkép" class="w-full h-full object-cover scale-[1.2]" />
                   </div>
                 </div>
-
                 <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
                 <p class="text-base text-slate-700">{{ user.email }}</p>
-
                 <button @click="logout"
                   class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
                   <LogOut class="w-4 h-4" />
                   Kijelentkezés
                 </button>
               </div>
+
               <div v-else class="space-y-4 text-center py-2">
                 <div class="flex justify-center">
                   <div class="w-20 h-20 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
@@ -270,63 +296,85 @@ watch(() => page.url, (currentPath) => {
                   Bejelentkezés
                 </button>
               </div>
+
             </div>
           </div>
+
         </div>
       </div>
     </aside>
 
-    <main class="flex-1 flex flex-col lg:ml-[calc(250px+1rem)] lg:mr-[calc(250px+1rem)] z-10 overflow-hidden
-             pt-20 pb-24 lg:pt-0 lg:pb-0">
-      <div class="max-w-7xl mx-auto w-full h-full">
-        <slot />
+    <!-- ═══════════════════════════════════════════════
+         MOBILE 
+    ════════════════════════════════════════════════ -->
+    <Transition name="menu-fade">
+      <div v-if="isMobileMenuOpen" @click="closeMobileMenu"
+        class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40" />
+    </Transition>
+
+    <Transition name="menu-slide">
+      <div v-if="isMobileMenuOpen" class="lg:hidden fixed top-1/2 -translate-y-1/2 right-4 left-4 z-50 pt-16">
+
+
+        <button @click="closeMobileMenu" class="absolute top-0 right-0 w-14 h-14 rounded-full
+                 bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
+                 border-6 border-accent-600 shadow-lg
+                 flex items-center justify-center z-20 transition-all hover:scale-110">
+          <X class="w-7 h-7 text-brand-600" :stroke-width="3" />
+        </button>
+
+        <div class="max-h-[calc(100dvh-6rem)] overflow-y-auto border-accent-600 border-6 rounded-4xl">
+          <div class="rounded-3xl overflow-hidden shadow-2xl">
+            <div
+              class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-4 relative">
+
+              <div
+                class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 shadow-lg p-5 backdrop-blur-sm text-center">
+                <div v-if="user" class="space-y-3 py-2">
+                  <div class="flex justify-center">
+                    <div class="w-16 h-16 rounded-full overflow-hidden shadow-md">
+                      <img :src="user.profilkepurl" alt="Profilkép" class="w-full h-full object-cover scale-[1.2]" />
+                    </div>
+                  </div>
+                  <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
+                  <p class="text-sm text-slate-700">{{ user.email }}</p>
+                </div>
+                <div v-else class="space-y-3 py-2">
+                  <div class="flex justify-center">
+                    <div class="w-16 h-16 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
+                      <User class="w-8 h-8 text-slate-700" />
+                    </div>
+                  </div>
+                  <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
+                  <p class="text-sm text-slate-700 mt-1">Jelentkezz be a funkciók eléréséhez</p>
+                  <button @click="openLoginModal"
+                    class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all font-medium shadow-md flex items-center justify-center gap-2">
+                    <LogIn class="w-4 h-4" />
+                    Bejelentkezés
+                  </button>
+                </div>
+              </div>
+
+              <nav class="space-y-2 pb-2">
+                <button v-for="item in RightnavItems" :key="item.label" @click="handleRightNav(item)"
+                  :class="item.active ? 'bg-accent-500/30' : ''"
+                  class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
+                  <component :is="item.icon" class="h-5 w-5 mr-3" />
+                  {{ item.label }}
+                </button>
+
+                <button v-if="user" @click="logout"
+                  class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-red-200/50 text-slate-900">
+                  <LogOut class="h-5 w-5 mr-3" />
+                  Kijelentkezés
+                </button>
+              </nav>
+
+            </div>
+          </div>
+        </div>
       </div>
-    </main>
-
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-30 p-3">
-      <div
-        class="flex items-center justify-around bg-accent-300/95 backdrop-blur-lg rounded-3xl px-2 py-2 shadow-xl border-accent-600 border-3 gap-x-4">
-
-        <button @click="handleLeftNav(LeftnavItems[1])"
-          class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all"
-          :class="LeftnavItems[1].active ? 'bg-accent-500/40' : 'active:bg-accent-400/30'">
-          <div class="relative transition-transform duration-200"
-            :class="LeftnavItems[1].active ? 'scale-125' : 'scale-100'">
-            <Heart class="w-6 h-6 transition-colors"
-              :class="LeftnavItems[1].active ? 'text-brand-600 fill-brand-500' : 'text-slate-700'" />
-            <span v-if="user && likedCount > 0"
-              class="absolute -top-2 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-brand-600 text-accent-200 text-[10px] font-bold flex items-center justify-center leading-none">
-              {{ likedCount }}
-            </span>
-          </div>
-          <span class="text-[10px] font-semibold tracking-wide"
-            :class="LeftnavItems[1].active ? 'text-brand-600' : 'text-slate-600'">FavoR</span>
-        </button>
-
-        <button @click="handleLeftNav(LeftnavItems[0])"
-          class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all"
-          :class="LeftnavItems[0].active ? 'bg-accent-500/40' : 'active:bg-accent-400/30'">
-          <div class="transition-transform duration-200" :class="LeftnavItems[0].active ? 'scale-125' : 'scale-100'">
-            <Home class="w-6 h-6 transition-colors"
-              :class="LeftnavItems[0].active ? 'text-brand-600' : 'text-slate-700'" />
-          </div>
-          <span class="text-[10px] font-semibold tracking-wide"
-            :class="LeftnavItems[0].active ? 'text-brand-600' : 'text-slate-600'">SwipeR</span>
-        </button>
-
-        <button @click="handleLeftNav(LeftnavItems[2])"
-          class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all"
-          :class="LeftnavItems[2].active ? 'bg-accent-500/40' : 'active:bg-accent-400/30'">
-          <div class="transition-transform duration-200" :class="LeftnavItems[2].active ? 'scale-125' : 'scale-100'">
-            <Search class="w-6 h-6 transition-colors"
-              :class="LeftnavItems[2].active ? 'text-brand-600' : 'text-slate-700'" />
-          </div>
-          <span class="text-[10px] font-semibold tracking-wide"
-            :class="LeftnavItems[2].active ? 'text-brand-600' : 'text-slate-600'">FeedR</span>
-        </button>
-
-      </div>
-    </nav>
+    </Transition>
 
   </div>
 </template>

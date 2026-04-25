@@ -35,7 +35,7 @@ class LoginController extends Controller
             'password' => $credentials['jelszo']
         ], $remember)) {
             $request->session()->regenerate();
-            return redirect()->intended('');
+            return redirect('/');
         }
 
         return back()->withErrors([
