@@ -175,10 +175,10 @@ const rendezesDropdownRef = ref(null)
 
     <!-- Külső keret -->
     <div
-      class="rounded-3xl overflow-hidden border-4 border-accent-600 bg-gradient-to-br from-brand-800 via-brand-600 to-accent-700 animate-gradient backdrop-blur-sm shadow-2xl w-full h-full mx-12">
+      class="rounded-3xl overflow-hidden border-4 border-accent-600 bg-gradient-to-br from-brand-800 via-brand-600 to-accent-700 animate-gradient backdrop-blur-sm shadow-2xl w-full h-full mx-3 lg:mx-12">
 
       <!-- Belső konténer -->
-      <div class="h-full overflow-y-auto scroll-smooth p-3 foodr-scrollbar">
+      <div class="h-full overflow-y-auto scroll-smooth p-3 pb-10 lg:pb-3 foodr-scrollbar">
 
         <div v-if="recipesToShow.length == 0 && !searchInput"
           class="relative h-full flex flex-col items-center justify-center gap-8 py-8">

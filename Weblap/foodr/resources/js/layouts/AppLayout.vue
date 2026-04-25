@@ -145,31 +145,13 @@ watch(() => page.url, (currentPath) => {
 
     <div class="flex flex-col flex-1 min-w-0 min-h-0 h-full lg:h-screen z-10">
 
-      <!-- MOBILE: Top header bar -->
-      <header class="lg:hidden shrink-0 p-4">
-        <div
-          class="flex items-center justify-between bg-accent-300/90 backdrop-blur-lg rounded-3xl px-4 py-3 shadow-xl border-accent-600 border-3">
-          <button @click="router.visit('/')">
-            <h1 class="text-2xl font-bold">
-              <span class="text-accent-400 text-outline-shadow">Food</span><span
-                class="text-brand-500 text-outline-shadow">R</span>
-            </h1>
-          </button>
-          <button @click="toggleMobileMenu"
-            class="p-2 rounded-3xl bg-accent-400/50 hover:bg-accent-400 border-accent-600 border-2 transition">
-            <Menu v-if="!isMobileMenuOpen" class="w-6 h-6 text-slate-900" />
-            <X v-else class="w-6 h-6 text-slate-900" />
-          </button>
-        </div>
-      </header>
-
       <!-- Page content -->
-      <main class="flex-1 min-h-0 overflow-hidden">
+      <main class="flex-1 min-h-0 overflow-hidden lg:pt-0 pt-3">
         <slot />
       </main>
 
       <!-- MOBILE: Bottom navigation bar -->
-      <nav class="lg:hidden shrink-0 px-3 pb-3">
+      <nav class="lg:hidden shrink-0 px-3 pb-3" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom))">
         <div class="relative flex items-center justify-around bg-accent-300/95 backdrop-blur-lg rounded-3xl px-2 py-1 shadow-xl border-accent-600 border-3">
 
           <!-- FavoR -->
@@ -227,9 +209,9 @@ watch(() => page.url, (currentPath) => {
           </button>
 
           <!-- Fiók -->
-          <button @click="handleRightNav(RightnavItems[0])"
+          <button @click="toggleMobileMenu"
             class="flex flex-col items-center gap-1 flex-1 py-2 rounded-3xl transition-all active:bg-accent-400/30">
-            <User class="w-7 h-7 text-slate-700" />
+            <Menu class="w-7 h-7 text-slate-700" />
             <span class="text-sm font-semibold tracking-wide text-slate-600">Fiók</span>
           </button>
 
@@ -313,20 +295,25 @@ watch(() => page.url, (currentPath) => {
     </Transition>
 
     <Transition name="menu-slide">
-      <div v-if="isMobileMenuOpen" class="lg:hidden fixed top-1/2 -translate-y-1/2 right-4 left-4 z-50 pt-16">
+      <div v-if="isMobileMenuOpen" class="lg:hidden fixed inset-0 z-50 flex items-center justify-center px-3">
 
-
-        <button @click="closeMobileMenu" class="absolute top-0 right-0 w-14 h-14 rounded-full
-                 bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
-                 border-6 border-accent-600 shadow-lg
-                 flex items-center justify-center z-20 transition-all hover:scale-110">
-          <X class="w-7 h-7 text-brand-600" :stroke-width="3" />
-        </button>
-
+        <div class="relative w-full">
         <div class="max-h-[calc(100dvh-6rem)] overflow-y-auto border-accent-600 border-6 rounded-4xl">
           <div class="rounded-3xl overflow-hidden shadow-2xl">
             <div
               class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-4 relative">
+
+              <div class="flex items-center justify-between">
+                <button @click="router.visit('/')">
+                  <h1 class="text-5xl font-bold">
+                    <span class="text-accent-400 text-outline-shadow">Food</span><span class="text-brand-500 text-outline-shadow">R</span>
+                  </h1>
+                </button>
+                <button @click="closeMobileMenu" class="w-12 h-12 rounded-full
+                         flex items-center justify-center transition-all hover:scale-110">
+                  <X class="w-7 h-7 text-brand-600" :stroke-width="3" />
+                </button>
+              </div>
 
               <div
                 class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 shadow-lg p-5 backdrop-blur-sm text-center">
@@ -372,6 +359,7 @@ watch(() => page.url, (currentPath) => {
 
             </div>
           </div>
+        </div>
         </div>
       </div>
     </Transition>
