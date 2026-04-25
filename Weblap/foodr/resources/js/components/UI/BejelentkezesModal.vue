@@ -171,7 +171,7 @@ onUnmounted(() => {
 
             <Transition name="toast-slide">
                 <div v-if="successToast"
-                    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] px-6 py-3 rounded-3xl shadow-lg bg-gradient-to-r from-accent-300 to-accent-200 border border-accent-500 text-slate-900 text-sm font-medium text-center whitespace-nowrap">
+                    class="fixed bottom-6 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:whitespace-nowrap z-[70] px-6 py-3 rounded-3xl shadow-lg bg-gradient-to-r from-accent-300 to-accent-200 border border-accent-500 text-slate-900 text-sm font-medium text-center">
                     Sikeres regisztráció! Erősítsd meg az e-mail címed.
                 </div>
             </Transition>
