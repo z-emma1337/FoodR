@@ -61,9 +61,9 @@ Route::match(['get', 'post'], '/felhasznalo', function (Request $request) {
 
         if ($request->filled('profilkepurl')) {
             $user->profilkepurl = $request->profilkepurl;
-            Kommentek::where('felhasznalo_id', $user->id)
-                ->update(['profilkepurl' => $user->profilkepurl]);
         }
+        Kommentek::where('felhasznalo_id', $user->id)
+            ->update(['pfpurl' => $user->profilkepurl]);
 
         $user->save();
         return Redirect::back();

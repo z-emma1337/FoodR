@@ -210,7 +210,7 @@ const mentesAllergenek = () => {
                                     <label v-for="allergen in allergenek" :key="allergen.id"
                                         class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium text-slate-900 font-semibold hover:text-heading rounded">
                                         <input type="checkbox" v-model="selectedAllergens" :value="allergen.id"
-                                            @change="mentesAllergenek" class="mr-2 accent-brand-600 w-5 h-5" />
+                                            @change="mentesAllergenek" class="mr-2 cursor-pointer accent-brand-600 w-5 h-5" />
                                         {{ allergen.nev }}
                                     </label>
                                 </div>
