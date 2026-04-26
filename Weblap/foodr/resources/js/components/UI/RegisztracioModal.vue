@@ -9,7 +9,7 @@ import { useUsernameCheck } from '@/composables/useUsernameCheck'
 import { usePasswordValidation } from '@/composables/usePasswordValidation'
 
 const props = defineProps({ open: { type: Boolean, required: true } })
-const emit = defineEmits(['close', 'switch-to-login'])
+const emit = defineEmits(['close', 'switch-to-login', 'registered'])
 
 const email = ref('')
 const username = ref('')
@@ -59,7 +59,7 @@ const submit = () => {
         jelszo_confirmation: confirmPassword.value,
         allergen_id: 1,
     }, {
-        onSuccess: () => emit('switch-to-login'),
+        onSuccess: () => emit('registered'),
         onError: (errors) => {
             if (errors.email) {
                 emailError.value = Array.isArray(errors.email) ? errors.email[0] : errors.email

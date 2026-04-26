@@ -34,6 +34,12 @@ class RegisterController extends Controller
             'jelszo' => Hash::make($validated['jelszo']),
         ]);
 
-        $user->sendEmailVerificationNotification();
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Email verification send failed: ' . $e->getMessage());
+        }
+
+        return back();
     }
 }

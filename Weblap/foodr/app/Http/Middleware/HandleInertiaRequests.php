@@ -27,7 +27,8 @@ class HandleInertiaRequests extends Middleware
                     'nev' => $user->nev,
                     'email' => $user->email,
                     'email_verified_at' => $user->email_verified_at,
-                    'profilkepurl'=>$user->profilkepurl
+                    'profilkepurl' => $user->profilkepurl,
+                    'two_factor_enabled' => $user->hasEnabledTwoFactorAuthentication(),
                 ] : null,
             ],
             'likedCount' => $likedCount,

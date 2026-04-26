@@ -89,6 +89,10 @@ Route::post('/regisztracio', [RegisterController::class, 'store'])
 Route::post('/bejelentkezes', [LoginController::class, 'login'])
     ->name('login');
 
+Route::post('/bejelentkezes/2fa', [LoginController::class, 'twoFactorVerify'])
+    ->name('login.two-factor')
+    ->middleware('throttle:5,1');
+
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();

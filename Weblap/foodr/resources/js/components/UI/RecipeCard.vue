@@ -99,6 +99,7 @@ onUnmounted(() => {
     transform: isBackground
       ? `scale(${nextCardScale})`
       : `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${rotation}deg)`,
+    willChange: isBackground ? 'transform, opacity' : 'transform',
     opacity: isBackground ? nextCardOpacity : 1,
     transition: !isBackground && isDragging
       ? 'none'

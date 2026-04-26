@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class Felhasznalo extends Authenticatable implements MustVerifyEmail
 {
-    use Notifiable;
+    use Notifiable, TwoFactorAuthenticatable;
 
     protected $table = 'felhasznalo';
 
@@ -23,6 +24,13 @@ class Felhasznalo extends Authenticatable implements MustVerifyEmail
 
     protected $hidden = [
         'jelszo',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'two_factor_confirmed_at' => 'datetime',
     ];
 
     public function getAuthPassword()
