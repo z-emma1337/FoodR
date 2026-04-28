@@ -178,12 +178,12 @@ const rendezesDropdownRef = ref(null)
         </div>
 
         <div v-else class="w-full mb-3 relative sticky top-0 z-50 drop-shadow-[0_0_50px_theme(colors.brand.800)]">
-          <input v-model="searchInput" class="w-full bg-accent-200 text-brand-700 placeholder:text-brand-700 text-sm
+          <input title="Keresés" v-model="searchInput" class="w-full bg-accent-200 text-brand-700 placeholder:text-brand-700 text-sm
            border-4 border-accent-600 rounded-3xl py-2 pl-12 pr-12
            focus:outline-none focus:ring-2 focus:ring-accent-400
            focus:border-transparent transition-all shadow-md" placeholder="Receptek keresése..." />
 
-          <button ref="filterButtonRef" @click="toggleDropdown" class="absolute left-3 top-1/2 -translate-y-1/2
+          <button title="Szűrés" ref="filterButtonRef" @click="toggleDropdown" class="absolute left-3 top-1/2 -translate-y-1/2
          bg-accent-200 rounded-full p-1.5
          text-brand-700 hover:text-brand-800 transition-all transform
          hover:scale-110">
@@ -197,17 +197,18 @@ const rendezesDropdownRef = ref(null)
                 <li>
                   <h5>Hozzávalók</h5>
                   <h4>{{ inputHozzavalok }}</h4>
-                  <input v-model.number="inputHozzavalok" type="range"
-                    :min="minHozzavalok" :max="maxHozzavalok" step="1"
-                    class="w-full mt-1 rounded border border-brand-300 accent-brand-600" />
+                  <input v-model.number="inputHozzavalok" type="range" :min="minHozzavalok" :max="maxHozzavalok"
+                    step="1" class="w-full mt-1 rounded border border-brand-300 accent-brand-600" />
                 </li>
                 <li>
                   <h5>Idő</h5>
                   <h4>{{ inputIdo }} perc</h4>
-                  <input v-model.number="inputIdo" type="range"
-                    :min="minIdo" :max="maxIdo" step="1"
+                  <input v-model.number="inputIdo" type="range" :min="minIdo" :max="maxIdo" step="1"
                     class="w-full mt-1 rounded border border-brand-300 accent-brand-600" />
                 </li>
+                <p class="text-xs text-slate-500 font-medium">
+                  Mit tartalmazhat a recept?
+                </p>
                 <li v-for="allergen in allergenek" :key="allergen">
                   <label
                     class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">
@@ -246,7 +247,7 @@ const rendezesDropdownRef = ref(null)
            text-brand-700 hover:text-brand-800 transition-colors">
             <X class="w-5 h-5" stroke-width="3" />
           </button>
-          <button ref="rendezesButtonRef" @click="toggleRendezesDropdown" class="absolute right-3 top-1/2 -translate-y-1/2
+          <button title="Rendezés" ref="rendezesButtonRef" @click="toggleRendezesDropdown" class="absolute right-3 top-1/2 -translate-y-1/2
          bg-accent-200 rounded-full p-1.5
          text-brand-700 hover:text-brand-800 transition-all transform
          hover:scale-110">

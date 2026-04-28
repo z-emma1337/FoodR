@@ -61,7 +61,7 @@ function ReceptTorlese(id) {
     <RecipeModal :open="recipeModalOpen" :recipe="recipe" @close="CloseRecipeModal" />
     <SzerkesztModal :open="SzerkesztModalOpen" :recipe="recipe" @close="CloseSzerkesztModal" />
 
-    <div class="rounded-2xl overflow-hidden 
+    <div :title="recipe.nev" class="rounded-2xl overflow-hidden 
            bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
            shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
            border-accent-600 border-3 flex flex-col group w-full h-full">
@@ -98,12 +98,12 @@ function ReceptTorlese(id) {
                     {{ recipe.nev }}
                 </h3>
 
-                <span class="flex items-center gap-1 rounded-full
+                <span title="Likeok" class="flex items-center gap-1 rounded-full
                text-white text-sm font-semibold shadow-lg">
                     <Heart class="w-6 h-6 text-brand-600 fill-brand-400" />
                     {{ recipe.likedb }}
                 </span>
-                <span class="flex items-center gap-1 rounded-full
+                <span title="Kommentek" class="flex items-center gap-1 rounded-full
                text-white text-sm font-semibold shadow-lg">
                     <MessageCircleMore class="w-6 h-6 text-slate-600 fill-white" />
                     {{ recipe.likedb }}
@@ -131,16 +131,16 @@ function ReceptTorlese(id) {
 
             <div class="flex gap-2 mt-auto">
 
-                <button @click.stop="OpenRecipeModal"
-                    class="flex-1 py-2.5 sm:py-3 rounded-3xl button-brand flex items-center justify-center gap-2">
+                <button title="Részletek" @click.stop="OpenRecipeModal"
+                    class="flex-1 py-2.5 sm:py-3 rounded-3xl button-brand hover:!scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
                     Részletek
                 </button>
-                <button @click.stop="OpenSzerkesztModal"
-                    class="delete-btn w-13 h-13 p-2 rounded-full button-brand flex items-center justify-center">
-                    <Pencil class=" w-7 h-7" />
+                <button title="Szerkesztés" @click.stop="OpenSzerkesztModal"
+                            class="delete-btn w-13 h-13 p-2 rounded-full button-brand flex items-center justify-center">
+                            <Pencil class=" w-7 h-7" />
                 </button>
 
-                <button @click.stop="ReceptTorlese(recipe.id)"
+                <button title="Törlés" @click.stop="ReceptTorlese(recipe.id)"
                     class="delete-btn w-13 h-13 p-2 rounded-full button-brand flex items-center justify-center hover:bg-red-600">
                     <Trash2 class="trash-icon w-7 h-7" />
                 </button>

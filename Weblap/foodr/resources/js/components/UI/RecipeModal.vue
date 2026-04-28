@@ -183,7 +183,7 @@ function ReceptTorlese(id) {
               {{ recipe.nev }}
             </h2>
 
-            <button @click="emit('close')"
+            <button title="Bezárás" @click="emit('close')"
               class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200">
               <CloseIcon class="w-10 h-10 text-brand-600" :stroke-width="3" />
             </button>
@@ -191,7 +191,7 @@ function ReceptTorlese(id) {
 
           <div class="overflow-y-auto px-8 pb-8 space-y-6">
 
-            <div class="flex flex-col items-center gap-4 mb-2">
+            <div :title="recipe.nev" class="flex flex-col items-center gap-4 mb-2">
               <img :src="recipe.kep_url" alt="Recept kép"
                 class="w-full h-64 object-cover rounded-3xl shadow-lg border-accent-600 border-6">
             </div>
@@ -207,20 +207,20 @@ function ReceptTorlese(id) {
 
 
                 <div class="relative flex items-center w-20 rounded-base">
-                  <button type="button" id="" @click="adagInput > 1 ? adagInput-- : null"
+                  <button title="Adag csökkentése" type="button" id="" @click="adagInput > 1 ? adagInput-- : null"
                     class="text-body button-brand w-10 rounded-full font-bold flex items-center justify-center pb-0.5">
                     -
                   </button>
-                  <input type="number" id="" v-model.number="adagInput" data-input-counter
+                  <input  type="number" id="" v-model.number="adagInput" data-input-counter
                     aria-describedby="helper-text-explanation"
                     class="border-x-0 h-10 placeholder:text-heading text-center w-full bg-neutral-secondary-medium border-default-medium py-2.5 placeholder:text-body"
                     required />
-                  <button type="button" id="" @click="adagInput < 100 ? adagInput++ : null"
+                  <button title="Adag növelése" type="button" id="" @click="adagInput < 100 ? adagInput++ : null"
                     class="text-body button-brand w-10 rounded-full font-bold flex items-center justify-center pb-0.5">
                     +
                   </button>
                 </div>
-                <div class="flex items-center gap-1 p-2 rounded-xl">
+                <div title="Recept készítője" class="flex items-center gap-1 p-2 rounded-xl">
 
                   <img :src="props.recipe.felhasznalo_pfpurl" class="w-12 h-12 rounded-full object-cover shadow-md" />
 
@@ -287,7 +287,7 @@ function ReceptTorlese(id) {
            border-4 border-accent-600 rounded-3xl py-2.5 px-4
            focus:outline-none focus:ring-2 focus:ring-accent-400
            focus:border-transparent transition-all shadow-md" placeholder="Komment írása..." />
-              <button @click="Komment()"
+              <button title="Komment küldése" @click="Komment()"
                 class="p-3 rounded-full button-brand shadow-md transition-all duration-200 flex items-center justify-center">
                 <Send class="w-6 h-6" />
               </button>
@@ -315,12 +315,12 @@ function ReceptTorlese(id) {
 
           <div v-if="props.recipe.felhasznalo_id == felhasznalo?.id"
             class="flex items-center justify-between px-8 pt-8 pb-4 gap-8">
-            <button @click="szerkesztes = true" class="w-full p-2 rounded-full  font-bold shadow-md
+            <button title="Szerkesztés" @click="szerkesztes = true" class="w-full p-2 rounded-full  font-bold shadow-md
                   button-brand
                  flex items-center justify-center gap-2">
               <Pencil :stroke-width="2" class="w-13 h-13 text-accent-300 pt-0.5 transition-all" />
             </button>
-            <button @click="ReceptTorlese(props.recipe.id)" class="w-full p-2 rounded-full  font-bold shadow-md
+            <button title="Recept törlése" @click="ReceptTorlese(props.recipe.id)" class="w-full p-2 rounded-full  font-bold shadow-md
                  button-brand
                  flex items-center justify-center gap-2
                  ">
@@ -328,14 +328,14 @@ function ReceptTorlese(id) {
             </button>
           </div>
           <div v-else class="flex items-center justify-between px-8 pt-8 pb-4 gap-10 shrink-0">
-            <button v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="w-full p-2 rounded-full  font-bold shadow-md
+            <button title="Like" v-if="isLiked == 0 || isLiked == 2" @click="handleAddToFavorites" :disabled="isCheckingLiked" class="w-full p-2 rounded-full  font-bold shadow-md
                  transition-all
                  flex items-center justify-center gap-2
                  button-brand">
               <Heart :stroke-width="2.5" class="w-15 h-15 text-accent-300 pt-0.5 transition-all" />
             </button>
 
-            <button v-else @click="handleRemoveFromFavorites" class="w-full p-2 rounded-full button-brand font-bold shadow-md
+            <button title="Unlike" v-else @click="handleRemoveFromFavorites" class="w-full p-2 rounded-full button-brand font-bold shadow-md
                   hover:scale-[1.1]
                  flex items-center justify-center gap-2
                  ">

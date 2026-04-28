@@ -273,7 +273,7 @@ const nextCard = () => {
           <!-- Gombok – picit belelógnak a kártyába -->
           <div class="flex items-center gap-5 z-20">
             <div class="w-20 flex justify-center">
-              <button @click="swipeLeftClick" :disabled="isAnimating" class="group relative w-16 h-16 rounded-full
+              <button title="Dislike" @click="swipeLeftClick" :disabled="isAnimating" class="group relative w-16 h-16 rounded-full
                        bg-gradient-to-br from-red-500 to-red-600
                        shadow-xl hover:shadow-2xl
                        transform hover:scale-110 active:scale-95
@@ -285,7 +285,7 @@ const nextCard = () => {
               </button>
             </div>
 
-            <button @click="recipeModalOpen = true" :disabled="!currentRecipe" class="group relative w-14 h-14 rounded-full
+            <button title="Info" @click="recipeModalOpen = true" :disabled="!currentRecipe" class="group relative w-14 h-14 rounded-full
                      bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
                      border-4 border-accent-600
                      shadow-xl hover:shadow-2xl
@@ -297,7 +297,7 @@ const nextCard = () => {
               <Info class="relative w-7 h-7 text-brand-700" />
             </button>
 
-            <button @click="swipeRightClick" :disabled="isAnimating" class="group relative w-20 h-20 rounded-full
+            <button title="Like" @click="swipeRightClick" :disabled="isAnimating" class="group relative w-20 h-20 rounded-full
                      bg-gradient-to-br from-green-500 to-green-600
                      shadow-xl hover:shadow-2xl
                      transform hover:scale-110 active:scale-95
