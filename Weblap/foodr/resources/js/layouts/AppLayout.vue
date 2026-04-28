@@ -256,7 +256,7 @@ watch(() => page.url, (currentPath) => {
                 </div>
                 <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
                 <p class="text-base text-slate-700">{{ user.email }}</p>
-                <button @click="logout"
+                <button @click="logout" title="Kijelentkezés"
                   class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
                   <LogOut class="w-4 h-4" />
                   Kijelentkezés
@@ -273,7 +273,7 @@ watch(() => page.url, (currentPath) => {
                   <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
                   <p class="text-base text-slate-700 mt-1">Jelentkezz be a funkciók eléréséhez</p>
                 </div>
-                <button @click="openLoginModal"
+                <button @click="openLoginModal" title="Bejelenkezés"
                   class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
                   <LogIn class="w-4 h-4" />
                   Bejelentkezés
