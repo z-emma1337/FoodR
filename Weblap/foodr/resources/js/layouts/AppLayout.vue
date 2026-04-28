@@ -43,16 +43,16 @@ const modalMap = {
 }
 
 const LeftnavItems = ref([
-  { label: 'SwipeR', url: '/', icon: Home, active: true, requiresAuth: false },
-  { label: 'FavoR', url: '/kedvencek', icon: Heart, active: false, requiresAuth: true },
-  { label: 'FeedR', url: '/felfedezes', icon: Search, active: false, requiresAuth: false },
-  { label: 'CreatR', url: '/receptjeim', icon: PencilLine, active: false, requiresAuth: true },
+  { label: 'SwipeR', title: 'Receptek válogatása', url: '/', icon: Home, active: true, requiresAuth: false },
+  { label: 'FavoR', title: 'Kedvelt receptek', url: '/kedvencek', icon: Heart, active: false, requiresAuth: true },
+  { label: 'FeedR', title: 'Felfedezés', url: '/felfedezes', icon: Search, active: false, requiresAuth: false },
+  { label: 'CreatR', title: 'Saját receptek', url: '/receptjeim', icon: PencilLine, active: false, requiresAuth: true },
 ])
 
 const RightnavItems = ref([
-  { label: 'Profilom', url: '/profil', icon: User, active: false },
-  { label: 'Beállítások', url: '/beallitasok', icon: Settings, active: false },
-  { label: 'Súgó', url: '/sugo', icon: HelpCircle, active: false },
+  { label: 'Profilom', title: 'Profilom', url: '/profil', icon: User, active: false },
+  { label: 'Beállítások', title: 'Beállítások', url: '/beallitasok', icon: Settings, active: false },
+  { label: 'Súgó', title: 'Súgó', url: '/sugo', icon: HelpCircle, active: false },
 ])
 
 const handleLeftNav = (item) => {
@@ -126,7 +126,7 @@ watch(() => page.url, (currentPath) => {
 
           <nav class="flex-1 px-3 space-y-1 overflow-y-auto">
             <button v-for="item in LeftnavItems" :key="item.label" @click="handleLeftNav(item)"
-              :class="item.active ? 'bg-accent-500/30' : ''"
+              :class="item.active ? 'bg-accent-500/30' : ''" :title="item.title"
               class="w-full flex items-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
               <component :is="item.icon" class="h-5 w-5 mr-3 shrink-0" />
               <span class="flex flex-1 items-center justify-between gap-2">
@@ -152,7 +152,8 @@ watch(() => page.url, (currentPath) => {
 
       <!-- MOBILE: Bottom navigation bar -->
       <nav class="lg:hidden shrink-0 px-3 pb-3" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom))">
-        <div class="relative flex items-center justify-around bg-accent-300/95 backdrop-blur-lg rounded-3xl px-2 py-1 shadow-xl border-accent-600 border-3">
+        <div
+          class="relative flex items-center justify-around bg-accent-300/95 backdrop-blur-lg rounded-3xl px-2 py-1 shadow-xl border-accent-600 border-3">
 
           <!-- FavoR -->
           <button @click="handleLeftNav(LeftnavItems[1])"
@@ -236,7 +237,7 @@ watch(() => page.url, (currentPath) => {
 
           <nav class="flex-1 px-3 space-y-1">
             <button v-for="item in RightnavItems" :key="item.label" @click="handleRightNav(item)"
-              :class="item.active ? 'bg-accent-500/30' : ''"
+              :class="item.active ? 'bg-accent-500/30' : ''" :title="item.title"
               class="w-full group flex items-center px-4 py-3 rounded-3xl transition hover:bg-accent-500/30 hover:scale-[1.02] text-slate-900">
               <component :is="item.icon" class="h-5 w-5 mr-3" />
               <span class="flex-1 text-left">{{ item.label }}</span>
@@ -298,68 +299,69 @@ watch(() => page.url, (currentPath) => {
       <div v-if="isMobileMenuOpen" class="lg:hidden fixed inset-0 z-50 flex items-center justify-center px-3">
 
         <div class="relative w-full">
-        <div class="max-h-[calc(100dvh-6rem)] overflow-y-auto border-accent-600 border-6 rounded-4xl">
-          <div class="rounded-3xl overflow-hidden shadow-2xl">
-            <div
-              class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-4 relative">
-
-              <div class="flex items-center justify-between">
-                <button @click="router.visit('/')">
-                  <h1 class="text-5xl font-bold">
-                    <span class="text-accent-400 text-outline-shadow">Food</span><span class="text-brand-500 text-outline-shadow">R</span>
-                  </h1>
-                </button>
-                <button @click="closeMobileMenu" class="w-12 h-12 rounded-full
-                         flex items-center justify-center transition-all hover:scale-110">
-                  <X class="w-7 h-7 text-brand-600" :stroke-width="3" />
-                </button>
-              </div>
-
+          <div class="max-h-[calc(100dvh-6rem)] overflow-y-auto border-accent-600 border-6 rounded-4xl">
+            <div class="rounded-3xl overflow-hidden shadow-2xl">
               <div
-                class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 shadow-lg p-5 backdrop-blur-sm text-center">
-                <div v-if="user" class="space-y-3 py-2">
-                  <div class="flex justify-center">
-                    <div class="w-16 h-16 rounded-full overflow-hidden shadow-md">
-                      <img :src="user.profilkepurl" alt="Profilkép" class="w-full h-full object-cover scale-[1.2]" />
-                    </div>
-                  </div>
-                  <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
-                  <p class="text-sm text-slate-700">{{ user.email }}</p>
-                </div>
-                <div v-else class="space-y-3 py-2">
-                  <div class="flex justify-center">
-                    <div class="w-16 h-16 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
-                      <User class="w-8 h-8 text-slate-700" />
-                    </div>
-                  </div>
-                  <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
-                  <p class="text-sm text-slate-700 mt-1">Jelentkezz be a funkciók eléréséhez</p>
-                  <button @click="openLoginModal"
-                    class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all font-medium shadow-md flex items-center justify-center gap-2">
-                    <LogIn class="w-4 h-4" />
-                    Bejelentkezés
+                class="rounded-3xl bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-6 space-y-4 relative">
+
+                <div class="flex items-center justify-between">
+                  <button @click="router.visit('/')">
+                    <h1 class="text-5xl font-bold">
+                      <span class="text-accent-400 text-outline-shadow">Food</span><span
+                        class="text-brand-500 text-outline-shadow">R</span>
+                    </h1>
+                  </button>
+                  <button @click="closeMobileMenu" class="w-12 h-12 rounded-full
+                         flex items-center justify-center transition-all hover:scale-110">
+                    <X class="w-7 h-7 text-brand-600" :stroke-width="3" />
                   </button>
                 </div>
+
+                <div
+                  class="rounded-3xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 shadow-lg p-5 backdrop-blur-sm text-center">
+                  <div v-if="user" class="space-y-3 py-2">
+                    <div class="flex justify-center">
+                      <div class="w-16 h-16 rounded-full overflow-hidden shadow-md">
+                        <img :src="user.profilkepurl" alt="Profilkép" class="w-full h-full object-cover scale-[1.2]" />
+                      </div>
+                    </div>
+                    <p class="font-bold text-slate-900 text-lg">{{ user.nev }}</p>
+                    <p class="text-sm text-slate-700">{{ user.email }}</p>
+                  </div>
+                  <div v-else class="space-y-3 py-2">
+                    <div class="flex justify-center">
+                      <div class="w-16 h-16 rounded-full bg-accent-500/30 flex items-center justify-center shadow-md">
+                        <User class="w-8 h-8 text-slate-700" />
+                      </div>
+                    </div>
+                    <p class="font-bold text-slate-900 text-lg">Nincs bejelentkezve</p>
+                    <p class="text-sm text-slate-700 mt-1">Jelentkezz be a funkciók eléréséhez</p>
+                    <button @click="openLoginModal"
+                      class="w-full py-3 rounded-3xl bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all font-medium shadow-md flex items-center justify-center gap-2">
+                      <LogIn class="w-4 h-4" />
+                      Bejelentkezés
+                    </button>
+                  </div>
+                </div>
+
+                <nav class="space-y-2 pb-2">
+                  <button v-for="item in RightnavItems" :key="item.label" @click="handleRightNav(item)"
+                    :class="item.active ? 'bg-accent-500/30' : ''"
+                    class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
+                    <component :is="item.icon" class="h-5 w-5 mr-3" />
+                    {{ item.label }}
+                  </button>
+
+                  <button v-if="user" @click="logout"
+                    class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-red-200/50 text-slate-900">
+                    <LogOut class="h-5 w-5 mr-3" />
+                    Kijelentkezés
+                  </button>
+                </nav>
+
               </div>
-
-              <nav class="space-y-2 pb-2">
-                <button v-for="item in RightnavItems" :key="item.label" @click="handleRightNav(item)"
-                  :class="item.active ? 'bg-accent-500/30' : ''"
-                  class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-accent-500/30 text-slate-900">
-                  <component :is="item.icon" class="h-5 w-5 mr-3" />
-                  {{ item.label }}
-                </button>
-
-                <button v-if="user" @click="logout"
-                  class="w-full flex items-center justify-center px-4 py-3 rounded-full transition hover:bg-red-200/50 text-slate-900">
-                  <LogOut class="h-5 w-5 mr-3" />
-                  Kijelentkezés
-                </button>
-              </nav>
-
             </div>
           </div>
-        </div>
         </div>
       </div>
     </Transition>
