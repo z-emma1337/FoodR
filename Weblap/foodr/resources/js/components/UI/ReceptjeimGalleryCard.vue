@@ -36,6 +36,7 @@ const getAllergenColor = (allergen) => {
 
 const recipeModalOpen = ref(false)
 const SzerkesztModalOpen = ref(false)
+const torolodik = ref(false)
 function OpenRecipeModal() {
     recipeModalOpen.value = true;
 }
@@ -50,11 +51,15 @@ function CloseSzerkesztModal() {
     SzerkesztModalOpen.value = false;
 }
 function ReceptTorlese(id) {
+    if (torolodik.value) return
+    torolodik.value = true
     axios.delete(`/recept-torles/${id}`)
         .then(() => {
             window.location.reload()
         })
-    resolve()
+        .catch(() => {
+            torolodik.value = false
+        })
 }
 </script>
 <template>
@@ -140,8 +145,8 @@ function ReceptTorlese(id) {
                             <Pencil class=" w-7 h-7" />
                 </button>
 
-                <button title="Törlés" @click.stop="ReceptTorlese(recipe.id)"
-                    class="delete-btn w-13 h-13 p-2 rounded-full button-brand flex items-center justify-center hover:bg-red-600">
+                <button title="Törlés" @click.stop="ReceptTorlese(recipe.id)" :disabled="torolodik"
+                    class="delete-btn w-13 h-13 p-2 rounded-full button-brand flex items-center justify-center hover:bg-red-600 disabled:opacity-50 disabled:hover:scale-100">
                     <Trash2 class="trash-icon w-7 h-7" />
                 </button>
             </div>

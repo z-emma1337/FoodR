@@ -21,18 +21,17 @@ class InterakcioController extends Controller
 
         $felhasznaloId = Auth::id();
 
-        $interakcio = Interakciok::updateOrCreate(
+        Interakciok::updateOrCreate(
             [
                 'felhasznalo_id' => $felhasznaloId,
                 'recept_id' => $request->recept_id
             ],
             [
-
                 'liked' => 1,
             ]
         );
 
-
+        return redirect()->back();
     }
 
 
@@ -44,7 +43,7 @@ class InterakcioController extends Controller
 
         $felhasznaloId = Auth::id();
 
-        $interakcio = Interakciok::updateOrCreate(
+        Interakciok::updateOrCreate(
             [
                 'felhasznalo_id' => $felhasznaloId,
                 'recept_id' => $request->recept_id
@@ -56,6 +55,7 @@ class InterakcioController extends Controller
             ]
         );
 
+        return redirect()->back();
     }
 
     public function UnlikeRecept(Request $request)
@@ -66,7 +66,7 @@ class InterakcioController extends Controller
 
         $felhasznaloId = Auth::id();
 
-        $interakcio = Interakciok::updateOrCreate(
+        Interakciok::updateOrCreate(
             [
                 'felhasznalo_id' => $felhasznaloId,
                 'recept_id' => $request->recept_id
@@ -78,6 +78,7 @@ class InterakcioController extends Controller
             ]
         );
 
+        return redirect()->back();
     }
 
 
