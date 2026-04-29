@@ -185,6 +185,15 @@ Route::delete('/recept-torles/{id}', function ($id) {
     return response()->json(['success' => true], 200);
 })->middleware('auth');
 
+Route::post('/user/two-factor-cancel', function () {
+    $user = Auth::user();
+    $user->two_factor_secret = null;
+    $user->two_factor_recovery_codes = null;
+    $user->two_factor_confirmed_at = null;
+    $user->save();
+    return response()->noContent();
+})->middleware('auth');
+
 Route::post('/komment', [KommentController::class, 'komment']);
 Route::get('/kommentek/{recept_id}', [KommentController::class, 'getKommentek']);
 require __DIR__ . '/settings.php';

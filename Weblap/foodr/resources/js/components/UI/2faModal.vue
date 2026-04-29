@@ -79,7 +79,10 @@ async function copyKey() {
     setTimeout(() => (copied.value = false), 2000)
 }
 
-function close() {
+async function close() {
+    if (step.value !== 'recovery') {
+        await apiPost('/user/two-factor-cancel')
+    }
     emit('close')
 }
 
