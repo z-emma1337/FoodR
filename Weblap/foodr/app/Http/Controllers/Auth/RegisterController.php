@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Felhasznalo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -34,6 +35,15 @@ class RegisterController extends Controller
             'jelszo' => Hash::make($validated['jelszo']),
         ]);
 
-        $user->sendEmailVerificationNotification();
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Email verification send failed: ' . $e->getMessage());
+        }
+
+        return redirect('/');
     }
 }

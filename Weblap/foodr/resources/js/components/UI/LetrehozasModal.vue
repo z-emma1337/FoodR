@@ -15,6 +15,7 @@ const receptAdag = ref();
 const receptHozzavalok = ref([{ nev: '', adag: null }]);
 const receptLeirasok = ref([{ leiras: '' }])
 const letrehozhato = ref(false);
+const bekuldes = ref(false);
 const Kep = ref(null);
 const kepPreview = ref(null);
 const hozzavalok = ref([]);
@@ -55,6 +56,8 @@ const torolLeiras = (index) => {
 }
 
 const Letrehozas = () => {
+    if (bekuldes.value) return
+    bekuldes.value = true
 
     const formData = new FormData()
 
@@ -82,6 +85,10 @@ const Letrehozas = () => {
         },
         onError: (errors) => {
             console.error(errors)
+            bekuldes.value = false
+        },
+        onFinish: () => {
+            bekuldes.value = false
         }
     })
 }
@@ -308,10 +315,10 @@ const szurtHozzavalok = computed(() => {
                     </div>
 
                     <div class="flex items-center justify-between px-8 pt-8 pb-4 shrink-0">
-                        <button @click="Letrehozas()" :disabled="!letrehozhato"
+                        <button @click="Letrehozas()" :disabled="!letrehozhato || bekuldes"
                             class="w-full p-2 py-4 rounded-full font-bold text-lg shadow-md
                          flex items-center justify-center gap-2 button-brand disabled:opacity-50 disabled:transition-none disabled:hover:scale-100 disabled:hover:bg-brand-700">
-                            Létrehozás
+                            {{ bekuldes ? 'Létrehozás...' : 'Létrehozás' }}
                         </button>
                     </div>
 

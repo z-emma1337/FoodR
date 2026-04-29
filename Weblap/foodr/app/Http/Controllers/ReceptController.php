@@ -103,11 +103,17 @@ class ReceptController extends Controller
 
 
 
-        $kep = $request->file('kep');
-        $kiterj = $kep->getClientOriginalExtension();
-        $kepnev = $recept->id . '.' . $kiterj;
-        $kep->move(public_path('imgs/Receptek'), $kepnev);
-        $recept->update(['kep_url' => '/imgs/Receptek/' . $kepnev]);
+        if ($request->hasFile('kep')) {
+            $kep = $request->file('kep');
+            $kiterj = $kep->getClientOriginalExtension();
+            $kepnev = $recept->id . '.' . $kiterj;
+            $targetDir = public_path('imgs/Receptek');
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+            $kep->move($targetDir, $kepnev);
+            $recept->update(['kep_url' => '/imgs/Receptek/' . $kepnev]);
+        }
 
 
         foreach ($request->receptHozzavalok as $hozzavalo) {

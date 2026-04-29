@@ -35,14 +35,24 @@ const flipTo = (face) => {
     }, 350)
 }
 
+const successToast = ref(false)
+let toastTimeout = null
+
 const openRegisztracio = () => flipTo('register')
 const closeRegisztracio = () => flipTo('login')
+const onRegistered = () => {
+    emit('close')
+}
 
 const authInput = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const rememberMe = ref(false)
 const errorMessage = ref('')
+
+const twoFactorCode = ref('')
+const twoFactorError = ref('')
+const twoFactorLoading = ref(false)
 
 const isFormValid = computed(() => authInput.value.length > 0 && password.value.length > 0)
 
@@ -54,7 +64,32 @@ const submit = () => {
         remember: rememberMe.value,
     }, {
         onSuccess: () => resolveLoginSuccess(),
-        onError: () => { errorMessage.value = 'Hibás email cím vagy jelszó' }
+        onError: (errors) => {
+            if (errors.two_factor) {
+                flipTo('twoFactor')
+            } else {
+                errorMessage.value = 'Hibás email cím vagy jelszó'
+            }
+        },
+    })
+}
+
+const submitTwoFactor = () => {
+    if (twoFactorCode.value.replace(/\s/g, '').length < 6) {
+        twoFactorError.value = 'Kérjük, adj meg egy 6 jegyű kódot.'
+        return
+    }
+    twoFactorError.value = ''
+    twoFactorLoading.value = true
+    router.post('/bejelentkezes/2fa', {
+        code: twoFactorCode.value.replace(/\s/g, ''),
+    }, {
+        onSuccess: () => resolveLoginSuccess(),
+        onError: () => {
+            twoFactorError.value = 'Hibás kód. Próbáld újra.'
+            twoFactorLoading.value = false
+        },
+        onFinish: () => { twoFactorLoading.value = false },
     })
 }
 
@@ -65,6 +100,9 @@ watch(() => props.open, (val) => {
         showPassword.value = false
         rememberMe.value = false
         errorMessage.value = ''
+        twoFactorCode.value = ''
+        twoFactorError.value = ''
+        twoFactorLoading.value = false
         visibleFace.value = 'login'
         rotateY.value = 0
         isFlipping.value = false
@@ -155,10 +193,79 @@ onUnmounted(() => {
                 <div v-if="visibleFace === 'register'"
                     class="w-full rounded-3xl shadow-2xl border-accent-600 border-6 overflow-hidden">
                     <RegisztracioModal :open="visibleFace === 'register'" @close="closeRegisztracio"
-                        @switch-to-login="closeRegisztracio" />
+                        @switch-to-login="closeRegisztracio" @registered="onRegistered" />
+                </div>
+
+                <div v-if="visibleFace === 'twoFactor'"
+                    class="w-full rounded-3xl shadow-2xl border-accent-600 border-6 overflow-hidden">
+                    <div class="bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300 p-10 space-y-6">
+
+                        <button @click="emit('close')"
+                            class="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center hover:bg-accent-500/30 transition-all duration-200">
+                            <CloseIcon class="w-6 h-6 text-brand-600" :stroke-width="3" />
+                        </button>
+
+                        <div class="text-center space-y-1">
+                            <h1 class="text-2xl font-semibold text-slate-900">Kétlépéses hitelesítés</h1>
+                            <p class="text-sm text-slate-600">Add meg a Google Authenticatorban látható kódot</p>
+                        </div>
+
+                        <div class="flex justify-center">
+                            <input
+                                v-model="twoFactorCode"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="6"
+                                placeholder="000000"
+                                @keydown.enter="submitTwoFactor"
+                                class="w-48 text-center text-3xl font-mono tracking-widest rounded-2xl border-2 border-accent-500 bg-white/70 px-4 py-3 focus:outline-none focus:border-brand-600 transition-colors"
+                                autofocus
+                            />
+                        </div>
+
+                        <div v-if="twoFactorError"
+                            class="rounded-3xl bg-brand-200 px-3 py-2 text-center text-sm text-brand-900">
+                            {{ twoFactorError }}
+                        </div>
+
+                        <FormButton :disabled="twoFactorLoading" @click="submitTwoFactor">
+                            <span v-if="twoFactorLoading" class="flex items-center justify-center gap-2">
+                                <span class="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                                Ellenőrzés...
+                            </span>
+                            <span v-else>Bejelentkezés</span>
+                        </FormButton>
+
+                        <p class="text-center text-sm text-slate-800">
+                            <button type="button" @click="flipTo('login')"
+                                class="font-medium text-brand-600 hover:underline inline-block hover:scale-105 transition-all duration-200">
+                                ← Vissza
+                            </button>
+                        </p>
+
+                    </div>
                 </div>
 
             </div>
+
+            <Transition name="toast-slide">
+                <div v-if="successToast"
+                    class="fixed bottom-6 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:whitespace-nowrap z-[70] px-6 py-3 rounded-3xl shadow-lg bg-gradient-to-r from-accent-300 to-accent-200 border border-accent-500 text-slate-900 text-sm font-medium text-center">
+                    Sikeres regisztráció! Erősítsd meg az e-mail címed.
+                </div>
+            </Transition>
         </div>
     </Transition>
 </template>
+
+<style scoped>
+.toast-slide-enter-active,
+.toast-slide-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.toast-slide-enter-from,
+.toast-slide-leave-to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+}
+</style>

@@ -61,7 +61,7 @@ function CloseRecipeModal(){
 </script>
 <template>
          <RecipeModal :open="recipeModalOpen" :recipe="recipe" @close="CloseRecipeModal" />
-  <div class="rounded-2xl overflow-hidden 
+  <div :title="recipe.nev" class="rounded-2xl overflow-hidden 
            bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
            shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
            border-accent-600 border-3 flex flex-col group w-full h-full">
@@ -99,12 +99,12 @@ function CloseRecipeModal(){
           {{ recipe.nev }}
         </h3>
 
-        <span class="flex items-center gap-1 rounded-full
+        <span title="Likeok" class="flex items-center gap-1 rounded-full
                text-white text-sm font-semibold shadow-lg">
           <Heart class="w-6 h-6 text-brand-600 fill-brand-400" />
           {{ recipe.likedb }}
         </span>
-                <span class="flex items-center gap-1 rounded-full
+                <span title="Kommentek" class="flex items-center gap-1 rounded-full
                text-white text-sm font-semibold shadow-lg">
           <MessageCircleMore class="w-6 h-6 text-slate-600 fill-white" />
           {{ recipe.kommentdb }}
@@ -116,29 +116,37 @@ function CloseRecipeModal(){
 
     <div class="p-3 sm:p-4 flex flex-col min-h-[140px] justify-between">
       <div class="flex gap-2 text-xs sm:text-sm flex-wrap items-center justify-center mb-4">
-        <div class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
+
+                        <div title="Recept készítője" class="flex items-center gap-1 rounded-xl pr-2">
+
+                  <img :src="props.recipe.felhasznalo_pfpurl" class="w-10 h-10 rounded-full object-cover shadow-md" />
+
+                  <span class="font-semibold text-sm text-brand-700">{{ props.recipe.felhasznalo_nev }} receptje</span>
+                </div>
+
+        <div title="Idő (perc)" class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
           <Clock class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
-          <span class="text-slate-700 font-semibold">{{ formatTime(recipe.ido) }}</span>
+          <span class="text-slate-700 font-semibold">{{ recipe.ido }}</span>
         </div>
-        <div class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
+        <div title="Adagok" class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
           <Users class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
-          <span class="text-slate-700 font-semibold">{{ recipe.adag }} adag</span>
+          <span class="text-slate-700 font-semibold">{{ recipe.adag }}</span>
         </div>
-        <div class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
+        <div title="Hozzávalók"  class="flex items-center gap-1.5 bg-slate-700/20 rounded-full px-2.5 py-1">
           <ShoppingBasket class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-700" />
-          <span class="text-slate-700 font-semibold">{{ recipe.hozzavalok.length }} hozzávaló</span>
+          <span class="text-slate-700 font-semibold">{{ recipe.hozzavalok.length }}</span>
         </div>
       </div>
 
       <div class="flex gap-2 mt-auto">
 
-        <button @click.stop="OpenRecipeModal"
+        <button title="Részletek" @click.stop="OpenRecipeModal"
           class="flex-1 py-2.5 sm:py-3 rounded-3xl button-brand hover:!scale-[1.02] font-medium shadow-md flex items-center justify-center gap-2">
           Részletek
         </button>
 
 
-        <button @click.stop="handleRemoveFromFavorites"
+        <button title="Törlés a kedvencekből" @click.stop="handleRemoveFromFavorites"
           class="delete-btn w-13 h-13 p-2 rounded-full bg-brand-700 text-accent-200 shadow-md transition-all duration-200 flex items-center justify-center hover:bg-red-600">
           <Trash2 class="trash-icon w-7 h-7" />
         </button>

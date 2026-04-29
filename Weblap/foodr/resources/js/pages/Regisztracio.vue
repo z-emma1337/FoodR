@@ -8,6 +8,7 @@ import ValidationItem from '@/components/form/ValidationItem.vue'
 import { User, Mail, Lock, Eye } from 'lucide-vue-next'
 import { useUsernameCheck } from '@/composables/useUsernameCheck'
 import { usePasswordValidation } from '@/composables/usePasswordValidation'
+import { useEmailCheck } from '@/composables/useEmailCheck'
 
 
 const email = ref('')
@@ -35,6 +36,14 @@ const {
   isPasswordValid
 } = usePasswordValidation(password)
 
+const {
+  isEmailAvailable,
+  checkingEmail,
+  emailTouched,
+  hasAtSymbol,
+  isEmailFormatValid,
+  isEmailValid,
+} = useEmailCheck(email)
 
 const doPasswordsMatch = computed(() =>
   password.value === confirmPassword.value && confirmPassword.value.length > 0
@@ -44,9 +53,10 @@ const doPasswordsMatch = computed(() =>
 const isFormValid = computed(() =>
   !checkingUsername.value &&
   isUsernameValid.value &&
+  !checkingEmail.value &&
+  isEmailValid.value &&
   isPasswordValid.value &&
-  doPasswordsMatch.value &&
-  email.value.length > 0
+  doPasswordsMatch.value
 )
 
 
@@ -85,9 +95,18 @@ const submit = () => {
         </div>
       </div>
 
-      <div class="transform transition-all duration-300 ">
+      <div class="transform transition-all duration-300">
         <label class="block text-sm font-medium text-slate-800 mb-1">Email cím</label>
-        <FormInput v-model="email" type="email" :icon="Mail" placeholder="email@pelda.hu" required />
+        <FormInput v-model="email" type="email" :icon="Mail" placeholder="email@pelda.hu" />
+        <div v-if="emailTouched && hasAtSymbol" class="mt-2 space-y-1">
+          <ValidationItem
+            v-if="isEmailFormatValid"
+            :valid="isEmailAvailable"
+            :loading="checkingEmail"
+            :text="checkingEmail ? 'Ellenőrzés…' : isEmailAvailable ? 'Email cím elérhető' : 'Ez az email cím már foglalt'"
+          />
+          <ValidationItem v-else :valid="false" text="Érvénytelen email cím formátum" />
+        </div>
       </div>
 
       <div class="transform transition-all duration-300 ">

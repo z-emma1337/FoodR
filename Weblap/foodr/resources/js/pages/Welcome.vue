@@ -162,6 +162,12 @@ const receptekBetoltes = async () => {
 onMounted(async () => {
   await receptekBetoltes()
 
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('login') === '1') {
+    openLoginModal()
+    window.history.replaceState({}, '', '/')
+  }
+
   window.addEventListener('allergenek-frissitve', receptekBetoltes)
 
   document.addEventListener('mousemove', handleDragMove, { passive: true })
@@ -238,14 +244,14 @@ const nextCard = () => {
 <template>
 
   <Head title="SwipeR" />
-  <div class="relative min-h-screen">
+  <div class="relative h-[100dvh] overflow-hidden">
     <!-- swipe hint gradient -->
     <div v-if="dragOffset.x > 50"
       class="fixed inset-0 bg-gradient-to-l from-green-500 via-green-500/50 to-transparent pointer-events-none z-0" />
 
-    <AppLayout class="relative z-10 min-h-screen">
+    <AppLayout class="relative z-10">
       <div v-if="currentIndex >= recipes.length"
-        class="min-h-[calc(100vh-3rem)] flex flex-col items-center justify-center gap-8 py-8">
+        class="h-full flex flex-col items-center justify-center gap-8 py-8">
         <div class="text-center space-y-4 animate-fade-in">
           <div class="w-24 h-24 mx-auto rounded-full bg-accent-400/30 flex items-center justify-center">
             <ChefHat class="w-12 h-12 text-accent-600" />
@@ -259,7 +265,7 @@ const nextCard = () => {
         <div class="flex flex-col items-center gap-2 w-full max-w-md">
 
           <!-- Kártya konténer -->
-          <div class="relative w-[65vh] max-w-[80vw] aspect-[3/4]" @mousedown="handleDragStart"
+          <div class="relative w-[55dvh] max-w-[80vw] aspect-[3/4]" @mousedown="handleDragStart"
             @touchstart="handleDragStart">
             <!-- háttér kártya -->
             <RecipeCard v-if="nextRecipe" :recipe="nextRecipe" :is-background="true" :next-card-scale="nextCardScale"
@@ -273,7 +279,7 @@ const nextCard = () => {
           <!-- Gombok – picit belelógnak a kártyába -->
           <div class="flex items-center gap-5 z-20">
             <div class="w-20 flex justify-center">
-              <button @click="swipeLeftClick" :disabled="isAnimating" class="group relative w-16 h-16 rounded-full
+              <button title="Dislike" @click="swipeLeftClick" :disabled="isAnimating" class="group relative w-16 h-16 rounded-full
                        bg-gradient-to-br from-red-500 to-red-600
                        shadow-xl hover:shadow-2xl
                        transform hover:scale-110 active:scale-95
@@ -285,7 +291,7 @@ const nextCard = () => {
               </button>
             </div>
 
-            <button @click="recipeModalOpen = true" :disabled="!currentRecipe" class="group relative w-14 h-14 rounded-full
+            <button title="Info" @click="recipeModalOpen = true" :disabled="!currentRecipe" class="group relative w-14 h-14 rounded-full
                      bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300
                      border-4 border-accent-600
                      shadow-xl hover:shadow-2xl
@@ -297,7 +303,7 @@ const nextCard = () => {
               <Info class="relative w-7 h-7 text-brand-700" />
             </button>
 
-            <button @click="swipeRightClick" :disabled="isAnimating" class="group relative w-20 h-20 rounded-full
+            <button title="Like" @click="swipeRightClick" :disabled="isAnimating" class="group relative w-20 h-20 rounded-full
                      bg-gradient-to-br from-green-500 to-green-600
                      shadow-xl hover:shadow-2xl
                      transform hover:scale-110 active:scale-95

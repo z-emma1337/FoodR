@@ -363,3 +363,13 @@ button:disabled {
 .button-brand {
   @apply bg-brand-700 text-accent-200 hover:bg-brand-800 transition-all hover:scale-[1.07] font-medium shadow-md;
 }
+
+.p-toggleswitch .p-toggleswitch-slider {
+  background-color: #6b7280 !important;
+}
+.p-toggleswitch.p-toggleswitch-checked .p-toggleswitch-slider {
+  background-color: #ea580c !important;
+}
+.p-toggleswitch.p-toggleswitch-checked:not(.p-disabled):hover .p-toggleswitch-slider {
+  background-color: #c2410c !important;
+}

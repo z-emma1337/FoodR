@@ -25,7 +25,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('login', function () {
-    return redirect()->route('bejelentkezes');
+    return redirect('/?login=1');
 })->name('login');
 
 Route::get('bejelentkezes', function () {
@@ -61,9 +61,9 @@ Route::match(['get', 'post'], '/felhasznalo', function (Request $request) {
 
         if ($request->filled('profilkepurl')) {
             $user->profilkepurl = $request->profilkepurl;
-            Kommentek::where('felhasznalo_id', $user->id)
-                ->update(['profilkepurl' => $user->profilkepurl]);
         }
+        Kommentek::where('felhasznalo_id', $user->id)
+            ->update(['pfpurl' => $user->profilkepurl]);
 
         $user->save();
         return Redirect::back();
@@ -83,11 +83,21 @@ Route::get('/check-username', function (Request $request) {
     return response()->json(['available' => $available]);
 });
 
+Route::get('/check-email', function (Request $request) {
+    $email = strtolower($request->query('email'));
+    $available = !Felhasznalo::whereRaw('LOWER(email) = ?', [$email])->exists();
+    return response()->json(['available' => $available]);
+});
+
 Route::post('/regisztracio', [RegisterController::class, 'store'])
     ->name('regisztracio.store');
 
 Route::post('/bejelentkezes', [LoginController::class, 'login'])
     ->name('login');
+
+Route::post('/bejelentkezes/2fa', [LoginController::class, 'twoFactorVerify'])
+    ->name('login.two-factor')
+    ->middleware('throttle:5,1');
 
 Route::post('/logout', function () {
     Auth::logout();
@@ -126,7 +136,7 @@ Route::middleware('auth')->group(function () {
     })->name('receptjeim');
 
 });
-Route::get('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'show'])->middleware('auth');
+Route::get('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'show']);
 Route::post('/allergenek/felhasznalo', [App\Http\Controllers\AllergenController::class, 'felhasznaloallergenhozzaad'])->middleware('auth');
 Route::get('/recept-alapanyagok', [App\Http\Controllers\ReceptAlapanyagController::class, 'index']);
 Route::get('/allergenek', [App\Http\Controllers\AllergenController::class, 'index']);
@@ -138,7 +148,7 @@ Route::get('/email/verify', function () {
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    return redirect('/felfedezes');
+    return redirect('/');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 Route::delete('/fiok-torles', function () {
@@ -160,12 +170,30 @@ Route::delete('/fiok-torles', function () {
 
 Route::delete('/recept-torles/{id}', function ($id) {
     $felhasznalo = Auth::user();
-    \App\Models\Recept::where('id', $id)
+    $recept = \App\Models\Recept::where('id', $id)
         ->where('felhasznalo_id', $felhasznalo->id)
-        ->delete();
+        ->firstOrFail();
+
+    if ($recept->kep_url) {
+        $fajlUtvonal = public_path(ltrim($recept->kep_url, '/'));
+        if (file_exists($fajlUtvonal)) {
+            unlink($fajlUtvonal);
+        }
+    }
+
+    $recept->delete();
 
     return response()->json(['success' => true], 200);
-});
+})->middleware('auth');
+
+Route::post('/user/two-factor-cancel', function () {
+    $user = Auth::user();
+    $user->two_factor_secret = null;
+    $user->two_factor_recovery_codes = null;
+    $user->two_factor_confirmed_at = null;
+    $user->save();
+    return response()->noContent();
+})->middleware('auth');
 
 Route::post('/komment', [KommentController::class, 'komment']);
 Route::get('/kommentek/{recept_id}', [KommentController::class, 'getKommentek']);

@@ -114,7 +114,7 @@ onUnmounted(() => {
       src="/imgs/swipe.png" alt="" />
 
 
-    <div class="relative w-full h-full rounded-3xl overflow-hidden 
+    <div :title="recipe.nev" class="relative w-full h-full rounded-3xl overflow-hidden 
                     bg-gradient-to-br from-accent-300 via-accent-200 to-accent-300  border-accent-600 border-6">
 
       <div class="relative w-full h-full overflow-hidden">
@@ -124,8 +124,10 @@ onUnmounted(() => {
         <div class="absolute inset-0 bg-gradient-to-b 
                         from-transparent via-transparent to-slate-900/80" />
 
+
         <div v-if="!isBackground && isDragging"
           class="absolute inset-0 flex items-center justify-center pointer-events-none">
+
           <div v-if="dragOffset.x > 50" class="transform rotate-12 border-8 border-green-500 
                           rounded-3xl px-8 py-4 text-6xl font-bold text-green-500
                           shadow-2xl bg-white/10 backdrop-blur-sm"
@@ -138,15 +140,23 @@ onUnmounted(() => {
             :style="{ opacity: Math.min(Math.abs(dragOffset.x) / 100, 1) }">
             DISLIKE
           </div>
+
         </div>
 
+
+
         <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-6 space-y-2 sm:space-y-3">
+
 
           <h2 class="text-2xl sm:text-4xl font-bold text-white leading-tight drop-shadow-lg">
             {{ recipe.nev }}
           </h2>
 
+
+
+
           <div class="flex items-center gap-3 flex-wrap">
+
             <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md 
                             rounded-3xl px-4 py-2 shadow-lg">
               <Clock class="w-4 h-4 text-white" />
@@ -171,7 +181,10 @@ onUnmounted(() => {
               getAllergenColor(allergen)
             ]" style="padding-top: 0.2rem; padding-bottom: 0.2rem;">
               <span class="text-[10px] sm:text-xs font-semibold leading-none">{{ allergen }}</span>
+
             </div>
+
+
           </div>
 
         </div>

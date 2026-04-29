@@ -1,17 +1,75 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { usePage, router } from '@inertiajs/vue3'
 import ToggleSwitch from 'primevue/toggleswitch';
 import {
     X as CloseIcon, Settings, Bell, Shield, Eye, EyeOff,
     Palette, Globe, Trash2, LogOut
 } from 'lucide-vue-next'
+import KetFaktorosBeallitasModal from '@/components/UI/2faModal.vue'
 
 defineProps({ open: { type: Boolean, required: true } })
 const emit = defineEmits(['close'])
 
 const page = usePage()
 const user = computed(() => page.props.auth?.user)
+const twoFactorEnabled = computed(() => user.value?.two_factor_enabled ?? false)
+
+const twoFactorModalOpen = ref(false)
+const disabling2FA = ref(false)
+const disable2FAConfirm = ref(false)
+const twoFactorDisplay = ref(false)
+watch(twoFactorEnabled, (val) => { twoFactorDisplay.value = val }, { immediate: true })
+
+function csrfToken() {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/)
+    return match ? decodeURIComponent(match[1]) : ''
+}
+
+function onTwoFactorToggle() {
+    if (twoFactorEnabled.value) {
+        if (!disable2FAConfirm.value) {
+            disable2FAConfirm.value = true
+            return
+        }
+        disableTwoFactor()
+    } else {
+        twoFactorDisplay.value = true
+        twoFactorModalOpen.value = true
+    }
+}
+
+function on2FAModalClose() {
+    twoFactorModalOpen.value = false
+    twoFactorDisplay.value = twoFactorEnabled.value
+}
+
+function cancelDisable() {
+    disable2FAConfirm.value = false
+}
+
+async function disableTwoFactor() {
+    disabling2FA.value = true
+    disable2FAConfirm.value = false
+    try {
+        await fetch('/user/two-factor-authentication', {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'X-XSRF-TOKEN': csrfToken(),
+            },
+        })
+        router.reload({ only: ['auth'] })
+    } finally {
+        disabling2FA.value = false
+    }
+}
+
+function onTwoFactorEnabled() {
+    router.reload({ only: ['auth'] })
+}
+
+const checked = ref(false)
 
 const confirmMode = ref(false)
 const deleting = ref(false)
@@ -62,26 +120,26 @@ function handleDeleteMouseLeave() {
                             <div
                                 class="rounded-2xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 divide-y divide-accent-400/30 shadow-sm overflow-hidden">
 
-                                <div class="flex items-center justify-between p-4">
+                                <div class="flex items-center justify-between p-4 opacity-50 pointer-events-none">
                                     <div class="flex items-center gap-3">
                                         <Bell class="w-5 h-5 text-brand-600 shrink-0" />
                                         <div>
-                                            <p class="text-sm font-semibold text-slate-900">valamit talaljunk ki ide</p>
-                                            <p class="text-xs text-slate-500">es ide is, el van baszva a toggle cucc, meg a szine</p>
+                                            <p class="text-sm font-semibold text-slate-900">Recept interakciók</p>
+                                            <p class="text-xs text-slate-500">Értesítés, ha felhasználó interaktált az egyik recepteddel</p>
                                         </div>
                                     </div>
-                                    <ToggleSwitch v-model="checked" />
+                                    <ToggleSwitch v-model="checked" :disabled="true" />
                                 </div>
 
-                                <div class="flex items-center justify-between p-4">
+                                <div class="flex items-center justify-between p-4 opacity-50 pointer-events-none">
                                     <div class="flex items-center gap-3">
                                         <Globe class="w-5 h-5 text-brand-600 shrink-0" />
                                         <div>
-                                            <p class="text-sm font-semibold text-slate-900">Same itt is kene valami</p>
-                                            <p class="text-xs text-slate-500">valami ertesites cucc</p>
+                                            <p class="text-sm font-semibold text-slate-900">Heti ajánlások</p>
+                                            <p class="text-xs text-slate-500">Személyre szabott receptajánlások minden héten</p>
                                         </div>
                                     </div>
-                                    <ToggleSwitch v-model="checked" />
+                                    <ToggleSwitch v-model="checked" :disabled="true" />
                                 </div>
 
                             </div>
@@ -94,7 +152,7 @@ function handleDeleteMouseLeave() {
                             <div
                                 class="rounded-2xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 divide-y divide-accent-400/30 shadow-sm overflow-hidden">
 
-                                <div class="flex items-center justify-between p-4">
+                                <div class="flex items-center justify-between p-4 opacity-50 pointer-events-none">
                                     <div class="flex items-center gap-3">
                                         <Shield class="w-5 h-5 text-brand-600 shrink-0" />
                                         <div>
@@ -102,8 +160,44 @@ function handleDeleteMouseLeave() {
                                             <p class="text-xs text-slate-500">Csak te látod az adataidat</p>
                                         </div>
                                     </div>
-                                    <ToggleSwitch v-model="checked" />
+                                    <ToggleSwitch v-model="checked" :disabled="true" />
                                 </div>
+
+                                <div class="flex items-center justify-between p-4">
+                                    <div class="flex items-center gap-3">
+                                        <Shield class="w-5 h-5 text-brand-600 shrink-0" />
+                                        <div>
+                                            <p class="text-sm font-semibold text-slate-900">Kétlépéses hitelesítés</p>
+                                            <p class="text-xs text-slate-500">
+                                                <template v-if="twoFactorEnabled">Bekapcsolva · Google Authenticator</template>
+                                                <template v-else>Védd fiókodat Google Authenticatorral</template>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <ToggleSwitch :modelValue="twoFactorDisplay" @update:modelValue="onTwoFactorToggle" :disabled="disabling2FA" />
+                                </div>
+                                <Transition name="modal-fade">
+                                    <div v-if="disable2FAConfirm" class="px-4 pb-3">
+                                        <div class="rounded-xl bg-red-50 border border-red-200 px-3 py-2 flex items-center justify-between gap-2">
+                                            <p class="text-xs text-red-700 font-medium">Biztosan kikapcsolod?</p>
+                                            <div class="flex gap-2">
+                                                <button
+                                                    @click="cancelDisable"
+                                                    class="text-xs font-semibold text-slate-500 hover:text-slate-700"
+                                                >
+                                                    Mégse
+                                                </button>
+                                                <button
+                                                    @click="disableTwoFactor"
+                                                    :disabled="disabling2FA"
+                                                    class="text-xs font-semibold text-red-600 hover:text-red-800 disabled:opacity-60"
+                                                >
+                                                    Kikapcsolás
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Transition>
 
                             </div>
                         </div>
@@ -170,4 +264,10 @@ function handleDeleteMouseLeave() {
             </div>
         </div>
     </Transition>
+
+    <KetFaktorosBeallitasModal
+        :open="twoFactorModalOpen"
+        @close="on2FAModalClose"
+        @enabled="onTwoFactorEnabled"
+    />
 </template>
