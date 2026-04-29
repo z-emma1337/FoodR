@@ -50,8 +50,6 @@ class InterakcioController extends Controller
             ],
             [
                 'liked' => 2,
-                'mentett' => 0,
-                'vote' => 0
             ]
         );
 
@@ -73,8 +71,6 @@ class InterakcioController extends Controller
             ],
             [
                 'liked' => 2,
-                'mentett' => 0,
-                'vote' => 0
             ]
         );
 
