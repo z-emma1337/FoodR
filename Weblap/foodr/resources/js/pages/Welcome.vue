@@ -197,7 +197,6 @@ const handleDragMove = (e) => {
 
   const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX
 
-  // CSAK X tengely! Nincs szabad Y mozgás (nem zabálja a memóriát, nincs getBoundingClientRect hívás)
   const deltaX = clientX - dragStartPos.value.x
 
   dragOffset.value = { x: deltaX, y: 0 }
@@ -245,7 +244,7 @@ const nextCard = () => {
 
   <Head title="SwipeR" />
   <div class="relative h-[100dvh] overflow-hidden">
-    <!-- swipe hint gradient -->
+
     <div v-if="dragOffset.x > 50"
       class="fixed inset-0 bg-gradient-to-l from-green-500 via-green-500/50 to-transparent pointer-events-none z-0" />
 
@@ -264,19 +263,15 @@ const nextCard = () => {
       <div v-else class=" h-full flex flex-col items-center justify-center">
         <div class="flex flex-col items-center gap-2 w-full max-w-md">
 
-          <!-- Kártya konténer -->
           <div class="relative w-[55dvh] max-w-[80vw] aspect-[3/4]" @mousedown="handleDragStart"
             @touchstart="handleDragStart">
-            <!-- háttér kártya -->
             <RecipeCard v-if="nextRecipe" :recipe="nextRecipe" :is-background="true" :next-card-scale="nextCardScale"
               :next-card-opacity="nextCardOpacity" class="absolute inset-0" />
 
-            <!-- aktuális kártya -->
             <RecipeCard v-if="currentRecipe && shouldShowCurrentCard" :recipe="currentRecipe" :is-dragging="isDragging"
               :drag-offset="dragOffset" :rotation="rotation" class="absolute inset-0" />
           </div>
 
-          <!-- Gombok – picit belelógnak a kártyába -->
           <div class="flex items-center gap-5 z-20">
             <div class="w-20 flex justify-center">
               <button title="Dislike" @click="swipeLeftClick" :disabled="isAnimating" class="group relative w-16 h-16 rounded-full

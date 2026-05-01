@@ -55,7 +55,6 @@ onUnmounted(() => {
     </h1>
 
     <form @submit.prevent="submit" class="mt-6 space-y-5">
-      <!-- EMAIL -->
       <FormInput
         v-model="authInput"
         type="text"
@@ -64,7 +63,7 @@ onUnmounted(() => {
         required
       />
 
-      <!-- PASSWORD -->
+
       <FormInput
         v-model="password"
         :type="showPassword ? 'text' : 'password'"
@@ -75,12 +74,10 @@ onUnmounted(() => {
         @toggle="showPassword = !showPassword"
       />
 
-      <!-- ERROR MESSAGE -->
       <div v-if="errorMessage" class="rounded-3xl bg-brand-200 px-3 py-2 text-center text-sm text-brand-900">
         {{ errorMessage }}
       </div>
 
-      <!-- SUBMIT BUTTON -->
       <FormButton :disabled="!isFormValid">
         Bejelentkezés
       </FormButton>
