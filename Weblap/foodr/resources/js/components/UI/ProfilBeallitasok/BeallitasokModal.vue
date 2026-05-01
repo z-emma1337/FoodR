@@ -120,26 +120,26 @@ function handleDeleteMouseLeave() {
                             <div
                                 class="rounded-2xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 divide-y divide-accent-400/30 shadow-sm overflow-hidden">
 
-                                <div class="flex items-center justify-between p-4">
+                                <div class="flex items-center justify-between p-4 opacity-50 pointer-events-none">
                                     <div class="flex items-center gap-3">
                                         <Bell class="w-5 h-5 text-brand-600 shrink-0" />
                                         <div>
-                                            <p class="text-sm font-semibold text-slate-900">valamit talaljunk ki ide</p>
-                                            <p class="text-xs text-slate-500">es ide is, el van baszva a toggle cucc, meg a szine</p>
+                                            <p class="text-sm font-semibold text-slate-900">Recept interakciók</p>
+                                            <p class="text-xs text-slate-500">Értesítés, ha felhasználó interaktált az egyik recepteddel</p>
                                         </div>
                                     </div>
-                                    <ToggleSwitch v-model="checked" />
+                                    <ToggleSwitch v-model="checked" :disabled="true" />
                                 </div>
 
-                                <div class="flex items-center justify-between p-4">
+                                <div class="flex items-center justify-between p-4 opacity-50 pointer-events-none">
                                     <div class="flex items-center gap-3">
                                         <Globe class="w-5 h-5 text-brand-600 shrink-0" />
                                         <div>
-                                            <p class="text-sm font-semibold text-slate-900">Same itt is kene valami</p>
-                                            <p class="text-xs text-slate-500">valami ertesites cucc</p>
+                                            <p class="text-sm font-semibold text-slate-900">Heti ajánlások</p>
+                                            <p class="text-xs text-slate-500">Személyre szabott receptajánlások minden héten</p>
                                         </div>
                                     </div>
-                                    <ToggleSwitch v-model="checked" />
+                                    <ToggleSwitch v-model="checked" :disabled="true" />
                                 </div>
 
                             </div>
@@ -152,7 +152,7 @@ function handleDeleteMouseLeave() {
                             <div
                                 class="rounded-2xl bg-gradient-to-br from-accent-400/40 to-accent-500/40 divide-y divide-accent-400/30 shadow-sm overflow-hidden">
 
-                                <div class="flex items-center justify-between p-4">
+                                <div class="flex items-center justify-between p-4 opacity-50 pointer-events-none">
                                     <div class="flex items-center gap-3">
                                         <Shield class="w-5 h-5 text-brand-600 shrink-0" />
                                         <div>
@@ -160,7 +160,7 @@ function handleDeleteMouseLeave() {
                                             <p class="text-xs text-slate-500">Csak te látod az adataidat</p>
                                         </div>
                                     </div>
-                                    <ToggleSwitch v-model="checked" />
+                                    <ToggleSwitch v-model="checked" :disabled="true" />
                                 </div>
 
                                 <div class="flex items-center justify-between p-4">

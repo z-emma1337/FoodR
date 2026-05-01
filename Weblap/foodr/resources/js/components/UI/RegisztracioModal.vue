@@ -7,6 +7,7 @@ import FormButton from '@/components/form/FormButton.vue'
 import ValidationItem from '@/components/form/ValidationItem.vue'
 import { useUsernameCheck } from '@/composables/useUsernameCheck'
 import { usePasswordValidation } from '@/composables/usePasswordValidation'
+import { useEmailCheck } from '@/composables/useEmailCheck'
 
 const props = defineProps({ open: { type: Boolean, required: true } })
 const emit = defineEmits(['close', 'switch-to-login', 'registered'])
@@ -37,6 +38,16 @@ const {
     isPasswordValid,
 } = usePasswordValidation(password)
 
+const {
+    isEmailAvailable,
+    checkingEmail,
+    emailTouched,
+    hasAtSymbol,
+    isEmailFormatValid,
+    isEmailValid,
+    clearEmail,
+} = useEmailCheck(email)
+
 const doPasswordsMatch = computed(() =>
     password.value === confirmPassword.value && confirmPassword.value.length > 0
 )
@@ -44,9 +55,10 @@ const doPasswordsMatch = computed(() =>
 const isFormValid = computed(() =>
     !checkingUsername.value &&
     isUsernameValid.value &&
+    !checkingEmail.value &&
+    isEmailValid.value &&
     isPasswordValid.value &&
-    doPasswordsMatch.value &&
-    email.value.length > 0 
+    doPasswordsMatch.value
 )
 
 const submit = () => {
@@ -75,7 +87,6 @@ const submit = () => {
 
 watch(() => props.open, (val) => {
     if (!val) {
-        email.value = ''
         username.value = ''
         password.value = ''
         confirmPassword.value = ''
@@ -84,6 +95,7 @@ watch(() => props.open, (val) => {
         errorMessage.value = ''
         emailError.value = ''
         clearUsername()
+        clearEmail()
     }
 })
 </script>
@@ -121,8 +133,17 @@ watch(() => props.open, (val) => {
 
                     <div class="transform transition-all duration-300">
                         <label class="block text-sm font-medium text-slate-800 mb-1">Email cím</label>
-                        <FormInput v-model="email" type="email" :icon="Mail" placeholder="email@pelda.hu" required />
-                        <div v-if="emailError" class="mt-2">
+                        <FormInput v-model="email" type="email" :icon="Mail" placeholder="email@pelda.hu" />
+                        <div v-if="emailTouched && hasAtSymbol" class="mt-2 space-y-1">
+                            <ValidationItem
+                                v-if="isEmailFormatValid"
+                                :valid="isEmailAvailable"
+                                :loading="checkingEmail"
+                                :text="checkingEmail ? 'Ellenőrzés…' : isEmailAvailable ? 'Email cím elérhető' : 'Ez az email cím már foglalt'"
+                            />
+                            <ValidationItem v-else :valid="false" text="Érvénytelen email cím formátum" />
+                        </div>
+                        <div v-if="emailError && !emailTouched" class="mt-2">
                             <ValidationItem :valid="false" :text="emailError" />
                         </div>
                     </div>

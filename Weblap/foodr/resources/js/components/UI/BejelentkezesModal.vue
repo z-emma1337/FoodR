@@ -41,10 +41,7 @@ let toastTimeout = null
 const openRegisztracio = () => flipTo('register')
 const closeRegisztracio = () => flipTo('login')
 const onRegistered = () => {
-    flipTo('login')
-    if (toastTimeout) clearTimeout(toastTimeout)
-    successToast.value = true
-    toastTimeout = setTimeout(() => { successToast.value = false }, 4000)
+    emit('close')
 }
 
 const authInput = ref('')

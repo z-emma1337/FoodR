@@ -158,12 +158,18 @@ const deleteKomment = (komment) => {
   })
 }
 
+const torolodik = ref(false)
+
 function ReceptTorlese(id) {
+  if (torolodik.value) return
+  torolodik.value = true
   axios.delete(`/recept-torles/${id}`)
     .then(() => {
       window.location.reload()
     })
-  resolve()
+    .catch(() => {
+      torolodik.value = false
+    })
 }
 
 </script>
@@ -320,9 +326,9 @@ function ReceptTorlese(id) {
                  flex items-center justify-center gap-2">
               <Pencil :stroke-width="2" class="w-13 h-13 text-accent-300 pt-0.5 transition-all" />
             </button>
-            <button title="Recept törlése" @click="ReceptTorlese(props.recipe.id)" class="w-full p-2 rounded-full  font-bold shadow-md
+            <button title="Recept törlése" @click="ReceptTorlese(props.recipe.id)" :disabled="torolodik" class="w-full p-2 rounded-full  font-bold shadow-md
                  button-brand
-                 flex items-center justify-center gap-2
+                 flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100
                  ">
               <Trash2 :stroke-width="2" class="trash-icon w-13 h-13 text-accent-300 pt-0.5 transition-all" />
             </button>

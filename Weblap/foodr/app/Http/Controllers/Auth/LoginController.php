@@ -45,7 +45,7 @@ class LoginController extends Controller
             }
 
             $request->session()->regenerate();
-            return redirect('/');
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([

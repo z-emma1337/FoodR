@@ -162,6 +162,12 @@ const receptekBetoltes = async () => {
 onMounted(async () => {
   await receptekBetoltes()
 
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('login') === '1') {
+    openLoginModal()
+    window.history.replaceState({}, '', '/')
+  }
+
   window.addEventListener('allergenek-frissitve', receptekBetoltes)
 
   document.addEventListener('mousemove', handleDragMove, { passive: true })
