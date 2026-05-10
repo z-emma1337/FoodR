@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { Clock, Users, ShoppingBasket, Trash2, Heart, MessageCircleMore, Pencil } from 'lucide-vue-next'
-import { router, usePage } from '@inertiajs/vue3'
+import { usePage } from '@inertiajs/vue3'
 import RecipeModal from './RecipeModal.vue'
 import SzerkesztModal from './SzerkesztModal.vue'
 

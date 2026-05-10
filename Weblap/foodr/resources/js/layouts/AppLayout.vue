@@ -96,20 +96,16 @@ watch(() => page.url, (currentPath) => {
               lg:flex-row lg:h-screen
               bg-gradient-to-br from-brand-900 via-brand-700 to-brand-800 animate-gradient">
 
-    <!-- Background glow (fixed, purely decorative) -->
     <div class="pointer-events-none fixed inset-0 z-0
                 bg-gradient-to-br from-accent-500/20 via-transparent to-accent-600/20
                 blur-3xl animate-gradient-slow" />
 
-    <!-- Modals -->
     <BejelentkezesModal :open="loginModalOpen" @close="closeLoginModal" />
     <ProfilomModal :open="profilomOpen" @close="profilomOpen = false" />
     <BeallitasokModal :open="beallitasokOpen" @close="beallitasokOpen = false" />
     <SugoModal :open="sugoOpen" @close="sugoOpen = false" />
 
-    <!-- ═══════════════════════════════════════════════
-         DESKTOP — LEFT SIDEBAR
-    ════════════════════════════════════════════════ -->
+    <!-- asztali baloldal -->
     <aside class="hidden lg:flex flex-col shrink-0 w-[280px] h-screen p-4 z-20">
       <div class="h-full rounded-3xl overflow-hidden shadow-2xl border-accent-600 border-6">
         <div
@@ -145,12 +141,12 @@ watch(() => page.url, (currentPath) => {
 
     <div class="flex flex-col flex-1 min-w-0 min-h-0 h-full lg:h-screen z-10">
 
-      <!-- Page content -->
+
       <main class="flex-1 min-h-0 overflow-hidden lg:pt-0 pt-3">
         <slot />
       </main>
 
-      <!-- MOBILE: Bottom navigation bar -->
+      <!-- mobil nav -->
       <nav class="lg:hidden shrink-0 px-3 pb-3" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom))">
         <div
           class="relative flex items-center justify-around bg-accent-300/95 backdrop-blur-lg rounded-3xl px-2 py-1 shadow-xl border-accent-600 border-3">
@@ -184,7 +180,7 @@ watch(() => page.url, (currentPath) => {
               :class="LeftnavItems[2].active ? 'text-brand-600' : 'text-slate-600'">FeedR</span>
           </button>
 
-          <!-- SwipeR — raised center button -->
+          <!-- SwipeR -->
           <div class="flex-1 flex justify-center">
             <button @click="handleLeftNav(LeftnavItems[0])"
               class="relative -top-6 w-20 h-20 rounded-full shadow-xl border-accent-600 border-6 transition-all active:scale-95
@@ -221,9 +217,7 @@ watch(() => page.url, (currentPath) => {
 
     </div>
 
-    <!-- ═══════════════════════════════════════════════
-         DESKTOP — RIGHT SIDEBAR
-    ════════════════════════════════════════════════ -->
+    <!-- asztsal jobb -->
     <aside class="hidden lg:flex flex-col shrink-0 w-[280px] h-screen p-4 z-20">
       <div class="h-full rounded-3xl overflow-hidden shadow-2xl border-accent-600 border-6">
         <div
@@ -287,9 +281,7 @@ watch(() => page.url, (currentPath) => {
       </div>
     </aside>
 
-    <!-- ═══════════════════════════════════════════════
-         MOBILE 
-    ════════════════════════════════════════════════ -->
+    <!-- mobil-->
     <Transition name="menu-fade">
       <div v-if="isMobileMenuOpen" @click="closeMobileMenu"
         class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40" />

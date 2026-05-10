@@ -97,8 +97,6 @@ class KedvencController extends Controller
                 'felhasznalo_id' => $user->id,
                 'recept_id' => $validated['recept_id'],
                 'liked' => 1,
-                'mentett' => 0,
-                'vote' => 0,
             ]);
         }
 
